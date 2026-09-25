@@ -1,0 +1,67 @@
+Stop legality
+
+No reasonable suspicion for the initial stop
+Stop based on anonymous tip lacking indicia of reliability
+Stop based on profile/pattern rather than particularized suspicion
+Prolonged beyond time needed for the stop's original purpose (Rodriguez v. United States)
+Checkpoint/roadblock without a valid primary purpose (Indianapolis v. Edmond)
+Officer's mistake of law was unreasonable (contrast with Heien v. North Carolina, where a reasonable mistake can still support a stop)
+
+Frisk scope
+
+No reasonable suspicion the person was armed and dangerous
+Pat-down exceeded a search for weapons (manipulation of soft objects, beyond "plain feel" — Minnesota v. Dickerson)
+Frisk extended to a passenger without individualized suspicion
+Frisk continued after any weapon concern was dispelled
+Frisk expanded into the surrounding area/vehicle without separate justification
+
+Consent validity
+
+Consent not voluntary (coercive presence, number of officers, show of force)
+Consent came after an illegal stop/detention (taint — did it purge or not?)
+Search exceeded the scope of what was consented to
+Third-party consent issues — actual vs. apparent authority (Illinois v. Rodriguez)
+Consent withdrawn mid-search but search continued
+"Knock and talk" consent obtained coercively
+
+Warrant defects
+
+No probable cause in the affidavit
+Stale information in the affidavit
+Lacks particularity — overbroad/general warrant
+Franks violation — false statements or material omissions in the affidavit
+Execution exceeded the warrant's scope (wrong areas/items)
+Improper no-knock or nighttime execution
+Anticipatory warrant's triggering condition wasn't met
+Good-faith exception (United States v. Leon) — arguing it shouldn't apply
+
+Plain view
+
+Officer wasn't lawfully present when the observation was made
+Incriminating character wasn't immediately apparent
+Officer moved an object to see it (not truly "plain view")
+Used to justify a broader search than the single item seized
+
+Inventory search
+
+No standardized policy governing the inventory
+Impoundment itself was discretionary/unjustified
+Search functioned as pretext for investigation, not routine inventory
+Scope exceeded policy (e.g., opening locked containers without authorization)
+
+Canine sniff
+
+Sniff prolonged the stop beyond what the original stop required (Rodriguez)
+Dog's training/reliability record not established
+Sniff occurred at the curtilage of a home (Florida v. Jardines — trespassory sniff)
+
+Miranda / custodial interrogation
+
+Custody itself is disputed (would a reasonable person have felt free to leave?)
+Statement was spontaneous, not the product of interrogation
+Warnings were incomplete or inadequate
+Waiver wasn't knowing, voluntary, and intelligent
+Invocation of silence or counsel wasn't honored
+"Question-first, warn-later" technique (Missouri v. Seibert)
+Public-safety exception misapplied
+Confession involuntary under due process, independent of Miranda (coercion, promises, deception)

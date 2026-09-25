@@ -1,0 +1,74 @@
+{
+  "_description": "Single source of truth for the app: the case-level session schema (jurisdiction lives here, asked once) plus the index of every issue file in content/issues/.",
+
+  "case_session_schema": {
+    "case_id": "string, generated per session",
+    "created": "ISO date",
+    "jurisdiction_selection": {
+      "type": "multiple_choice",
+      "prompt": "Which law should this motion cite?",
+      "options": ["Federal only", "State only", "Federal and state"],
+      "asked": "once, at the very start of the wizard, before any issue-taxonomy questions — every issue's law_paragraph rendering reads this instead of asking again"
+    },
+    "state_name": {
+      "type": "dropdown",
+      "prompt": "Which state?",
+      "options": "50 states + D.C. — only asked if jurisdiction_selection includes state law",
+      "note": "Future-proofs multi-state support; drives which state-tagged segments the resolver looks for (e.g. state_CA vs state_TX, see segment tagging below)"
+    },
+    "federal_circuit": {
+      "type": "dropdown",
+      "prompt": "Which federal circuit applies?",
+      "options": ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "D.C."],
+      "asked": "once, only if jurisdiction_selection includes federal law",
+      "note": "Most issues will only have SCOTUS-level authority (applies regardless of circuit). Circuit is only relevant for issues with a documented circuit split — most issue files will never need a circuit-specific segment at all."
+    },
+    "answers": "object — keyed by question id, populated as the attorney moves through each issue's trigger.questions",
+    "matched_issues": "array of issue ids — populated by matching logic, not asked directly"
+  },
+
+  "circuits_reviewed_field": {
+    "location": "top level of each issue file, e.g. issue.circuits_reviewed",
+    "format": "array of circuit names that have actually been checked for a split on this issue, e.g. ['9th', '4th'] — a circuit CAN be in this list with no circuit-specific segment authored, meaning 'checked, no split found, the any-circuit segment is correct there'",
+    "why_separate_from_segments": "Without this, the resolver can't distinguish 'no split exists' from 'nobody has looked yet' — both look identical (no circuit-specific segment) unless tracked explicitly."
+  },
+
+  "segment_tagging_convention": {
+    "federal_scotus_or_undivided": "jurisdiction: 'federal', circuit: 'any' — renders whenever federal law is desired, regardless of which circuit is selected. Use this for SCOTUS holdings and any circuit-level rule you haven't found a split on.",
+    "federal_circuit_specific": "jurisdiction: 'federal', circuit: '9th' (etc.) — only renders when case_session.federal_circuit matches. Use only where you've identified an actual circuit split worth flagging.",
+    "state_specific": "jurisdiction: 'state', state: 'CA' (etc.) — only renders when case_session.state_name matches. A single issue file can hold segments for more than one state as you expand beyond your first."
+  },
+
+  "resolver_logic": {
+    "function": "resolveLawParagraph(issue, case_session)",
+    "steps": [
+      "1. desiredJurisdictions = jurisdictionSelectionToSet(case_session.jurisdiction_selection)  // {federal}, {state}, or {federal, state}",
+      "2. federalSegments = segments where jurisdiction == 'federal' AND (circuit == 'any' OR circuit == case_session.federal_circuit), status != 'NEEDS_RESEARCH'",
+      "3. stateSegments = segments where jurisdiction == 'state' AND state == case_session.state_name, status != 'NEEDS_RESEARCH'",
+      "4. toRender = (federalSegments if 'federal' in desiredJurisdictions) + (stateSegments if 'state' in desiredJurisdictions), federal first",
+      "5. IF toRender is empty: set warning (e.g. 'no_state_authority_for_<state>' or 'no_circuit_specific_authority'), fall back to any 'any'-circuit federal segment if one exists — never render nothing, never silently use an unresearched placeholder",
+      "6. IF 'federal' in desiredJurisdictions AND case_session.federal_circuit NOT IN issue.circuits_reviewed: add soft warning 'circuit_specific_authority_not_researched' — this fires even when toRender is non-empty, since it means nobody has confirmed whether this circuit has a split, not that one was ruled out",
+      "7. text = join segment texts in toRender order; citations = flattened segment citations",
+      "8. return { text, citations, warnings: [] }  // warnings is a list — both a step-5 and step-6 warning can fire together"
+    ]
+  },
+
+  "issues": [
+    {
+      "id": "franks-violation",
+      "category": "warrant-defects",
+      "label": "Franks Violation — False Statement or Material Omission in Affidavit",
+      "file": "content/issues/franks-violation.json",
+      "jurisdiction_status": { "federal": "reviewed", "state": "needs_research" }
+    },
+    {
+      "id": "prolonged-stop",
+      "category": "stop-legality",
+      "label": "Stop Prolonged Beyond Its Original Purpose",
+      "file": "content/issues/prolonged-stop.json",
+      "jurisdiction_status": { "federal": "reviewed", "state": "needs_research" }
+    }
+  ],
+
+  "coverage_note": "To check how much state-law research remains, scan all issue files' law_paragraph.segments for status == 'NEEDS_RESEARCH', or just check jurisdiction_status.state across this issues array as you add entries."
+}

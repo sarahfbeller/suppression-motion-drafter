@@ -1,0 +1,90 @@
+{
+  "id": "prolonged-stop",
+  "category": "stop-legality",
+  "label": "Stop Prolonged Beyond Its Original Purpose",
+  "jurisdiction": ["federal", "state"],
+  "status": "reviewed",
+  "last_reviewed": "2026-09-25",
+  "reviewed_by": "",
+
+  "trigger": {
+    "description": "Ask whenever there was a traffic or investigative stop, to determine whether it was extended beyond the time reasonably required for its original purpose.",
+    "questions": [
+      {
+        "id": "q_stop_type",
+        "type": "multiple_choice",
+        "prompt": "What was the original basis for the stop?",
+        "options": ["Traffic violation", "Terry stop (reasonable suspicion of a crime)", "DUI checkpoint", "Other"]
+      },
+      {
+        "id": "q_original_purpose_completed",
+        "type": "yes_no",
+        "prompt": "Had the officer finished (or reasonably should have finished) the tasks tied to the original purpose — e.g. writing the citation, running the license/registration/warrant checks — before anything else happened?",
+        "required_answer": "yes",
+        "note": "This is the Rodriguez trigger question. If the officer was still actively completing original-purpose tasks, there is no prolongation issue yet."
+      },
+      {
+        "id": "q_extension_event",
+        "type": "multiple_choice",
+        "prompt": "What happened after the original-purpose tasks were done (or should have been done)?",
+        "options": [
+          "Canine sniff conducted",
+          "Questioning unrelated to the stop (travel plans, contents of vehicle, etc.)",
+          "Request to search the vehicle",
+          "Wait for a second officer or K-9 unit to arrive",
+          "Other unrelated investigation"
+        ]
+      },
+      {
+        "id": "q_independent_suspicion",
+        "type": "yes_no",
+        "prompt": "Did the officer develop independent, articulable reasonable suspicion of additional criminal activity DURING the original-purpose tasks (not after)?",
+        "required_answer": "no",
+        "note": "If yes, the extension may be independently justified — flag for attorney review rather than auto-excluding this issue, since timing of when suspicion arose is fact-intensive."
+      },
+      {
+        "id": "q_duration",
+        "type": "short_text",
+        "prompt": "Approximately how much additional time did the extension add to the stop (if known)?",
+        "note": "Courts do not require a bright-line minimum delay under Rodriguez — even a de minimis extension without independent justification can be unconstitutional. Collect this for the fact section of the motion, not as a threshold gate."
+      }
+    ]
+  },
+
+  "_comment": "Jurisdiction is no longer asked per-issue. See manifest.json — jurisdiction_selection lives on the case session, and the shared resolveLawParagraph() function reads segment.jurisdiction/circuit/state below to decide what to render.",
+
+  "circuits_reviewed": [],
+
+  "law_paragraph": {
+    "segments": [
+      {
+        "id": "federal_rule",
+        "jurisdiction": "federal",
+        "circuit": "any",
+        "text": "A traffic stop becomes unlawful if it is prolonged beyond the time reasonably required to complete the mission of the stop. Rodriguez v. United States, 575 U.S. 348 (2015). Authority for the seizure ends when tasks tied to the traffic infraction are, or reasonably should have been, completed, and an officer may not extend an otherwise-completed stop, even briefly, to conduct a dog sniff or other unrelated investigation absent independent reasonable suspicion. Illinois v. Caballes, 543 U.S. 405 (2005), permits a dog sniff only if it does not add time to the stop. Where an officer develops reasonable, articulable suspicion of additional criminal activity during the stop's original mission, a brief extension to investigate that suspicion may be justified; the burden is on the government to establish that suspicion arose before, not after, the original mission concluded.",
+        "citations": [
+          { "case": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "jurisdiction": "federal", "propositions": ["stop unlawful once prolonged beyond original mission", "no de minimis exception"] },
+          { "case": "Illinois v. Caballes", "citation": "543 U.S. 405 (2005)", "jurisdiction": "federal", "propositions": ["dog sniff permissible only if it adds no time to the stop"] }
+        ]
+      },
+      {
+        "id": "state_rule",
+        "jurisdiction": "state",
+        "state": "FILL_IN — e.g. 'CA'",
+        "status": "NEEDS_RESEARCH",
+        "text": "PLACEHOLDER — fill in once you've identified your state's controlling (or persuasive) authority. Suggested pattern: 'This principle is [adopted / equally recognized] under [state] law. See [State Case], [citation], which held that [parallel or stricter holding].' If your state constitution provides broader protection than the Fourth Amendment on this point, say so explicitly rather than treating it as identical to Rodriguez.",
+        "citations": [
+          { "case": "PLACEHOLDER — insert controlling state case", "citation": "", "jurisdiction": "state", "propositions": [] }
+        ]
+      }
+    ]
+  },
+
+  "practice_notes": [
+    "Get the dispatch log and any body-cam/dash-cam timestamps in discovery early — this issue lives and dies on minute-by-minute sequencing.",
+    "Pin down the officer's own testimony on when each original-purpose task was completed; officers sometimes pad task completion time in reports to avoid a Rodriguez problem.",
+    "If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later."
+  ],
+
+  "related_issues": ["canine-sniff-prolonged", "reasonable-suspicion-stop", "fruit-of-poisonous-tree"]
+}

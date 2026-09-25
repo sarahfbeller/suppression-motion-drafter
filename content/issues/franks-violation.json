@@ -1,0 +1,89 @@
+{
+  "id": "franks-violation",
+  "category": "warrant-defects",
+  "label": "Franks Violation — False Statement or Material Omission in Affidavit",
+  "jurisdiction": ["federal", "state"],
+  "status": "reviewed",
+  "last_reviewed": "2026-09-25",
+  "reviewed_by": "",
+  "circuits_reviewed": ["4th"],
+
+  "trigger": {
+    "description": "Ask when a search was conducted pursuant to a warrant and there is reason to believe the supporting affidavit contained inaccuracies or omissions.",
+    "questions": [
+      {
+        "id": "q_warrant_used",
+        "type": "yes_no",
+        "prompt": "Was the search conducted pursuant to a warrant?",
+        "required_answer": "yes"
+      },
+      {
+        "id": "q_affidavit_accuracy",
+        "type": "multiple_choice",
+        "prompt": "Is there any indication the affidavit contained a false statement, or omitted material information?",
+        "options": [
+          "No known issues",
+          "Possible false statement by affiant",
+          "Possible material omission by affiant",
+          "Both"
+        ],
+        "triggers_issue_if": ["Possible false statement by affiant", "Possible material omission by affiant", "Both"]
+      },
+      {
+        "id": "q_intent",
+        "type": "multiple_choice",
+        "prompt": "Does the available evidence suggest the affiant acted with...",
+        "options": ["Deliberate falsehood", "Reckless disregard for the truth", "Simple negligence/mistake", "Unknown"],
+        "note": "Simple negligence does not meet the Franks standard; flag for attorney review rather than auto-including."
+      },
+      {
+        "id": "q_materiality",
+        "type": "yes_no",
+        "prompt": "If the false statement were removed (or the omission included), would the affidavit still establish probable cause?",
+        "required_answer": "no"
+      }
+    ]
+  },
+
+  "law_paragraph": {
+    "segments": [
+      {
+        "id": "federal_rule",
+        "jurisdiction": "federal",
+        "circuit": "any",
+        "text": "Under Franks v. Delaware, 438 U.S. 154 (1978), a defendant is entitled to an evidentiary hearing on the validity of a search warrant affidavit where he makes a substantial preliminary showing that the affiant knowingly and intentionally, or with reckless disregard for the truth, included a false statement in the warrant affidavit, and the false statement was necessary to the finding of probable cause. The same analysis applies to material omissions where the affiant's conduct amounts to reckless disregard for the truth. If, after excising the false material or including the omitted information, the affidavit's remaining content is insufficient to establish probable cause, the warrant must be voided and the fruits of the search excluded.",
+        "citations": [
+          { "case": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "jurisdiction": "federal", "propositions": ["substantial preliminary showing standard", "knowing/reckless false statement", "materiality requirement"] }
+        ]
+      },
+      {
+        "id": "federal_rule_4th_cir",
+        "jurisdiction": "federal",
+        "circuit": "4th",
+        "text": "In the Fourth Circuit, the same Franks analysis governs material omissions, not just affirmative false statements. See United States v. Colkley, 899 F.2d 297 (4th Cir. 1990).",
+        "citations": [
+          { "case": "United States v. Colkley", "citation": "899 F.2d 297 (4th Cir. 1990)", "jurisdiction": "federal", "propositions": ["omissions analyzed under Franks"] }
+        ],
+        "note": "Example of a circuit-specific segment — Colkley is 4th Circuit authority, not SCOTUS. If your circuit has its own case for this same proposition, swap it in; if not researched yet, mark status: NEEDS_RESEARCH instead of leaving 4th Circuit law in as a stand-in for your actual circuit."
+      },
+      {
+        "id": "state_rule",
+        "jurisdiction": "state",
+        "state": "FILL_IN — e.g. 'CA'",
+        "status": "NEEDS_RESEARCH",
+        "text": "PLACEHOLDER — fill in once you've identified your state's controlling (or persuasive) authority on Franks-type challenges. Some states apply a lower threshold for omissions than the federal standard — say so explicitly if true in yours.",
+        "citations": [
+          { "case": "PLACEHOLDER — insert controlling state case", "citation": "", "jurisdiction": "state", "propositions": [] }
+        ]
+      }
+    ]
+  },
+
+  "practice_notes": [
+    "A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.",
+    "Request the officer's underlying notes, dispatch recordings, or informant file in discovery before filing — they're often the source of the contradiction.",
+    "Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant."
+  ],
+
+  "related_issues": ["good-faith-exception-rebuttal", "warrant-particularity", "standing"]
+}
