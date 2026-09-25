@@ -12,8 +12,8 @@
   },
   {
     "id": "q_extension_event",
-    "type": "multiple_choice",
-    "prompt": "What happened after the original-purpose tasks were done (or should have been done)?",
+    "type": "multi_select",
+    "prompt": "What happened after the original-purpose tasks were done (or should have been done)? Select all that apply.",
     "options": [
       "Canine sniff conducted",
       "Questioning unrelated to the stop (travel plans, contents of vehicle, etc.)",

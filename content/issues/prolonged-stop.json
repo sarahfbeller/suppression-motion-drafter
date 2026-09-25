@@ -13,7 +13,7 @@
     "match_condition": {
       "all": [
         { "question": "q_original_purpose_completed", "op": "equals", "value": "yes" },
-        { "question": "q_extension_event", "op": "not_equals", "value": null },
+        { "question": "q_extension_event", "op": "not_empty" },
         { "question": "q_independent_suspicion", "op": "in", "value": ["No", "Not sure"] }
       ]
     },
