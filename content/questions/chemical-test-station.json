@@ -1,0 +1,35 @@
+[
+  {
+    "id": "q_contact_requested",
+    "type": "multi_select",
+    "prompt": "Before deciding whether to take the breath test, did the defendant ask to contact anyone? Select all that apply.",
+    "options": ["An attorney", "A relative or friend (not an attorney)"]
+  },
+  {
+    "id": "q_contact_purpose",
+    "type": "multiple_choice",
+    "prompt": "If a relative or friend was requested, what was the stated or apparent purpose of that request?",
+    "options": [
+      "To get advice on whether to take the test, or what to do (defense-related)",
+      "Purely personal — e.g. arranging bail, notifying family, emotional support — no defense-related purpose apparent",
+      "Unclear or not established",
+      "N/A — only an attorney was requested"
+    ]
+  },
+  {
+    "id": "q_contact_outcome",
+    "type": "multiple_choice",
+    "prompt": "What happened after the request?",
+    "options": [
+      "Request was denied outright — no opportunity to contact anyone was given",
+      "An opportunity was given, but the defendant was not able to communicate privately",
+      "An opportunity was given, but not within a reasonable time given the circumstances (e.g. the person could have arrived or advised further, but wasn't given the time to)",
+      "A reasonable opportunity to contact and consult was given"
+    ]
+  },
+  {
+    "id": "q_contact_timeline",
+    "type": "short_text",
+    "prompt": "Roughly what was the timeline — when was the request made, when was contact made (if any), and when was the test administered?"
+  }
+]

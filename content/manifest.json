@@ -108,7 +108,8 @@
   "question_bank_topics": [
     "content/questions/warrant-affidavit.json",
     "content/questions/vehicle-stop-timeline.json",
-    "content/questions/vehicle-occupants.json"
+    "content/questions/vehicle-occupants.json",
+    "content/questions/chemical-test-station.json"
   ],
 
   "issues": [
@@ -132,6 +133,14 @@
       "label": "Frisk Extended to a Passenger Without Individualized Suspicion",
       "file": "content/issues/passenger-frisk-suspicionless.json",
       "jurisdiction_status": { "federal": "unreviewed", "state": "needs_research" }
+    },
+    {
+      "id": "denial-of-counsel-before-breath-test",
+      "category": "chemical-test-rights",
+      "label": "Denial of Right to Counsel Before Deciding Whether to Take a Breath Test (Copelin)",
+      "file": "content/issues/denial-of-counsel-before-breath-test.json",
+      "jurisdiction_status": { "state": "unreviewed" },
+      "note": "No 'federal' key — this issue has no federal counterpart by nature, not just an unresearched gap. See _jurisdiction_note in the issue file and the pending jurisdiction-applicability design decision."
     }
   ],
 

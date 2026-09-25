@@ -1,0 +1,95 @@
+{
+  "id": "denial-of-contact-before-breath-test",
+  "category": "chemical-test-rights",
+  "label": "Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "circuits_reviewed": [],
+
+  "_jurisdiction_note": "No federal segment exists here, intentionally — this is an Alaska statutory/due-process right (AS 12.25.150(b)), not a federal constitutional claim. Whether/how the resolver should treat 'no federal segment, and none is coming' is a pending design decision (see manifest.json) — not resolved yet, so this field is a placeholder comment rather than a structural fix.",
+
+  "trigger": {
+    "description": "Ask whenever the defendant submitted to (or refused) a breath test following a DUI arrest, to determine whether they were denied a reasonable opportunity to contact an attorney or a relative/friend before deciding.",
+
+    "match_condition": {
+      "all": [
+        { "question": "q_contact_requested", "op": "not_empty" },
+        { "question": "q_contact_outcome", "op": "in", "value": [
+          "Request was denied outright — no opportunity to contact anyone was given",
+          "An opportunity was given, but the defendant was not able to communicate privately",
+          "An opportunity was given, but not within a reasonable time given the circumstances (e.g. the person could have arrived or advised further, but wasn't given the time to)"
+        ] },
+        { "any": [
+          { "question": "q_contact_requested", "op": "includes", "value": "An attorney" },
+          { "all": [
+            { "question": "q_contact_requested", "op": "includes", "value": "A relative or friend (not an attorney)" },
+            { "question": "q_contact_purpose", "op": "equals", "value": "To get advice on whether to take the test, or what to do (defense-related)" }
+          ] }
+        ] }
+      ]
+    },
+
+    "review_conditions": [
+      {
+        "when": { "question": "q_contact_outcome", "op": "equals", "value": "An opportunity was given, but the defendant was not able to communicate privately" },
+        "flag": "privacy_reasonableness_factual",
+        "display_note": "Whether a lack of privacy violates AS 12.25.150(b) is a reasonableness balancing test, not a bright-line rule — gather the specific circumstances (what could be overheard, whether it actually inhibited communication) before relying on this issue as written."
+      },
+      {
+        "when": { "question": "q_contact_outcome", "op": "equals", "value": "An opportunity was given, but not within a reasonable time given the circumstances (e.g. the person could have arrived or advised further, but wasn't given the time to)" },
+        "flag": "timing_reasonableness_factual",
+        "display_note": "Whether the time allowed was 'reasonable' is fact-specific — though Alaska treats the standard 20-minute pre-test observation period as per se reasonable, so timing claims are strongest when less than that was actually given. Document exactly how much time was requested and needed versus actually given."
+      }
+    ],
+
+    "excluded_explanations": [
+      {
+        "when": {
+          "all": [
+            { "question": "q_contact_requested", "op": "includes", "value": "A relative or friend (not an attorney)" },
+            { "question": "q_contact_requested", "op": "not_includes", "value": "An attorney" },
+            { "question": "q_contact_purpose", "op": "equals", "value": "Purely personal — e.g. arranging bail, notifying family, emotional support — no defense-related purpose apparent" }
+          ]
+        },
+        "flag": "non_defense_purpose_remedy_undecided",
+        "display_note": "Denial of Contact Before Breath Test was considered but not included: the request to contact a relative/friend appears to have served a purely personal purpose, not a defense-related one. Alaska's supreme court has expressly left open whether denial of a non-defense-related request requires suppression (Zsupnik v. State, 789 P.2d 357, 361 n.4 (Alaska 1990)), and Winfrey v. State, 78 P.3d 725 (Alaska App. 2003), has declined to extend suppression to non-defense-related requests. This may still be worth raising in the alternative depending on the full record, but it isn't clearly supported by current law."
+      },
+      {
+        "when": {
+          "all": [
+            { "question": "q_contact_requested", "op": "includes", "value": "A relative or friend (not an attorney)" },
+            { "question": "q_contact_requested", "op": "not_includes", "value": "An attorney" },
+            { "question": "q_contact_purpose", "op": "equals", "value": "Unclear or not established" }
+          ]
+        },
+        "flag": "purpose_unclear_needs_development",
+        "display_note": "Denial of Contact Before Breath Test was considered but not included: it's unclear whether the request to contact a relative/friend served a defense-related purpose. Under Zsupnik v. State, 789 P.2d 357 (Alaska 1990), that purpose determines whether suppression is available — developing this fact (what the defendant said the reason was) could make this issue viable."
+      }
+    ]
+  },
+
+  "law_paragraph": {
+    "segments": [
+      {
+        "id": "state_rule",
+        "jurisdiction": "state",
+        "state": "AK",
+        "text": "Under AS 12.25.150(b) and Alaska Criminal Rule 5(b), a person arrested has the right to telephone or otherwise communicate with an attorney and any relative or friend immediately after arrest. Copelin v. State, 659 P.2d 1206 (Alaska 1983), held that this right requires police to give a person arrested for driving under the influence a reasonable opportunity to contact an attorney by phone before being required to decide whether to submit to a breath test, and that violation of this right requires suppression of the test results. Zsupnik v. State, 789 P.2d 357 (Alaska 1990), extended this right to requests to contact a relative or friend, holding that the statute draws no distinction between attorneys and relatives or friends on its face — but the remedy for denying such a request is exclusion of evidence only where the request served a purpose related to the defense process, such as obtaining advice on whether to take the test. The right is not absolute — it does not permit indefinite delay, and what counts as a reasonable opportunity is balanced against the state's need to administer the test in a timely manner; Alaska treats the standard 20-minute pre-test observation period as per se reasonable.",
+        "citations": [
+          { "case": "Copelin v. State", "citation": "659 P.2d 1206 (Alaska 1983)", "jurisdiction": "state", "propositions": ["right to reasonable opportunity to contact attorney before deciding whether to submit to breath test", "violation requires suppression"] },
+          { "case": "Zsupnik v. State", "citation": "789 P.2d 357 (Alaska 1990)", "jurisdiction": "state", "propositions": ["right extends to requests to contact a relative or friend, not just an attorney", "suppression remedy limited to defense-related purposes"] },
+          { "case": "Winfrey v. State", "citation": "78 P.3d 725 (Alaska App. 2003)", "jurisdiction": "state", "propositions": ["exclusionary rule not extended to non-defense-related requests"] },
+          { "case": "Municipality of Anchorage v. Marrs", "citation": "694 P.2d 1163 (Alaska App. 1985)", "jurisdiction": "state", "propositions": ["reasonableness of time given is balanced against timely test administration"] },
+          { "case": "Farrell v. Municipality of Anchorage", "citation": "682 P.2d 1128 (Alaska App. 1984)", "jurisdiction": "state", "propositions": ["police must make reasonable effort to accommodate private consultation"] }
+        ]
+      }
+    ]
+  },
+
+  "practice_notes": [
+    "This is an Alaska statutory/due-process right (AS 12.25.150(b)), not a Fourth Amendment claim, and not the same as federal Miranda right-to-counsel doctrine — Miranda governs counsel during interrogation; this governs contact before a testing decision. Don't conflate the two in briefing.",
+    "If the request was to contact a relative or friend rather than an attorney, pin down and document the stated purpose of that request as early as possible — under Zsupnik, whether the purpose was defense-related is what determines whether suppression is even available.",
+    "Get the booking/custody video and any phone or dispatch logs — these claims turn on the specific timeline: when the request was made, when (if ever) contact occurred, and how much time was given relative to what was actually needed."
+  ]
+}
