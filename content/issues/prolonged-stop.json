@@ -2,7 +2,6 @@
   "id": "prolonged-stop",
   "category": "stop-legality",
   "label": "Stop Prolonged Beyond Its Original Purpose",
-  "jurisdiction": ["federal", "state"],
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",

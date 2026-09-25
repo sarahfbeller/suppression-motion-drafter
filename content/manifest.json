@@ -81,6 +81,17 @@
     ]
   },
 
+  "condition_shape": {
+    "description": "The shape used by match_condition, and by 'when' inside review_conditions/excluded_explanations, is the same: either a single leaf { question, op, value } or a compound { all: [...] } / { any: [...] } of leaves (and compounds can nest). This wasn't explicit until passenger-frisk-suspicionless.json needed a 3-condition 'when' clause — until then every review/excluded 'when' had only ever been a single leaf, which could look like the only supported shape if you're skimming existing files rather than this doc.",
+    "ops": ["equals", "not_equals", "in", "not_in"]
+  },
+
+  "question_bank_topics": [
+    "content/questions/warrant-affidavit.json",
+    "content/questions/vehicle-stop-timeline.json",
+    "content/questions/vehicle-occupants.json"
+  ],
+
   "issues": [
     {
       "id": "franks-violation",
@@ -94,6 +105,13 @@
       "category": "stop-legality",
       "label": "Stop Prolonged Beyond Its Original Purpose",
       "file": "content/issues/prolonged-stop.json",
+      "jurisdiction_status": { "federal": "unreviewed", "state": "needs_research" }
+    },
+    {
+      "id": "passenger-frisk-suspicionless",
+      "category": "frisk-scope",
+      "label": "Frisk Extended to a Passenger Without Individualized Suspicion",
+      "file": "content/issues/passenger-frisk-suspicionless.json",
       "jurisdiction_status": { "federal": "unreviewed", "state": "needs_research" }
     }
   ],

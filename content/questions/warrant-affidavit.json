@@ -1,0 +1,24 @@
+[
+  {
+    "id": "q_warrant_used",
+    "type": "yes_no",
+    "prompt": "Was the search conducted pursuant to a warrant?"
+  },
+  {
+    "id": "q_affidavit_accuracy",
+    "type": "multiple_choice",
+    "prompt": "Is there any indication the affidavit contained a false statement, or omitted material information?",
+    "options": ["No known issues", "Possible false statement by affiant", "Possible material omission by affiant", "Both"]
+  },
+  {
+    "id": "q_intent",
+    "type": "multiple_choice",
+    "prompt": "Does the available evidence suggest the affiant acted with...",
+    "options": ["Deliberate falsehood", "Reckless disregard for the truth", "Simple negligence/mistake", "Unknown"]
+  },
+  {
+    "id": "q_materiality",
+    "type": "yes_no",
+    "prompt": "If the false statement were removed (or the omission included), would the affidavit still establish probable cause?"
+  }
+]

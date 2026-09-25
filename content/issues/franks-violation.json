@@ -2,7 +2,6 @@
   "id": "franks-violation",
   "category": "warrant-defects",
   "label": "Franks Violation — False Statement or Material Omission in Affidavit",
-  "jurisdiction": ["federal", "state"],
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",

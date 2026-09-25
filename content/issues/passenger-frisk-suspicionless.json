@@ -1,0 +1,77 @@
+{
+  "id": "passenger-frisk-suspicionless",
+  "category": "frisk-scope",
+  "label": "Frisk Extended to a Passenger Without Individualized Suspicion",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "circuits_reviewed": [],
+
+  "trigger": {
+    "description": "Ask whenever the defendant was a passenger, to determine whether a frisk of that passenger was supported by suspicion specific to them, rather than general concerns tied to the stop itself.",
+
+    "match_condition": {
+      "all": [
+        { "question": "q_occupant_role", "op": "equals", "value": "Passenger" },
+        { "question": "q_passenger_frisked", "op": "equals", "value": "yes" },
+        { "question": "q_frisk_suspicion_basis", "op": "in", "value": [
+          "General nervousness or presence in a high-crime area only",
+          "No suspicion articulated — officer cited only proximity to the driver or the stop itself"
+        ] }
+      ]
+    },
+
+    "review_conditions": [
+      {
+        "when": { "question": "q_frisk_suspicion_basis", "op": "equals", "value": "General nervousness or presence in a high-crime area only" },
+        "flag": "frisk_basis_borderline",
+        "display_note": "Courts are split on whether generalized nervousness or a high-crime-area location, without more, can support a passenger frisk. This is a weaker record than 'no suspicion articulated' — confirm the full context of what the officer said before relying on this issue as written."
+      }
+    ],
+
+    "excluded_explanations": [
+      {
+        "when": {
+          "all": [
+            { "question": "q_occupant_role", "op": "equals", "value": "Passenger" },
+            { "question": "q_passenger_ordered_out", "op": "equals", "value": "yes" },
+            { "question": "q_passenger_frisked", "op": "equals", "value": "no" }
+          ]
+        },
+        "flag": "order_out_alone_not_challengeable",
+        "display_note": "Passenger Frisk Without Suspicion was considered but not included: the passenger was ordered out of the vehicle but not frisked. Ordering a passenger out of a vehicle during a lawful traffic stop is permitted without any additional justification (Maryland v. Wilson, 519 U.S. 408 (1997)) — being ordered out, standing alone, is not grounds for suppression."
+      }
+    ]
+  },
+
+  "law_paragraph": {
+    "segments": [
+      {
+        "id": "federal_rule",
+        "jurisdiction": "federal",
+        "circuit": "any",
+        "text": "A passenger frisk during a traffic stop requires more than the passenger's mere presence in the vehicle. An officer may frisk a passenger only where there is reasonable, articulable suspicion that the particular passenger is armed and dangerous, the standard set out in Terry v. Ohio, 392 U.S. 1 (1968). Arizona v. Johnson, 555 U.S. 323 (2009), confirms that this individualized standard governs passengers just as it governs drivers, and that general officer-safety concerns tied to the stop itself — without something specific to the passenger being frisked — do not satisfy it.",
+        "citations": [
+          { "case": "Terry v. Ohio", "citation": "392 U.S. 1 (1968)", "jurisdiction": "federal", "propositions": ["reasonable suspicion the person is armed and dangerous required for any protective frisk"] },
+          { "case": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "jurisdiction": "federal", "propositions": ["Terry frisk standard applies to passengers individually, not derivatively from the stop"] }
+        ]
+      },
+      {
+        "id": "state_rule",
+        "jurisdiction": "state",
+        "state": "FILL_IN — e.g. 'CA'",
+        "status": "NEEDS_RESEARCH",
+        "text": "PLACEHOLDER — fill in once you've identified your state's controlling (or persuasive) authority on passenger frisks. Some states may require an even more specific or contemporaneous basis than Johnson's federal floor.",
+        "citations": [
+          { "case": "PLACEHOLDER — insert controlling state case", "citation": "", "jurisdiction": "state", "propositions": [] }
+        ]
+      }
+    ]
+  },
+
+  "practice_notes": [
+    "Pin down exactly what the officer said or wrote to justify the frisk — vague references to 'officer safety' or the neighborhood, without anything tied to this specific passenger, are the weakest part of the government's position.",
+    "If the passenger was also asked for ID and that added time to the stop, that may raise a separate timing issue independent of the frisk itself.",
+    "A passenger has standing to challenge the stop itself and any search of their own person (Brendlin v. California, 551 U.S. 249 (2007)), but standing to challenge a search of the vehicle's contents is analyzed separately — don't assume one covers the other."
+  ]
+}
