@@ -51,8 +51,6 @@
     ]
   },
 
-  "_comment": "Jurisdiction is no longer asked per-issue. See manifest.json — jurisdiction_selection lives on the case session, and the shared resolveLawParagraph() function reads segment.jurisdiction/circuit/state below to decide what to render.",
-
   "circuits_reviewed": [],
 
   "law_paragraph": {
