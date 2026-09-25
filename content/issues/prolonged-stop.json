@@ -62,7 +62,5 @@
     "Get the dispatch log and any body-cam/dash-cam timestamps in discovery early — this issue lives and dies on minute-by-minute sequencing.",
     "Pin down the officer's own testimony on when each original-purpose task was completed; officers sometimes pad task completion time in reports to avoid a Rodriguez problem.",
     "If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later."
-  ],
-
-  "related_issues": ["canine-sniff-prolonged", "reasonable-suspicion-stop", "fruit-of-poisonous-tree"]
+  ]
 }

@@ -39,6 +39,28 @@
     "why_separate_from_flag": "'flag' is a short machine-readable id (for logging/analytics — e.g. tracking how often intent_below_franks_standard fires across cases). 'display_note' is the attorney-facing sentence that actually explains the judgment call. Never surface 'flag' itself in the output — it's not written for a human reader."
   },
 
+  "excluded_explanations_rendering": {
+    "description": "For issues whose match_condition did NOT pass, check excluded_explanations: if any entry's 'when' evaluates true against case_session.answers, the issue was a close call worth explaining, even though it isn't included in the motion.",
+    "steps": [
+      "1. For every issue considered (not just matched ones), if match_condition failed, check its excluded_explanations list.",
+      "2. Collect { issue_label, display_note } for each entry whose 'when' evaluates true.",
+      "3. If any were collected, render them together in ONE section at the very end of the full document — after all matched issues' law paragraphs/notes, and after cross_cutting_reminders — e.g. under a heading like 'Issues Considered But Not Included'.",
+      "4. If nothing was collected, omit the section entirely — don't show an empty heading."
+    ],
+    "why_separate_from_review_conditions": "review_conditions flags a shaky INCLUDED issue, rendered inline with that issue's law paragraph. excluded_explanations explains a NOT-included issue, rendered once at the end since there's no law paragraph to attach it to — the issue never made it into the motion body at all.",
+    "why_not_every_failed_match_gets_one": "Most excluded issues fail match_condition simply because the fact pattern doesn't exist for this case (e.g. no warrant was used at all) — that's not a close call and needs no explanation. excluded_explanations only fires for the specific, legally meaningful near-misses you've deliberately documented, not every unmatched issue."
+  },
+
+  "cross_cutting_reminders": {
+    "description": "Standing and fruit-of-the-poisonous-tree/attenuation aren't triggered by a specific fact pattern the way most issues are — they apply to EVERY suppression issue, always. Rather than referencing them per-issue (which doesn't scale and is easy to forget on any given issue file), render a single reminder once per motion, whenever at least one issue matched — not once per matched issue.",
+    "applies_when": "case_session.matched_issues is non-empty",
+    "reminders": [
+      { "id": "standing", "display_note": "Before relying on any issue above, confirm the defendant has standing to challenge it — i.e., a reasonable expectation of privacy in the place or thing searched. Standing is assessed separately for each matched issue; having it for one doesn't establish it for another." },
+      { "id": "fruit-of-poisonous-tree", "display_note": "For each matched issue, consider whether the evidence you're seeking to suppress is a direct or derivative product of that violation, versus sufficiently attenuated to survive suppression even if the underlying issue is found." }
+    ],
+    "rendering": "Render once at the end of the motion's full output (after every matched issue's law paragraph and notes), not repeated per issue."
+  },
+
   "segment_tagging_convention": {
     "federal_scotus_or_undivided": "jurisdiction: 'federal', circuit: 'any' — renders whenever federal law is desired, regardless of which circuit is selected. Use this for SCOTUS holdings and any circuit-level rule you haven't found a split on.",
     "federal_circuit_specific": "jurisdiction: 'federal', circuit: '9th' (etc.) — only renders when case_session.federal_circuit matches. Use only where you've identified an actual circuit split worth flagging.",

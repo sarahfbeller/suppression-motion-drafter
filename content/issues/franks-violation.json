@@ -20,11 +20,11 @@
       ]
     },
 
-    "review_conditions": [
+    "excluded_explanations": [
       {
         "when": { "question": "q_intent", "op": "equals", "value": "Simple negligence/mistake" },
-        "flag": "intent_below_franks_standard",
-        "display_note": "Simple negligence does not meet the Franks standard on its own — confirm the affiant's intent before relying on this argument as written. This issue is still shown because intent findings can shift once discovery (body-cam, dispatch logs, prior statements) comes in."
+        "flag": "franks_intent_insufficient",
+        "display_note": "Franks Violation was considered but not included: the available evidence suggests simple negligence or mistake by the affiant, which does not meet the Franks standard (requires deliberate falsehood or reckless disregard for the truth). If discovery reveals greater culpability, this issue may become viable."
       }
     ]
   },
@@ -67,7 +67,5 @@
     "A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.",
     "Request the officer's underlying notes, dispatch recordings, or informant file in discovery before filing — they're often the source of the contradiction.",
     "Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant."
-  ],
-
-  "related_issues": ["good-faith-exception-rebuttal", "warrant-particularity", "standing"]
+  ]
 }
