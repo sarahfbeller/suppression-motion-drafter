@@ -47,7 +47,7 @@
         "citations": [
           { "case": "United States v. Colkley", "citation": "899 F.2d 297 (4th Cir. 1990)", "jurisdiction": "federal", "propositions": ["omissions analyzed under Franks"] }
         ],
-        "note": "Example of a circuit-specific segment — Colkley is 4th Circuit authority, not SCOTUS. If your circuit has its own case for this same proposition, swap it in; if not researched yet, mark status: NEEDS_RESEARCH instead of leaving 4th Circuit law in as a stand-in for your actual circuit."
+        "note": "Example of a circuit-specific segment — Colkley is 4th Circuit authority, not SCOTUS. Add a segment like this whenever your circuit has its own case applying this proposition, whether or not other circuits agree — this is routine, not limited to genuine circuit splits. If not researched yet for your actual circuit, mark status: NEEDS_RESEARCH instead of leaving 4th Circuit law in as a stand-in."
       },
       {
         "id": "state_rule",
