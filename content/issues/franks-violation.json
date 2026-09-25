@@ -3,44 +3,28 @@
   "category": "warrant-defects",
   "label": "Franks Violation — False Statement or Material Omission in Affidavit",
   "jurisdiction": ["federal", "state"],
-  "status": "reviewed",
-  "last_reviewed": "2026-09-25",
+  "status": "unreviewed",
+  "last_reviewed": "",
   "reviewed_by": "",
   "circuits_reviewed": ["4th"],
 
   "trigger": {
     "description": "Ask when a search was conducted pursuant to a warrant and there is reason to believe the supporting affidavit contained inaccuracies or omissions.",
-    "questions": [
+
+    "match_condition": {
+      "all": [
+        { "question": "q_warrant_used", "op": "equals", "value": "yes" },
+        { "question": "q_affidavit_accuracy", "op": "in", "value": ["Possible false statement by affiant", "Possible material omission by affiant", "Both"] },
+        { "question": "q_intent", "op": "in", "value": ["Deliberate falsehood", "Reckless disregard for the truth"] },
+        { "question": "q_materiality", "op": "equals", "value": "no" }
+      ]
+    },
+
+    "review_conditions": [
       {
-        "id": "q_warrant_used",
-        "type": "yes_no",
-        "prompt": "Was the search conducted pursuant to a warrant?",
-        "required_answer": "yes"
-      },
-      {
-        "id": "q_affidavit_accuracy",
-        "type": "multiple_choice",
-        "prompt": "Is there any indication the affidavit contained a false statement, or omitted material information?",
-        "options": [
-          "No known issues",
-          "Possible false statement by affiant",
-          "Possible material omission by affiant",
-          "Both"
-        ],
-        "triggers_issue_if": ["Possible false statement by affiant", "Possible material omission by affiant", "Both"]
-      },
-      {
-        "id": "q_intent",
-        "type": "multiple_choice",
-        "prompt": "Does the available evidence suggest the affiant acted with...",
-        "options": ["Deliberate falsehood", "Reckless disregard for the truth", "Simple negligence/mistake", "Unknown"],
-        "note": "Simple negligence does not meet the Franks standard; flag for attorney review rather than auto-including."
-      },
-      {
-        "id": "q_materiality",
-        "type": "yes_no",
-        "prompt": "If the false statement were removed (or the omission included), would the affidavit still establish probable cause?",
-        "required_answer": "no"
+        "when": { "question": "q_intent", "op": "equals", "value": "Simple negligence/mistake" },
+        "flag": "intent_below_franks_standard",
+        "display_note": "Simple negligence does not meet the Franks standard on its own — confirm the affiant's intent before relying on this argument as written. This issue is still shown because intent findings can shift once discovery (body-cam, dispatch logs, prior statements) comes in."
       }
     ]
   },

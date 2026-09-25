@@ -33,6 +33,12 @@
     "why_separate_from_segments": "Without this, the resolver can't distinguish 'no split exists' from 'nobody has looked yet' — both look identical (no circuit-specific segment) unless tracked explicitly."
   },
 
+  "review_condition_rendering": {
+    "description": "Separate from resolveLawParagraph. After an issue is matched (or considered) and its law_paragraph text is rendered, check the issue's review_conditions: for each one whose 'when' evaluates true against case_session.answers, append its display_note to the output.",
+    "format": "Append on its own line after the law paragraph text, wrapped as: [NOTE: <display_note>] — all-caps 'NOTE' and brackets so it's visually distinct from the drafted law text when the attorney reviews the output.",
+    "why_separate_from_flag": "'flag' is a short machine-readable id (for logging/analytics — e.g. tracking how often intent_below_franks_standard fires across cases). 'display_note' is the attorney-facing sentence that actually explains the judgment call. Never surface 'flag' itself in the output — it's not written for a human reader."
+  },
+
   "segment_tagging_convention": {
     "federal_scotus_or_undivided": "jurisdiction: 'federal', circuit: 'any' — renders whenever federal law is desired, regardless of which circuit is selected. Use this for SCOTUS holdings and any circuit-level rule you haven't found a split on.",
     "federal_circuit_specific": "jurisdiction: 'federal', circuit: '9th' (etc.) — only renders when case_session.federal_circuit matches. Use only where you've identified an actual circuit split worth flagging.",
@@ -59,14 +65,14 @@
       "category": "warrant-defects",
       "label": "Franks Violation — False Statement or Material Omission in Affidavit",
       "file": "content/issues/franks-violation.json",
-      "jurisdiction_status": { "federal": "reviewed", "state": "needs_research" }
+      "jurisdiction_status": { "federal": "unreviewed", "state": "needs_research" }
     },
     {
       "id": "prolonged-stop",
       "category": "stop-legality",
       "label": "Stop Prolonged Beyond Its Original Purpose",
       "file": "content/issues/prolonged-stop.json",
-      "jurisdiction_status": { "federal": "reviewed", "state": "needs_research" }
+      "jurisdiction_status": { "federal": "unreviewed", "state": "needs_research" }
     }
   ],
 
