@@ -1,0 +1,65 @@
+{
+  "id": "independent-test-comprehension-barrier",
+  "category": "chemical-test-rights",
+  "label": "Comprehension Barrier Preventing Knowing Understanding of Right to Independent Test",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "circuits_reviewed": [],
+
+  "_jurisdiction_note": "No federal segment exists here, intentionally — same as independent-test-advisement-failure.json. See the pending jurisdiction-applicability design decision in manifest.json.",
+
+  "trigger": {
+    "description": "Ask whenever the officer's advisement of the right to an independent test was otherwise proper on its face, but something may have prevented the defendant from actually, knowingly understanding it.",
+
+    "match_condition": {
+      "all": [
+        { "question": "q_independent_test_advisement", "op": "equals", "value": "A clear and express advisement was given" },
+        { "question": "q_comprehension_barrier", "op": "in", "value": [
+          "Language barrier — advisement was given only in a language the defendant did not adequately understand",
+          "Intoxication level so severe the defendant could not knowingly and intelligently understand the advisement",
+          "Other comprehension barrier (e.g. cognitive impairment, disability)"
+        ] }
+      ]
+    },
+
+    "review_conditions": [
+      {
+        "when": { "question": "q_comprehension_barrier", "op": "equals", "value": "Other comprehension barrier (e.g. cognitive impairment, disability)" },
+        "flag": "novel_comprehension_theory",
+        "display_note": "The cases reviewed here directly support a language barrier (Ahtuangaruak) and severe intoxication (Gundersen) as comprehension barriers that invalidate a waiver of the independent-test right. A different kind of barrier is a reasonable extension of the same principle but wasn't found squarely addressed — expect to argue by analogy rather than cite a case directly on point."
+      },
+      {
+        "when": { "question": "q_breath_test_administered", "op": "equals", "value": "yes" },
+        "flag": "remedy_is_suppression",
+        "display_note": "Because a breath test was administered here, the remedy for this violation is suppression of that test result."
+      },
+      {
+        "when": { "question": "q_breath_test_administered", "op": "equals", "value": "no" },
+        "flag": "remedy_is_favorable_presumption",
+        "display_note": "Because no breath test was administered, suppression is not a meaningful remedy — instead, seek a presumption that an independent test would have yielded a favorable result (a BAC of .04 or below). Nelson v. State, 512 P.3d 86, 90-91 (Alaska App. 2022), applying Snyder v. State, 930 P.2d 1274, 1278-79 (Alaska 1996)."
+      }
+    ]
+  },
+
+  "law_paragraph": {
+    "segments": [
+      {
+        "id": "state_rule",
+        "jurisdiction": "state",
+        "state": "AK",
+        "text": "Even where police give a clear and express advisement of the right to an independent chemical test, the right is not honored if the defendant could not knowingly and intelligently understand that advisement. A defendant with too poor a grasp of English to understand an advisement given only in English may be unable to make a knowing and intelligent decision regarding the right, even where the advisement itself followed correct procedure. A waiver of the right to an independent test is valid only if it is knowing and intelligent, and a defendant whose intoxication was severe enough that they could not understand what they were giving up has not validly waived the right.",
+        "citations": [
+          { "case": "Ahtuangaruak v. State", "citation": "820 P.2d 310 (Alaska App. 1991)", "jurisdiction": "state", "propositions": ["advisement given only in English can fail to convey the right to a defendant with insufficient English comprehension"] },
+          { "case": "Gundersen v. Municipality of Anchorage", "citation": "792 P.2d 673 (Alaska 1990)", "jurisdiction": "state", "propositions": ["waiver of the right to an independent test is valid only if knowing and intelligent"] }
+        ]
+      }
+    ]
+  },
+
+  "practice_notes": [
+    "Document the defendant's actual English proficiency at the time of the advisement — an interpreter's later availability at trial doesn't cure a station-house advisement given only in English when the decision had to be made.",
+    "For an intoxication-based comprehension claim, be aware of the tension: the same BAC or observations that support this claim may also support the state's case on the underlying DUI charge. Weigh how heavily to lean on this theory alongside your other defenses.",
+    "This is closely related to, but distinct from, the failure-to-advise issue — here the advisement was procedurally proper, but the defendant's ability to receive it wasn't. Don't conflate the two in briefing; they rest on different facts."
+  ]
+}

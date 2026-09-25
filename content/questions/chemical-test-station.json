@@ -12,8 +12,7 @@
     "options": [
       "To get advice on whether to take the test, or what to do (defense-related)",
       "Purely personal — e.g. arranging bail, notifying family, emotional support — no defense-related purpose apparent",
-      "Unclear or not established",
-      "N/A — only an attorney was requested"
+      "Unclear or not established"
     ]
   },
   {
@@ -31,5 +30,36 @@
     "id": "q_contact_timeline",
     "type": "short_text",
     "prompt": "Roughly what was the timeline — when was the request made, when was contact made (if any), and when was the test administered?"
+  },
+  {
+    "id": "q_breath_test_administered",
+    "type": "yes_no",
+    "prompt": "Was a breath test actually administered (as opposed to refused, or not administered at all)?"
+  },
+  {
+    "id": "q_independent_test_advisement",
+    "type": "multiple_choice",
+    "prompt": "Did the officer clearly and expressly advise the defendant of the right to an independent chemical test?",
+    "options": [
+      "No advisement of the right to an independent test was given at all",
+      "An advisement was given, but it did not clearly and expressly explain the right or how to exercise it",
+      "A clear and express advisement was given"
+    ]
+  },
+  {
+    "id": "q_independent_test_type_limited",
+    "type": "yes_no",
+    "prompt": "Did the advisement explain only one type of independent test (e.g. only blood), without mentioning that other types might exist?"
+  },
+  {
+    "id": "q_comprehension_barrier",
+    "type": "multiple_choice",
+    "prompt": "Was there anything that may have prevented the defendant from actually understanding the advisement, even if it was properly given?",
+    "options": [
+      "Language barrier — advisement was given only in a language the defendant did not adequately understand",
+      "Intoxication level so severe the defendant could not knowingly and intelligently understand the advisement",
+      "Other comprehension barrier (e.g. cognitive impairment, disability)",
+      "No comprehension barrier apparent"
+    ]
   }
 ]

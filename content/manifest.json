@@ -135,12 +135,28 @@
       "jurisdiction_status": { "federal": "unreviewed", "state": "needs_research" }
     },
     {
-      "id": "denial-of-counsel-before-breath-test",
+      "id": "denial-of-contact-before-breath-test",
       "category": "chemical-test-rights",
-      "label": "Denial of Right to Counsel Before Deciding Whether to Take a Breath Test (Copelin)",
-      "file": "content/issues/denial-of-counsel-before-breath-test.json",
+      "label": "Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)",
+      "file": "content/issues/denial-of-contact-before-breath-test.json",
       "jurisdiction_status": { "state": "unreviewed" },
       "note": "No 'federal' key — this issue has no federal counterpart by nature, not just an unresearched gap. See _jurisdiction_note in the issue file and the pending jurisdiction-applicability design decision."
+    },
+    {
+      "id": "independent-test-advisement-failure",
+      "category": "chemical-test-rights",
+      "label": "Failure to Clearly and Expressly Advise of Right to an Independent Chemical Test",
+      "file": "content/issues/independent-test-advisement-failure.json",
+      "jurisdiction_status": { "state": "unreviewed" },
+      "note": "No 'federal' key, same reason as denial-of-contact-before-breath-test. Also introduces a 'statutory_citations' field not yet formally documented in this manifest — see _citation_schema_note in the issue file."
+    },
+    {
+      "id": "independent-test-comprehension-barrier",
+      "category": "chemical-test-rights",
+      "label": "Comprehension Barrier Preventing Knowing Understanding of Right to Independent Test",
+      "file": "content/issues/independent-test-comprehension-barrier.json",
+      "jurisdiction_status": { "state": "unreviewed" },
+      "note": "No 'federal' key, same reason as the other chemical-test-rights issues."
     }
   ],
 
