@@ -9,21 +9,21 @@
       "prompt": "Is this motion being filed in state or federal court?",
       "options": ["State court", "Federal court"],
       "asked": "once, at the very start of the wizard, before any issue-taxonomy questions — every issue's law_paragraph rendering reads this instead of asking again",
-      "note": "Replaces the old 3-option jurisdiction_selection (Federal only / State only / Federal and state). SCOTUS authority binds state courts too, so a state-court filing always includes SCOTUS + the selected state together — there is no 'state only, no SCOTUS' option anymore."
+      "note": "SCOTUS authority binds state courts too, so a state-court filing always includes SCOTUS + the selected state together — there is no 'state only, no SCOTUS' option."
     },
     "state_name": {
       "type": "dropdown",
       "prompt": "Which state?",
       "options": ["Alaska"],
       "asked": "once, only if forum is 'State court'",
-      "note": "Currently only one option, matching this project's present scope. Its value maps to the court code 'AK' used throughout segments and authorities. Expanding to a new state later means adding a dropdown option here and a new court value (e.g. 'CA') in the affected issue files — no other structural change."
+      "note": "Currently only one option, matching this project's present scope. Its value maps to the court code 'AK' used throughout rule_statements' authorities. Expanding to a new state later means adding a dropdown option here and a new court value (e.g. 'CA') on the affected authorities — no other structural change."
     },
     "federal_circuit": {
       "type": "dropdown",
       "prompt": "Which federal circuit applies?",
       "options": ["9th Circuit"],
       "asked": "once, only if forum is 'Federal court'",
-      "note": "Currently only one option, matching this project's present scope. Its value is used directly as the court code. Expanding to a new circuit later means adding a dropdown option here and using its name as a new court value in the affected issue files."
+      "note": "Currently only one option, matching this project's present scope. Its value is used directly as the court code. Expanding to a new circuit later means adding a dropdown option here and using its name as a new court value."
     },
     "answers": "object — keyed by question id, populated as the attorney moves through each issue's trigger.questions",
     "matched_issues": "array of issue ids — populated by matching logic, not asked directly"
@@ -31,9 +31,10 @@
 
   "circuits_reviewed_field": {
     "location": "top level of each issue file, e.g. issue.circuits_reviewed",
-    "format": "array of court values (from federal_circuit) that have actually been checked for their OWN case law on this issue, e.g. ['9th Circuit'] — a circuit CAN be in this list with no circuit-specific segment authored, meaning 'checked, nothing beyond the SCOTUS segment worth citing'",
-    "why_separate_from_segments": "Without this, the resolver can't distinguish 'checked, nothing circuit-specific to add' from 'nobody has looked yet' — both look identical (no circuit-specific segment) unless tracked explicitly.",
-    "current_scope": "Only ever contains '9th Circuit' for now, since that's the only circuit in scope — see case_session_schema.federal_circuit."
+    "format": "array of court values (from federal_circuit) that have actually been checked for their OWN case law on this issue, e.g. ['9th Circuit'] — a circuit CAN be in this list with no circuit-specific authority added to any rule statement yet, meaning 'checked, nothing beyond SCOTUS worth citing'",
+    "why_separate_from_rule_statements": "Without this, there's no way to distinguish 'checked, nothing circuit-specific to add' from 'nobody has looked yet' — both look identical (no circuit-specific authority anywhere in the issue) unless tracked explicitly.",
+    "tracked_at_issue_level_only": "Deliberately NOT tracked per rule statement, even though citations now resolve per statement (see rule_statements_schema) — that would be more precise but more bookkeeping than needed. One issue-level field is enough.",
+    "current_scope": "Only ever contains '9th Circuit' for now, since that's the only circuit in scope."
   },
 
   "review_condition_rendering": {
@@ -64,53 +65,74 @@
     "rendering": "Render once at the end of the motion's full output (after every matched issue's law paragraph and notes), not repeated per issue."
   },
 
-  "authority_schema": {
-    "description": "Every legal authority cited in a segment's law_paragraph text lives in ONE unified 'authorities' array. Each entry carries a 'type' (case/statute/constitution/rule) and a single 'court' field — the SAME field and value space as segment.court (see court_tagging_convention) — rather than a separate 'jurisdiction' field.",
-    "shape": { "type": "case | statute | constitution | rule", "name": "the case name, or the statute/rule/constitutional provision identifier", "citation": "reporter citation for a case; empty string for statute/constitution/rule, where 'name' already IS the citation", "court": "SCOTUS | 9th Circuit | AK", "propositions": ["what this authority is cited for"] },
-    "examples": {
-      "case_scotus": { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS", "propositions": ["stop unlawful once prolonged beyond original mission"] },
-      "case_state": { "type": "case", "name": "Simmons v. State", "citation": "435 P.3d 975 (Alaska App. 2018)", "court": "AK", "propositions": ["applies Rodriguez to find a traffic stop unlawfully prolonged"] },
-      "statute": { "type": "statute", "name": "AS 28.35.033(e)", "citation": "", "court": "AK", "propositions": ["officer must clearly and expressly inform of the right to an independent test"] },
-      "constitution": { "type": "constitution", "name": "Alaska Const. art. I, § 7", "citation": "", "court": "AK", "propositions": ["due process basis for the right"] },
-      "rule": { "type": "rule", "name": "Alaska Criminal Rule 5(b)", "citation": "", "court": "AK", "propositions": ["implements the right to communicate with counsel or a relative/friend after arrest"] }
+  "rule_statements_schema": {
+    "description": "law_paragraph is an ORDERED LIST of small rule statements (law_paragraph.rule_statements), not a fixed set of whole-paragraph segments per court. Each statement is one sentence, or two at most — one proposition — with its own authorities array. Rendering walks the list in order, and for each statement includes only the authorities whose court is actually desired for this motion — so the SAME statement can render with just a SCOTUS citation in a federal motion, a genuine SCOTUS + state PARALLEL citation in a state motion (e.g. 'Rodriguez v. United States, 575 U.S. 348 (2015); Simmons v. State, 435 P.3d 975 (Alaska App. 2018)'), or a lone state/circuit citation if that's genuinely all that exists for that specific point.",
+    "shape": {
+      "id": "short slug, unique within the issue",
+      "text": "a BARE proposition. NEVER embed a case name or citation in this text, even mid-sentence — e.g. 'Illinois v. Caballes permits a dog sniff...' is wrong; write 'A dog sniff is permissible only if...' instead, and put Caballes in authorities. This can be a direct quotation — the whole quotation is then the proposition.",
+      "authorities": "see authority_schema — every entry here is understood to support exactly this statement's text, nothing more, nothing less"
     },
-    "why_one_array": "Cases, statutes, constitutional provisions, and court rules all serve the same function in a law paragraph — a citation backing a proposition. They only differ in what 'name' and 'citation' look like. One array with a 'type' tag scales to future authority kinds without adding a new array every time one shows up.",
-    "why_court_not_jurisdiction": "A separate 'jurisdiction' field (federal/state) plus a segment-level 'circuit'/'state' field was the same redundancy the segment-level rewrite fixed. An authority's 'court' value already says everything 'jurisdiction' tried to say, and says it more precisely (AK vs 9th Circuit vs SCOTUS, not just 'state' vs 'federal').",
-    "migration_history": "citations (case-shaped) -> statutory_citations stopgap -> unified 'authorities' array with a 'jurisdiction' field -> now a single 'court' field, mirroring the same collapse already done at the segment level. All issue files are current as of this note."
+    "why_this_replaced_segments": "The earlier model had one whole paragraph per court (a 'federal_rule' segment, a 'state_rule' segment), concatenated when both applied. That could only ever produce two separate paragraphs saying the same thing twice — it structurally could not produce a genuine parallel citation within one sentence. Breaking the paragraph into atomic, independently-citable statements lets each proposition resolve its own citation(s) independently.",
+    "omission_behavior": "If a statement's authorities produce no match for the desired courts (e.g. only a state citation exists, but the motion is federal-only), the ENTIRE statement — sentence and all — is omitted from the rendered paragraph. Never show a bare, uncited sentence.",
+    "research_completeness_tracked_at_issue_level_only": "A statement lacking an AK authority does NOT mean 'confirmed nothing exists' — it just isn't attached yet. Whether a given court has actually been researched for an issue is tracked by circuits_reviewed / jurisdiction_status at the ISSUE level (unchanged), not per statement — a deliberate choice to avoid unnecessary bookkeeping granularity.",
+    "no_more_placeholder_objects": "There is no more NEEDS_RESEARCH segment-level placeholder, and no more empty-string placeholder text sitting in a file. A statement you haven't finished researching for a given court simply has no authority entry for that court — nothing to blank out, nothing that could be mistaken for real content at a skim."
+  },
+
+  "authority_schema": {
+    "description": "Every legal authority cited anywhere lives inside a rule statement's 'authorities' array (see rule_statements_schema). Each entry carries a 'type' (case/statute/constitution/rule) and a 'court' field.",
+    "shape": { "type": "case | statute | constitution | rule", "name": "the case name, or the statute/rule/constitutional provision identifier", "citation": "reporter citation for a case; empty string for statute/constitution/rule, where 'name' already IS the citation", "court": "SCOTUS | 9th Circuit | AK" },
+    "examples": {
+      "case_scotus": { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS" },
+      "case_state": { "type": "case", "name": "Simmons v. State", "citation": "435 P.3d 975 (Alaska App. 2018)", "court": "AK" },
+      "statute": { "type": "statute", "name": "AS 28.35.033(e)", "citation": "", "court": "AK" },
+      "constitution": { "type": "constitution", "name": "Alaska Const. art. I, § 7", "citation": "", "court": "AK" },
+      "rule": { "type": "rule", "name": "Alaska Criminal Rule 5(b)", "citation": "", "court": "AK" }
+    },
+    "why_no_propositions_field": "A rule statement is deliberately atomic — one sentence, one proposition. Every authority attached to it necessarily supports that same single point, so a separate 'propositions' field on each authority would just re-paraphrase the statement's own text, which is already more complete and more accurate than any shorthand summary. If a statement seems to need two different propositions tracked separately across its authorities, that's a sign it should be split into two rule statements instead.",
+    "why_court_not_jurisdiction": "A separate 'jurisdiction' field (federal/state) plus a 'circuit'/'state' field was the same redundancy problem fixed once already at the segment level (segments have since been eliminated entirely — see rule_statements_schema). One 'court' value says everything needed, more precisely.",
+    "migration_history": "citations (case-shaped, per-segment) -> statutory_citations stopgap -> unified 'authorities' array with a 'jurisdiction' field, per-segment -> 'court' field replacing 'jurisdiction', still per-segment -> segments eliminated entirely; 'authorities' now lives on each atomic rule statement instead, with 'propositions' dropped since the statement's own text already is the proposition."
   },
 
   "court_tagging_convention": {
-    "SCOTUS": "court: 'SCOTUS' — genuine U.S. Supreme Court authority only, including the U.S. Constitution as SCOTUS interprets it. Binding on federal and state courts alike, so it renders in EVERY filing regardless of forum. Do NOT tag a circuit-level case 'SCOTUS' just because you haven't found a split or believe it applies everywhere — if it isn't actually a Supreme Court case, tag it with the real circuit instead.",
-    "circuit_specific": "court: '9th Circuit' — renders ALONGSIDE the SCOTUS segment (both together, not instead of it), and ONLY for a 'Federal court' filing. Add one whenever you find the 9th Circuit's own case restating, applying, or elaborating a proposition — this is routine, not limited to genuine circuit splits. NEVER rendered for a 'State court' filing, even on the same topic — the 9th Circuit isn't binding on Alaska's state courts, and the working assumption throughout this project has been to rely on binding authority, not persuasive material.",
-    "state_specific": "court: 'AK' — renders ALONGSIDE the SCOTUS segment (both together), and ONLY for a 'State court' filing. Also used for AK statutes, constitutional provisions, and court rules (see authority_schema) — 'court' means 'whose law this authority represents', not literally 'which court decided it'.",
-    "current_scope": "Only three court values are in use right now — SCOTUS, 9th Circuit, and AK — matching the one-option dropdowns in case_session_schema.state_name / federal_circuit. Expanding later just means adding a new dropdown option plus a new court value (e.g. 'CA', '2nd Circuit') to the affected issue files — no change to segments, authorities, or the resolver itself.",
-    "history": "This field was previously split across 'jurisdiction' (federal/state) + 'circuit' (SCOTUS/9th/4th/etc, tagged 'any' before that) + 'state' (AK/CA/etc) on a segment. All three collapsed into this single 'court' field once it became clear a state-court filing should always include SCOTUS by default, which the old three-field split made awkward to express."
+    "SCOTUS": "court: 'SCOTUS' on an authority — genuine U.S. Supreme Court authority only, including the U.S. Constitution as SCOTUS interprets it. Binding on federal and state courts alike, so an authority tagged this way is included in EVERY rendering of the rule statement it's attached to, regardless of forum. Do NOT tag a circuit-level case 'SCOTUS' just because you haven't found a split — if it isn't actually a Supreme Court case, tag it with the real circuit instead.",
+    "circuit_specific": "court: '9th Circuit' — included in a statement's rendering only when case_session.federal_circuit matches (i.e. only in a 'Federal court' filing in that circuit). Add one whenever the 9th Circuit has its own case on a statement's proposition — routine, not limited to genuine splits. NEVER included in a 'State court' rendering, even on the same statement — the 9th Circuit isn't binding on Alaska's state courts.",
+    "state_specific": "court: 'AK' — included only when case_session.state_name matches (i.e. only in a 'State court' filing). Also used for AK statutes, constitutional provisions, and court rules — 'court' means 'whose law this authority represents', not literally 'which court decided it'.",
+    "current_scope": "Only three court values are in use right now — SCOTUS, 9th Circuit, and AK — matching the one-option dropdowns in case_session_schema. Expanding later just means a new dropdown option plus tagging new authorities with the new court value — no change to rule_statements structure or the resolver.",
+    "history": "This value space was previously attached to whole SEGMENTS (one court per paragraph-sized chunk). Segments were eliminated in favor of per-statement 'authorities' arrays (see rule_statements_schema) once it became clear a genuine parallel citation requires resolving citations within one sentence, not choosing between whole alternate paragraphs. The court values and their meaning carried over unchanged — only the level they attach to moved from segment to individual authority."
   },
 
   "applicable_courts_field": {
     "location": "top level of each issue file, e.g. issue.applicable_courts",
-    "format": "array of court values (same value space as segment.court — 'SCOTUS' | '9th Circuit' | 'AK') — which courts this issue is actually KNOWN to exist in, regardless of research status.",
-    "why_court_not_forum": "An earlier version of this field used 'applicable_forums': ['State court'] — but 'state court' wrongly implies the issue would apply in ANY state. The three chemical-test-rights issues are known to exist only under Alaska's specific implied-consent statute; whether an equivalent exists in any other state has not been checked and must not be assumed. 'applicable_courts': ['AK'] says exactly what's known — nothing broader. If a second state is ever added and its equivalent statute is confirmed to exist, that state's code gets added explicitly; it's never inferred from 'State court' applying generally.",
-    "how_it_differs_from_content_coverage": "This is about whether an issue exists in a court at all, not whether content has been written for it yet. A Fourth Amendment issue lists ONLY 'SCOTUS' — not also '9th Circuit' and 'AK' — because SCOTUS binds every circuit and every state by definition, so desiredCourts always includes SCOTUS regardless of forum, and the intersection is guaranteed non-empty. Listing the circuit/state too would be redundant, not just extra-safe: it adds nothing the SCOTUS entry doesn't already cover. Only list a specific circuit or state ALONE (no SCOTUS) when the issue is NOT grounded in SCOTUS doctrine and is known to exist only in that specific court's own law — that's the chemical-test-rights case. Whether content has actually been AUTHORED for a given circuit/state (segments, NEEDS_RESEARCH status, circuits_reviewed) is a completely separate question from this field.",
+    "format": "array of court values (same value space as authority.court — 'SCOTUS' | '9th Circuit' | 'AK') — which courts this ISSUE is known to exist in at all, regardless of research status.",
+    "why_court_not_forum": "An earlier version used 'applicable_forums': ['State court'] — but 'state court' wrongly implies the issue applies in ANY state. The three chemical-test-rights issues are known to exist only under Alaska's specific implied-consent statute; whether an equivalent exists elsewhere hasn't been checked and must not be assumed. 'applicable_courts': ['AK'] says exactly what's known.",
+    "scotus_alone_is_universal": "Listing 'SCOTUS' alone is sufficient to mean 'applies in every circuit and every state' — desiredCourts always includes SCOTUS regardless of forum, so the intersection is guaranteed non-empty. Do NOT also list '9th Circuit' and 'AK' alongside SCOTUS for a genuinely federal-constitutional issue — that's redundant, not extra-safe. Only list a specific court ALONE (no SCOTUS) when the issue is NOT grounded in SCOTUS doctrine and is known to exist only in that court's own law.",
+    "how_it_differs_from_content_coverage": "This is about whether an issue exists in a court at all, not whether content has been written for it yet. Whether an authority has actually been added for a given circuit/state on any rule statement (and circuits_reviewed) is a completely separate, finer-grained question from this field.",
     "how_it_is_checked": [
-      "Decision tree / wizard: compute desiredCourts from case_session (see resolver_logic step 1). Before asking an issue's trigger questions at all, skip the entire issue if desiredCourts has no overlap with issue.applicable_courts. The three chemical-test-rights issues' questions should never be presented in a 'Federal court' case (desiredCourts = {SCOTUS, 9th Circuit}, no overlap with their applicable_courts = ['AK']) — not just hidden from the final output.",
-      "resolveLawParagraph (see resolver_logic step 0): same intersection check. An issue with no overlap is skipped entirely — no warning, no fallback, nothing rendered, since there's nothing wrong, it just doesn't exist in that forum."
+      "Decision tree / wizard: compute desiredCourts from case_session (see resolver_logic). Before asking an issue's trigger questions at all, skip the entire issue if desiredCourts has no overlap with issue.applicable_courts.",
+      "resolveLawParagraph (see resolver_logic step 1): same intersection check. An issue with no overlap is skipped entirely — no warning, no fallback, nothing rendered."
     ],
-    "current_values": "['SCOTUS'] for all three Fourth Amendment issues (franks-violation, prolonged-stop, passenger-frisk-suspicionless) — SCOTUS alone entails applicability in every circuit and every state, so nothing else needs listing. ['AK'] only for all three chemical-test-rights issues — confirmed to exist under Alaska's specific statutory scheme; no claim made about SCOTUS, the 9th Circuit, or any other state."
+    "current_values": "['SCOTUS'] for all three Fourth Amendment issues (franks-violation, prolonged-stop, passenger-frisk-suspicionless). ['AK'] only for all three chemical-test-rights issues."
   },
 
   "resolver_logic": {
     "function": "resolveLawParagraph(issue, case_session)",
     "steps": [
-      "0. desiredCourts = forumToCourts(case_session) (computed the same way as step 1 below). IF desiredCourts has NO overlap with issue.applicable_courts: skip this issue entirely — no warning, no output. This is a set-intersection check, not forum-list membership — see applicable_courts_field for why that distinction matters.",
-      "1. desiredCourts = forumToCourts(case_session) — 'State court' -> {SCOTUS, courtCodeForState(case_session.state_name)} e.g. {SCOTUS, AK}; 'Federal court' -> {SCOTUS, case_session.federal_circuit} e.g. {SCOTUS, 9th Circuit}",
-      "2. matchingSegments = segments where segment.court IN desiredCourts, status != 'NEEDS_RESEARCH'",
-      "3. toRender = matchingSegments, ordered SCOTUS first, then the circuit/state segment",
-      "4. IF toRender is empty: set warning (e.g. 'no_authority_for_<court>'), fall back to the SCOTUS segment if one exists — never render nothing, never silently use an unresearched placeholder. (This step only runs at all because step 0 already confirmed the issue is applicable here — an empty toRender at this point really is a research gap, not a structural non-applicability.)",
-      "5. IF case_session.forum == 'Federal court' AND case_session.federal_circuit NOT IN issue.circuits_reviewed: add soft warning 'circuit_specific_authority_not_researched' — fires even when toRender is non-empty, since it means nobody has checked whether this circuit has its own case worth citing yet, not that none exists. This warning NEVER fires for a 'State court' filing — circuit-specific segments are never pulled into state-court output at all, so there's nothing to flag as unresearched there.",
-      "6. text = join segment texts in toRender order; authorities = flattened segment authorities",
-      "7. return { text, authorities, warnings: [] }  // warnings is a list — both a step-4 and step-5 warning can fire together"
+      "0. desiredCourts = forumToCourts(case_session) — 'State court' -> {SCOTUS, courtCodeForState(case_session.state_name)} e.g. {SCOTUS, AK}; 'Federal court' -> {SCOTUS, case_session.federal_circuit} e.g. {SCOTUS, 9th Circuit}",
+      "1. IF desiredCourts has NO overlap with issue.applicable_courts: skip this issue entirely — no warning, no output. See applicable_courts_field.",
+      "2. FOR each statement in issue.law_paragraph.rule_statements, in order: (a) matchingAuthorities = statement.authorities where authority.court IN desiredCourts; (b) IF matchingAuthorities is empty, omit this statement entirely from the rendered paragraph; (c) ELSE render as statement.text + ' ' + citationString(matchingAuthorities) + '.' — see citation_string_formatting.",
+      "3. text = the rendered (non-omitted) statements from step 2, concatenated in order with a space between them",
+      "4. authorities = every matchingAuthorities collected across all rendered statements, flattened",
+      "5. IF every statement was omitted in step 2 (text is empty): set warning 'no_authority_found' — shouldn't normally happen for an applicable issue, since the core SCOTUS-backed statement(s) should always match, but worth catching explicitly rather than silently returning nothing",
+      "6. IF case_session.forum == 'Federal court' AND case_session.federal_circuit NOT IN issue.circuits_reviewed: add soft warning 'circuit_specific_authority_not_researched' — fires even when text is non-empty, since it means nobody has checked whether this circuit has its own authority worth adding to any rule statement yet. NEVER fires for a 'State court' filing.",
+      "7. return { text, authorities, warnings: [] }  // warnings is a list — both a step-5 and step-6 warning can fire together"
     ]
+  },
+
+  "citation_string_formatting": {
+    "description": "How resolver_logic step 2c turns a statement's matchingAuthorities into the trailing citation text.",
+    "single_authority": "IF authority.citation is non-empty (a case): '<name>, <citation>' — e.g. 'Rodriguez v. United States, 575 U.S. 348 (2015)'. IF authority.citation is empty (statute/rule/constitution, where name already IS the citation): just '<name>' — e.g. 'AS 28.35.033(e)'.",
+    "multiple_authorities": "Join with '; ' (semicolon-space) — this is what produces a genuine parallel citation, e.g. 'Rodriguez v. United States, 575 U.S. 348 (2015); Simmons v. State, 435 P.3d 975 (Alaska App. 2018)'.",
+    "ordering": "SCOTUS first, then circuit, then state — matches the SCOTUS-first convention used elsewhere in this project."
   },
 
   "question_types": {
@@ -192,5 +214,5 @@
     }
   ],
 
-  "coverage_note": "To check how much research remains, scan all issue files' law_paragraph.segments for status == 'NEEDS_RESEARCH', or check jurisdiction_status across this issues array as you add entries."
+  "coverage_note": "To check how much research remains, scan all issue files' rule_statements for authorities missing a given court, or check jurisdiction_status/circuits_reviewed across the issues array."
 }

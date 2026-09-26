@@ -6,8 +6,7 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "circuits_reviewed": [],
-
-  "_jurisdiction_note": "No SCOTUS or 9th Circuit segment exists here, intentionally — this is an Alaska statutory/due-process right (AS 12.25.150(b)), not a federal constitutional claim. Whether/how the resolver should treat 'no federal segment, and none is coming' when 'Federal court' forum is selected for an issue like this is still an open per-issue-applicability question — see manifest.json.",
+  "applicable_courts": ["AK"],
 
   "trigger": {
     "description": "Ask whenever the defendant submitted to (or refused) a breath test following a DUI arrest, to determine whether they were denied a reasonable opportunity to contact an attorney or a relative/friend before deciding.",
@@ -39,7 +38,7 @@
       {
         "when": { "question": "q_contact_outcome", "op": "equals", "value": "An opportunity was given, but not within a reasonable time given the circumstances (e.g. the person could have arrived or advised further, but wasn't given the time to)" },
         "flag": "timing_reasonableness_factual",
-        "display_note": "Whether the time allowed was 'reasonable' is fact-specific — though Alaska treats the standard 20-minute pre-test observation period as per se reasonable, so timing claims are strongest when less than that was actually given. Document exactly how much time was requested and needed versus actually given."
+        "display_note": "Whether the time allowed was 'reasonable' is fact-specific. Document exactly how much time was requested and needed versus actually given."
       }
     ],
 
@@ -70,19 +69,43 @@
   },
 
   "law_paragraph": {
-    "segments": [
+    "rule_statements": [
       {
-        "id": "state_rule",
-        "court": "AK",
-        "text": "Under AS 12.25.150(b) and Alaska Criminal Rule 5(b), a person arrested has the right to telephone or otherwise communicate with an attorney and any relative or friend immediately after arrest. Copelin v. State, 659 P.2d 1206 (Alaska 1983), held that this right requires police to give a person arrested for driving under the influence a reasonable opportunity to contact an attorney by phone before being required to decide whether to submit to a breath test, and that violation of this right requires suppression of the test results. Zsupnik v. State, 789 P.2d 357 (Alaska 1990), extended this right to requests to contact a relative or friend, holding that the statute draws no distinction between attorneys and relatives or friends on its face — but the remedy for denying such a request is exclusion of evidence only where the request served a purpose related to the defense process, such as obtaining advice on whether to take the test. The right is not absolute — it does not permit indefinite delay, and what counts as a reasonable opportunity is balanced against the state's need to administer the test in a timely manner; Alaska treats the standard 20-minute pre-test observation period as per se reasonable.",
+        "id": "core_communication_right",
+        "text": "A person arrested has the right to telephone or otherwise communicate with an attorney and any relative or friend immediately after arrest.",
         "authorities": [
-          { "type": "statute", "name": "AS 12.25.150(b)", "citation": "", "court": "AK", "propositions": ["right to telephone or otherwise communicate with an attorney and any relative or friend immediately after arrest"] },
-          { "type": "rule", "name": "Alaska Criminal Rule 5(b)", "citation": "", "court": "AK", "propositions": ["implements the right to communicate with counsel or a relative/friend after arrest"] },
-          { "type": "case", "name": "Copelin v. State", "citation": "659 P.2d 1206 (Alaska 1983)", "court": "AK", "propositions": ["right to reasonable opportunity to contact attorney before deciding whether to submit to breath test", "violation requires suppression"] },
-          { "type": "case", "name": "Zsupnik v. State", "citation": "789 P.2d 357 (Alaska 1990)", "court": "AK", "propositions": ["right extends to requests to contact a relative or friend, not just an attorney", "suppression remedy limited to defense-related purposes"] },
-          { "type": "case", "name": "Winfrey v. State", "citation": "78 P.3d 725 (Alaska App. 2003)", "court": "AK", "propositions": ["exclusionary rule not extended to non-defense-related requests"] },
-          { "type": "case", "name": "Municipality of Anchorage v. Marrs", "citation": "694 P.2d 1163 (Alaska App. 1985)", "court": "AK", "propositions": ["reasonableness of time given is balanced against timely test administration"] },
-          { "type": "case", "name": "Farrell v. Municipality of Anchorage", "citation": "682 P.2d 1128 (Alaska App. 1984)", "court": "AK", "propositions": ["police must make reasonable effort to accommodate private consultation"] }
+          { "type": "statute", "name": "AS 12.25.150(b)", "citation": "", "court": "AK" },
+          { "type": "rule", "name": "Alaska Criminal Rule 5(b)", "citation": "", "court": "AK" }
+        ]
+      },
+      {
+        "id": "attorney_contact_before_test_decision",
+        "text": "This right requires police to give a person arrested for driving under the influence a reasonable opportunity to contact an attorney by phone before being required to decide whether to submit to a breath test, and violation of this right requires suppression of the test results.",
+        "authorities": [
+          { "type": "case", "name": "Copelin v. State", "citation": "659 P.2d 1206 (Alaska 1983)", "court": "AK" }
+        ]
+      },
+      {
+        "id": "extends_to_relative_or_friend",
+        "text": "This right extends to requests to contact a relative or friend, not just an attorney — the statute draws no distinction between the two on its face.",
+        "authorities": [
+          { "type": "case", "name": "Zsupnik v. State", "citation": "789 P.2d 357 (Alaska 1990)", "court": "AK" }
+        ]
+      },
+      {
+        "id": "remedy_limited_to_defense_purpose",
+        "text": "The remedy for denying a request to contact a relative or friend is exclusion of evidence only where the request served a purpose related to the defense process, such as obtaining advice on whether to take the test.",
+        "authorities": [
+          { "type": "case", "name": "Zsupnik v. State", "citation": "789 P.2d 357 (Alaska 1990)", "court": "AK" },
+          { "type": "case", "name": "Winfrey v. State", "citation": "78 P.3d 725 (Alaska App. 2003)", "court": "AK" }
+        ]
+      },
+      {
+        "id": "reasonableness_balancing",
+        "text": "The right is not absolute and does not permit indefinite delay; what counts as a reasonable opportunity is balanced against the state's need to administer the test in a timely manner.",
+        "authorities": [
+          { "type": "case", "name": "Municipality of Anchorage v. Marrs", "citation": "694 P.2d 1163 (Alaska App. 1985)", "court": "AK" },
+          { "type": "case", "name": "Farrell v. Municipality of Anchorage", "citation": "682 P.2d 1128 (Alaska App. 1984)", "court": "AK" }
         ]
       }
     ]
@@ -91,6 +114,7 @@
   "practice_notes": [
     "This is an Alaska statutory/due-process right (AS 12.25.150(b)), not a Fourth Amendment claim, and not the same as federal Miranda right-to-counsel doctrine — Miranda governs counsel during interrogation; this governs contact before a testing decision. Don't conflate the two in briefing.",
     "If the request was to contact a relative or friend rather than an attorney, pin down and document the stated purpose of that request as early as possible — under Zsupnik, whether the purpose was defense-related is what determines whether suppression is even available.",
-    "Get the booking/custody video and any phone or dispatch logs — these claims turn on the specific timeline: when the request was made, when (if ever) contact occurred, and how much time was given relative to what was actually needed."
+    "Get the booking/custody video and any phone or dispatch logs — these claims turn on the specific timeline: when the request was made, when (if ever) contact occurred, and how much time was given relative to what was actually needed.",
+    "A prior draft of this rule asserted that Alaska treats the standard 20-minute pre-test observation period as per se reasonable for these purposes — that assertion has been removed because no citation was actually confirmed for it. If that's a real doctrine, it needs its own verified citation before going back in."
   ]
 }

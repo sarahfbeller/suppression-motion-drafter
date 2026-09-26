@@ -30,32 +30,24 @@
   },
 
   "law_paragraph": {
-    "segments": [
+    "rule_statements": [
       {
-        "id": "federal_rule",
-        "court": "SCOTUS",
-        "text": "Under Franks v. Delaware, 438 U.S. 154 (1978), a defendant is entitled to an evidentiary hearing on the validity of a search warrant affidavit where he makes a substantial preliminary showing that the affiant knowingly and intentionally, or with reckless disregard for the truth, included a false statement in the warrant affidavit, and the false statement was necessary to the finding of probable cause. The same analysis applies to material omissions where the affiant's conduct amounts to reckless disregard for the truth. If, after excising the false material or including the omitted information, the affidavit's remaining content is insufficient to establish probable cause, the warrant must be voided and the fruits of the search excluded.",
+        "id": "franks_hearing_standard",
+        "text": "A defendant is entitled to an evidentiary hearing on the validity of a search warrant affidavit upon a substantial preliminary showing that the affiant knowingly and intentionally, or with reckless disregard for the truth, included a false statement in the affidavit that was necessary to the finding of probable cause.",
         "authorities": [
-          { "type": "case", "name": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "court": "SCOTUS", "propositions": ["substantial preliminary showing standard", "knowing/reckless false statement", "materiality requirement"] }
+          { "type": "case", "name": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "court": "SCOTUS" }
         ]
       },
       {
-        "id": "circuit_rule_9th",
-        "court": "9th Circuit",
-        "status": "NEEDS_RESEARCH",
-        "text": "PLACEHOLDER — the 9th Circuit's own case law on Franks-type omissions has not yet been identified. For reference only, other circuits (e.g. United States v. Colkley, 899 F.2d 297 (4th Cir. 1990)) have held that omissions are analyzed under the same Franks framework as affirmative false statements — confirm whether the 9th Circuit has said the same before citing anything here.",
-        "authorities": [
-          { "type": "case", "name": "PLACEHOLDER — insert controlling 9th Circuit case", "citation": "", "court": "9th Circuit", "propositions": [] }
-        ],
-        "note": "This segment previously used Colkley (4th Cir.) as an ILLUSTRATIVE example of a circuit-specific segment, written before the actual circuit in scope was known. Now that scope is fixed to the 9th Circuit, that illustrative content has been replaced with a real placeholder — Colkley is mentioned in the text above only as research guidance, not as authority actually cited here."
+        "id": "omissions_extension",
+        "text": "The same analysis applies to material omissions from the affidavit, not just affirmative false statements.",
+        "authorities": []
       },
       {
-        "id": "state_rule",
-        "court": "AK",
-        "status": "NEEDS_RESEARCH",
-        "text": "PLACEHOLDER — fill in once you've identified Alaska's controlling (or persuasive) authority on Franks-type challenges. Alaska may apply a lower threshold for omissions than the federal standard — say so explicitly if true.",
+        "id": "materiality_remedy",
+        "text": "If, after excising the false material or including the omitted information, the affidavit's remaining content is insufficient to establish probable cause, the warrant must be voided and the fruits of the search excluded.",
         "authorities": [
-          { "type": "case", "name": "PLACEHOLDER — insert controlling Alaska case", "citation": "", "court": "AK", "propositions": [] }
+          { "type": "case", "name": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "court": "SCOTUS" }
         ]
       }
     ]
@@ -64,6 +56,7 @@
   "practice_notes": [
     "A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.",
     "Request the officer's underlying notes, dispatch recordings, or informant file in discovery before filing — they're often the source of the contradiction.",
-    "Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant."
+    "Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant.",
+    "The 'omissions_extension' rule statement has no authority attached yet — Franks itself addresses false statements, not omissions directly. The omissions extension is well-established circuit-court gloss, but which court's case to cite (SCOTUS has never squarely held this, so far as researched) needs confirming before this statement will render at all."
   ]
 }

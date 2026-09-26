@@ -28,41 +28,31 @@
         "flag": "frisk_basis_borderline",
         "display_note": "Courts are split on whether generalized nervousness or a high-crime-area location, without more, can support a passenger frisk. This is a weaker record than 'no suspicion articulated' — confirm the full context of what the officer said before relying on this issue as written."
       }
-    ],
-
-    "excluded_explanations": [
-      {
-        "when": {
-          "all": [
-            { "question": "q_occupant_role", "op": "equals", "value": "Passenger" },
-            { "question": "q_passenger_ordered_out", "op": "equals", "value": "yes" },
-            { "question": "q_passenger_frisked", "op": "equals", "value": "no" }
-          ]
-        },
-        "flag": "order_out_alone_not_challengeable",
-        "display_note": "Passenger Frisk Without Suspicion was considered but not included: the passenger was ordered out of the vehicle but not frisked. Ordering a passenger out of a vehicle during a lawful traffic stop is permitted without any additional justification (Maryland v. Wilson, 519 U.S. 408 (1997)) — being ordered out, standing alone, is not grounds for suppression."
-      }
     ]
   },
 
   "law_paragraph": {
-    "segments": [
+    "rule_statements": [
       {
-        "id": "federal_rule",
-        "court": "SCOTUS",
-        "text": "A passenger frisk during a traffic stop requires more than the passenger's mere presence in the vehicle. An officer may frisk a passenger only where there is reasonable, articulable suspicion that the particular passenger is armed and dangerous, the standard set out in Terry v. Ohio, 392 U.S. 1 (1968). Arizona v. Johnson, 555 U.S. 323 (2009), confirms that this individualized standard governs passengers just as it governs drivers, and that general officer-safety concerns tied to the stop itself — without something specific to the passenger being frisked — do not satisfy it.",
+        "id": "mere_presence_insufficient",
+        "text": "A passenger frisk during a traffic stop requires more than the passenger's mere presence in the vehicle.",
         "authorities": [
-          { "type": "case", "name": "Terry v. Ohio", "citation": "392 U.S. 1 (1968)", "court": "SCOTUS", "propositions": ["reasonable suspicion the person is armed and dangerous required for any protective frisk"] },
-          { "type": "case", "name": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "court": "SCOTUS", "propositions": ["Terry frisk standard applies to passengers individually, not derivatively from the stop"] }
+          { "type": "case", "name": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "court": "SCOTUS" }
         ]
       },
       {
-        "id": "state_rule",
-        "court": "AK",
-        "status": "NEEDS_RESEARCH",
-        "text": "PLACEHOLDER — fill in once you've identified Alaska's controlling (or persuasive) authority on passenger frisks. Alaska may require an even more specific or contemporaneous basis than Johnson's federal floor.",
+        "id": "individualized_suspicion_required",
+        "text": "An officer may frisk a passenger only where there is reasonable, articulable suspicion that the particular passenger is armed and dangerous.",
         "authorities": [
-          { "type": "case", "name": "PLACEHOLDER — insert controlling Alaska case", "citation": "", "court": "AK", "propositions": [] }
+          { "type": "case", "name": "Terry v. Ohio", "citation": "392 U.S. 1 (1968)", "court": "SCOTUS" },
+          { "type": "case", "name": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "court": "SCOTUS" }
+        ]
+      },
+      {
+        "id": "general_officer_safety_insufficient",
+        "text": "General officer-safety concerns tied to the stop itself, without something specific to the passenger being frisked, do not satisfy this standard.",
+        "authorities": [
+          { "type": "case", "name": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "court": "SCOTUS" }
         ]
       }
     ]

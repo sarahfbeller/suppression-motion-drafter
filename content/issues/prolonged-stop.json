@@ -33,22 +33,34 @@
   },
 
   "law_paragraph": {
-    "segments": [
+    "rule_statements": [
       {
-        "id": "federal_rule",
-        "court": "SCOTUS",
-        "text": "A traffic stop becomes unlawful if it is prolonged beyond the time reasonably required to complete the mission of the stop. Rodriguez v. United States, 575 U.S. 348 (2015). Authority for the seizure ends when tasks tied to the traffic infraction are, or reasonably should have been, completed, and an officer may not extend an otherwise-completed stop, even briefly, to conduct a dog sniff or other unrelated investigation absent independent reasonable suspicion. Illinois v. Caballes, 543 U.S. 405 (2005), permits a dog sniff only if it does not add time to the stop. Where an officer develops reasonable, articulable suspicion of additional criminal activity during the stop's original mission, a brief extension to investigate that suspicion may be justified; the burden is on the government to establish that suspicion arose before, not after, the original mission concluded.",
+        "id": "core_prolongation_rule",
+        "text": "A traffic stop becomes unlawful if it is prolonged beyond the time reasonably required to complete the mission of the stop.",
         "authorities": [
-          { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS", "propositions": ["stop unlawful once prolonged beyond original mission", "no de minimis exception"] },
-          { "type": "case", "name": "Illinois v. Caballes", "citation": "543 U.S. 405 (2005)", "court": "SCOTUS", "propositions": ["dog sniff permissible only if it adds no time to the stop"] }
+          { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS" },
+          { "type": "case", "name": "Simmons v. State", "citation": "435 P.3d 975 (Alaska App. 2018)", "court": "AK" }
         ]
       },
       {
-        "id": "state_rule",
-        "court": "AK",
-        "text": "Alaska has adopted this same rule for traffic stops conducted by Alaska law enforcement: a stop is unlawfully extended once the officer has, or reasonably should have, completed the tasks tied to the stop's original purpose, and any further extension without independent reasonable suspicion violates the Fourth Amendment. Simmons v. State, 435 P.3d 975 (Alaska App. 2018) (applying Rodriguez v. United States to hold that a traffic stop was unlawfully prolonged).",
+        "id": "authority_ends_at_mission_completion",
+        "text": "Authority for the seizure ends when tasks tied to the traffic infraction are, or reasonably should have been, completed, and an officer may not extend an otherwise-completed stop, even briefly, to conduct a dog sniff or other unrelated investigation absent independent reasonable suspicion.",
         "authorities": [
-          { "type": "case", "name": "Simmons v. State", "citation": "435 P.3d 975 (Alaska App. 2018)", "court": "AK", "propositions": ["Alaska Court of Appeals applies Rodriguez's prohibition on prolonging a traffic stop beyond its original purpose"] }
+          { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS" }
+        ]
+      },
+      {
+        "id": "dog_sniff_no_added_time",
+        "text": "A dog sniff is permissible only if it does not add time to the stop.",
+        "authorities": [
+          { "type": "case", "name": "Illinois v. Caballes", "citation": "543 U.S. 405 (2005)", "court": "SCOTUS" }
+        ]
+      },
+      {
+        "id": "independent_suspicion_exception",
+        "text": "Where an officer develops reasonable, articulable suspicion of additional criminal activity during the stop's original mission, a brief extension to investigate that suspicion may be justified; the burden is on the government to establish that suspicion arose before, not after, the original mission concluded.",
+        "authorities": [
+          { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS" }
         ]
       }
     ]
