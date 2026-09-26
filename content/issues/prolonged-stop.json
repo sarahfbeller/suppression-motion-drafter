@@ -6,6 +6,7 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "circuits_reviewed": [],
+  "applicable_courts": ["SCOTUS"],
 
   "trigger": {
     "description": "Ask whenever there was a traffic or investigative stop, to determine whether it was extended beyond the time reasonably required for its original purpose.",

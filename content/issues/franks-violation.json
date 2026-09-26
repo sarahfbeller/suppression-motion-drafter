@@ -6,6 +6,7 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "circuits_reviewed": [],
+  "applicable_courts": ["SCOTUS"],
 
   "trigger": {
     "description": "Ask when a search was conducted pursuant to a warrant and there is reason to believe the supporting affidavit contained inaccuracies or omissions.",

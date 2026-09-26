@@ -87,13 +87,26 @@
     "history": "This field was previously split across 'jurisdiction' (federal/state) + 'circuit' (SCOTUS/9th/4th/etc, tagged 'any' before that) + 'state' (AK/CA/etc) on a segment. All three collapsed into this single 'court' field once it became clear a state-court filing should always include SCOTUS by default, which the old three-field split made awkward to express."
   },
 
+  "applicable_courts_field": {
+    "location": "top level of each issue file, e.g. issue.applicable_courts",
+    "format": "array of court values (same value space as segment.court — 'SCOTUS' | '9th Circuit' | 'AK') — which courts this issue is actually KNOWN to exist in, regardless of research status.",
+    "why_court_not_forum": "An earlier version of this field used 'applicable_forums': ['State court'] — but 'state court' wrongly implies the issue would apply in ANY state. The three chemical-test-rights issues are known to exist only under Alaska's specific implied-consent statute; whether an equivalent exists in any other state has not been checked and must not be assumed. 'applicable_courts': ['AK'] says exactly what's known — nothing broader. If a second state is ever added and its equivalent statute is confirmed to exist, that state's code gets added explicitly; it's never inferred from 'State court' applying generally.",
+    "how_it_differs_from_content_coverage": "This is about whether an issue exists in a court at all, not whether content has been written for it yet. A Fourth Amendment issue lists ONLY 'SCOTUS' — not also '9th Circuit' and 'AK' — because SCOTUS binds every circuit and every state by definition, so desiredCourts always includes SCOTUS regardless of forum, and the intersection is guaranteed non-empty. Listing the circuit/state too would be redundant, not just extra-safe: it adds nothing the SCOTUS entry doesn't already cover. Only list a specific circuit or state ALONE (no SCOTUS) when the issue is NOT grounded in SCOTUS doctrine and is known to exist only in that specific court's own law — that's the chemical-test-rights case. Whether content has actually been AUTHORED for a given circuit/state (segments, NEEDS_RESEARCH status, circuits_reviewed) is a completely separate question from this field.",
+    "how_it_is_checked": [
+      "Decision tree / wizard: compute desiredCourts from case_session (see resolver_logic step 1). Before asking an issue's trigger questions at all, skip the entire issue if desiredCourts has no overlap with issue.applicable_courts. The three chemical-test-rights issues' questions should never be presented in a 'Federal court' case (desiredCourts = {SCOTUS, 9th Circuit}, no overlap with their applicable_courts = ['AK']) — not just hidden from the final output.",
+      "resolveLawParagraph (see resolver_logic step 0): same intersection check. An issue with no overlap is skipped entirely — no warning, no fallback, nothing rendered, since there's nothing wrong, it just doesn't exist in that forum."
+    ],
+    "current_values": "['SCOTUS'] for all three Fourth Amendment issues (franks-violation, prolonged-stop, passenger-frisk-suspicionless) — SCOTUS alone entails applicability in every circuit and every state, so nothing else needs listing. ['AK'] only for all three chemical-test-rights issues — confirmed to exist under Alaska's specific statutory scheme; no claim made about SCOTUS, the 9th Circuit, or any other state."
+  },
+
   "resolver_logic": {
     "function": "resolveLawParagraph(issue, case_session)",
     "steps": [
+      "0. desiredCourts = forumToCourts(case_session) (computed the same way as step 1 below). IF desiredCourts has NO overlap with issue.applicable_courts: skip this issue entirely — no warning, no output. This is a set-intersection check, not forum-list membership — see applicable_courts_field for why that distinction matters.",
       "1. desiredCourts = forumToCourts(case_session) — 'State court' -> {SCOTUS, courtCodeForState(case_session.state_name)} e.g. {SCOTUS, AK}; 'Federal court' -> {SCOTUS, case_session.federal_circuit} e.g. {SCOTUS, 9th Circuit}",
       "2. matchingSegments = segments where segment.court IN desiredCourts, status != 'NEEDS_RESEARCH'",
       "3. toRender = matchingSegments, ordered SCOTUS first, then the circuit/state segment",
-      "4. IF toRender is empty: set warning (e.g. 'no_authority_for_<court>'), fall back to the SCOTUS segment if one exists — never render nothing, never silently use an unresearched placeholder",
+      "4. IF toRender is empty: set warning (e.g. 'no_authority_for_<court>'), fall back to the SCOTUS segment if one exists — never render nothing, never silently use an unresearched placeholder. (This step only runs at all because step 0 already confirmed the issue is applicable here — an empty toRender at this point really is a research gap, not a structural non-applicability.)",
       "5. IF case_session.forum == 'Federal court' AND case_session.federal_circuit NOT IN issue.circuits_reviewed: add soft warning 'circuit_specific_authority_not_researched' — fires even when toRender is non-empty, since it means nobody has checked whether this circuit has its own case worth citing yet, not that none exists. This warning NEVER fires for a 'State court' filing — circuit-specific segments are never pulled into state-court output at all, so there's nothing to flag as unresearched there.",
       "6. text = join segment texts in toRender order; authorities = flattened segment authorities",
       "7. return { text, authorities, warnings: [] }  // warnings is a list — both a step-4 and step-5 warning can fire together"
@@ -159,7 +172,7 @@
       "label": "Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)",
       "file": "content/issues/denial-of-contact-before-breath-test.json",
       "jurisdiction_status": { "state": "unreviewed" },
-      "note": "No SCOTUS/9th Circuit segment — this issue has no federal counterpart by nature, not just an unresearched gap. See _jurisdiction_note in the issue file; still an open per-issue-applicability question for the resolver (see excluded_explanations/warning behavior when 'Federal court' forum is selected for an issue like this)."
+      "note": "applicable_courts: ['AK'] only — confirmed to exist under Alaska's specific implied-consent statute; no claim made about SCOTUS, the 9th Circuit, or any other state."
     },
     {
       "id": "independent-test-advisement-failure",
@@ -167,7 +180,7 @@
       "label": "Failure to Clearly and Expressly Advise of Right to an Independent Chemical Test",
       "file": "content/issues/independent-test-advisement-failure.json",
       "jurisdiction_status": { "state": "unreviewed" },
-      "note": "No SCOTUS/9th Circuit segment, same reason as denial-of-contact-before-breath-test."
+      "note": "applicable_courts: ['AK'] only, same reason as denial-of-contact-before-breath-test."
     },
     {
       "id": "independent-test-comprehension-barrier",
@@ -175,7 +188,7 @@
       "label": "Comprehension Barrier Preventing Knowing Understanding of Right to Independent Test",
       "file": "content/issues/independent-test-comprehension-barrier.json",
       "jurisdiction_status": { "state": "unreviewed" },
-      "note": "No SCOTUS/9th Circuit segment, same reason as the other chemical-test-rights issues."
+      "note": "applicable_courts: ['AK'] only, same reason as the other chemical-test-rights issues."
     }
   ],
 
