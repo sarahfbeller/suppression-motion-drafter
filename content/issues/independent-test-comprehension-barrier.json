@@ -7,7 +7,7 @@
   "reviewed_by": "",
   "circuits_reviewed": [],
 
-  "_jurisdiction_note": "No federal segment exists here, intentionally — same as independent-test-advisement-failure.json. See the pending jurisdiction-applicability design decision in manifest.json.",
+  "_jurisdiction_note": "No SCOTUS or 9th Circuit segment exists here, intentionally — same as independent-test-advisement-failure.json. See the open per-issue-applicability question in manifest.json.",
 
   "trigger": {
     "description": "Ask whenever the officer's advisement of the right to an independent test was otherwise proper on its face, but something may have prevented the defendant from actually, knowingly understanding it.",
@@ -46,12 +46,11 @@
     "segments": [
       {
         "id": "state_rule",
-        "jurisdiction": "state",
-        "state": "AK",
+        "court": "AK",
         "text": "Even where police give a clear and express advisement of the right to an independent chemical test, the right is not honored if the defendant could not knowingly and intelligently understand that advisement. A defendant with too poor a grasp of English to understand an advisement given only in English may be unable to make a knowing and intelligent decision regarding the right, even where the advisement itself followed correct procedure. A waiver of the right to an independent test is valid only if it is knowing and intelligent, and a defendant whose intoxication was severe enough that they could not understand what they were giving up has not validly waived the right.",
         "authorities": [
-          { "type": "case", "name": "Ahtuangaruak v. State", "citation": "820 P.2d 310 (Alaska App. 1991)", "jurisdiction": "state", "propositions": ["advisement given only in English can fail to convey the right to a defendant with insufficient English comprehension"] },
-          { "type": "case", "name": "Gundersen v. Municipality of Anchorage", "citation": "792 P.2d 673 (Alaska 1990)", "jurisdiction": "state", "propositions": ["waiver of the right to an independent test is valid only if knowing and intelligent"] }
+          { "type": "case", "name": "Ahtuangaruak v. State", "citation": "820 P.2d 310 (Alaska App. 1991)", "court": "AK", "propositions": ["advisement given only in English can fail to convey the right to a defendant with insufficient English comprehension"] },
+          { "type": "case", "name": "Gundersen v. Municipality of Anchorage", "citation": "792 P.2d 673 (Alaska 1990)", "court": "AK", "propositions": ["waiver of the right to an independent test is valid only if knowing and intelligent"] }
         ]
       }
     ]

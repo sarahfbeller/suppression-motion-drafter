@@ -7,7 +7,7 @@
   "reviewed_by": "",
   "circuits_reviewed": [],
 
-  "_jurisdiction_note": "No federal segment exists here, intentionally — this is an Alaska statutory/due-process right (AS 28.35.033(e) plus the Alaska Constitution), not a federal constitutional claim. See the pending jurisdiction-applicability design decision in manifest.json.",
+  "_jurisdiction_note": "No SCOTUS or 9th Circuit segment exists here, intentionally — this is an Alaska statutory/due-process right (AS 28.35.033(e) plus the Alaska Constitution), not a federal constitutional claim. See the open per-issue-applicability question in manifest.json.",
 
   "trigger": {
     "description": "Ask whenever the defendant was arrested for DUI and asked to submit to a breath test, to determine whether police clearly and expressly advised them of the right to an independent chemical test.",
@@ -57,16 +57,15 @@
     "segments": [
       {
         "id": "state_rule",
-        "jurisdiction": "state",
-        "state": "AK",
+        "court": "AK",
         "text": "AS 28.35.033(e) requires that the person who administers a chemical test clearly and expressly inform the person tested of the right to an independent chemical test, and make reasonable, good-faith efforts to assist the person in obtaining one if requested. This requirement also rests on an independent constitutional basis: due process under the Alaska Constitution requires that a defendant be given clear and express notice of the right to an independent test, because due process requires an opportunity to challenge the reliability of a state-administered chemical test in the simplest and most effective way possible. A waiver of this right is valid only if it is knowing and intelligent. Where a breath test was administered and is in evidence, the remedy for a violation of this advisement requirement is suppression of that test result. Where no breath test exists to suppress, the fact-finder must instead presume that an independent test, had one been conducted, would have yielded a favorable result.",
         "authorities": [
-          { "type": "statute", "name": "AS 28.35.033(e)", "citation": "", "jurisdiction": "state", "propositions": ["officer must clearly and expressly inform of the right to an independent test", "reasonable, good-faith assistance required if the right is invoked"] },
-          { "type": "case", "name": "Gundersen v. Municipality of Anchorage", "citation": "792 P.2d 673 (Alaska 1990)", "jurisdiction": "state", "propositions": ["due process requires clear and express notice of the right to an independent test", "waiver valid only if knowing and intelligent"] },
-          { "type": "case", "name": "Anchorage v. Serrano", "citation": "649 P.2d 256 (Alaska App. 1982)", "jurisdiction": "state", "propositions": ["origin of the clear-and-express-notice requirement"] },
-          { "type": "case", "name": "Crim v. Municipality of Anchorage", "citation": "903 P.2d 586 (Alaska App. 1995)", "jurisdiction": "state", "propositions": ["effective compliance with AS 28.35.033(e) requires clear and express notice"] },
-          { "type": "case", "name": "Nelson v. State", "citation": "512 P.3d 86 (Alaska App. 2022)", "jurisdiction": "state", "propositions": ["when no breath test exists, remedy is a presumption of a favorable independent test result (.04 or below)"] },
-          { "type": "case", "name": "Snyder v. State", "citation": "930 P.2d 1274 (Alaska 1996)", "jurisdiction": "state", "propositions": ["establishes the favorable-presumption remedy when there is no test to suppress"] }
+          { "type": "statute", "name": "AS 28.35.033(e)", "citation": "", "court": "AK", "propositions": ["officer must clearly and expressly inform of the right to an independent test", "reasonable, good-faith assistance required if the right is invoked"] },
+          { "type": "case", "name": "Gundersen v. Municipality of Anchorage", "citation": "792 P.2d 673 (Alaska 1990)", "court": "AK", "propositions": ["due process requires clear and express notice of the right to an independent test", "waiver valid only if knowing and intelligent"] },
+          { "type": "case", "name": "Anchorage v. Serrano", "citation": "649 P.2d 256 (Alaska App. 1982)", "court": "AK", "propositions": ["origin of the clear-and-express-notice requirement"] },
+          { "type": "case", "name": "Crim v. Municipality of Anchorage", "citation": "903 P.2d 586 (Alaska App. 1995)", "court": "AK", "propositions": ["effective compliance with AS 28.35.033(e) requires clear and express notice"] },
+          { "type": "case", "name": "Nelson v. State", "citation": "512 P.3d 86 (Alaska App. 2022)", "court": "AK", "propositions": ["when no breath test exists, remedy is a presumption of a favorable independent test result (.04 or below)"] },
+          { "type": "case", "name": "Snyder v. State", "citation": "930 P.2d 1274 (Alaska 1996)", "court": "AK", "propositions": ["establishes the favorable-presumption remedy when there is no test to suppress"] }
         ]
       }
     ]

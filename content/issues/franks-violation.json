@@ -5,7 +5,7 @@
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
-  "circuits_reviewed": ["4th"],
+  "circuits_reviewed": [],
 
   "trigger": {
     "description": "Ask when a search was conducted pursuant to a warrant and there is reason to believe the supporting affidavit contained inaccuracies or omissions.",
@@ -32,31 +32,29 @@
     "segments": [
       {
         "id": "federal_rule",
-        "jurisdiction": "federal",
-        "circuit": "any",
+        "court": "SCOTUS",
         "text": "Under Franks v. Delaware, 438 U.S. 154 (1978), a defendant is entitled to an evidentiary hearing on the validity of a search warrant affidavit where he makes a substantial preliminary showing that the affiant knowingly and intentionally, or with reckless disregard for the truth, included a false statement in the warrant affidavit, and the false statement was necessary to the finding of probable cause. The same analysis applies to material omissions where the affiant's conduct amounts to reckless disregard for the truth. If, after excising the false material or including the omitted information, the affidavit's remaining content is insufficient to establish probable cause, the warrant must be voided and the fruits of the search excluded.",
         "authorities": [
-          { "type": "case", "name": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "jurisdiction": "federal", "propositions": ["substantial preliminary showing standard", "knowing/reckless false statement", "materiality requirement"] }
+          { "type": "case", "name": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "court": "SCOTUS", "propositions": ["substantial preliminary showing standard", "knowing/reckless false statement", "materiality requirement"] }
         ]
       },
       {
-        "id": "federal_rule_4th_cir",
-        "jurisdiction": "federal",
-        "circuit": "4th",
-        "text": "In the Fourth Circuit, the same Franks analysis governs material omissions, not just affirmative false statements. See United States v. Colkley, 899 F.2d 297 (4th Cir. 1990).",
+        "id": "circuit_rule_9th",
+        "court": "9th Circuit",
+        "status": "NEEDS_RESEARCH",
+        "text": "PLACEHOLDER — the 9th Circuit's own case law on Franks-type omissions has not yet been identified. For reference only, other circuits (e.g. United States v. Colkley, 899 F.2d 297 (4th Cir. 1990)) have held that omissions are analyzed under the same Franks framework as affirmative false statements — confirm whether the 9th Circuit has said the same before citing anything here.",
         "authorities": [
-          { "type": "case", "name": "United States v. Colkley", "citation": "899 F.2d 297 (4th Cir. 1990)", "jurisdiction": "federal", "propositions": ["omissions analyzed under Franks"] }
+          { "type": "case", "name": "PLACEHOLDER — insert controlling 9th Circuit case", "citation": "", "court": "9th Circuit", "propositions": [] }
         ],
-        "note": "Example of a circuit-specific segment — Colkley is 4th Circuit authority, not SCOTUS. Add a segment like this whenever your circuit has its own case applying this proposition, whether or not other circuits agree — this is routine, not limited to genuine circuit splits. If not researched yet for your actual circuit, mark status: NEEDS_RESEARCH instead of leaving 4th Circuit law in as a stand-in."
+        "note": "This segment previously used Colkley (4th Cir.) as an ILLUSTRATIVE example of a circuit-specific segment, written before the actual circuit in scope was known. Now that scope is fixed to the 9th Circuit, that illustrative content has been replaced with a real placeholder — Colkley is mentioned in the text above only as research guidance, not as authority actually cited here."
       },
       {
         "id": "state_rule",
-        "jurisdiction": "state",
-        "state": "FILL_IN — e.g. 'CA'",
+        "court": "AK",
         "status": "NEEDS_RESEARCH",
-        "text": "PLACEHOLDER — fill in once you've identified your state's controlling (or persuasive) authority on Franks-type challenges. Some states apply a lower threshold for omissions than the federal standard — say so explicitly if true in yours.",
+        "text": "PLACEHOLDER — fill in once you've identified Alaska's controlling (or persuasive) authority on Franks-type challenges. Alaska may apply a lower threshold for omissions than the federal standard — say so explicitly if true.",
         "authorities": [
-          { "type": "case", "name": "PLACEHOLDER — insert controlling state case", "citation": "", "jurisdiction": "state", "propositions": [] }
+          { "type": "case", "name": "PLACEHOLDER — insert controlling Alaska case", "citation": "", "court": "AK", "propositions": [] }
         ]
       }
     ]
