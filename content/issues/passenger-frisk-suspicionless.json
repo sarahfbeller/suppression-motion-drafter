@@ -51,9 +51,9 @@
         "jurisdiction": "federal",
         "circuit": "any",
         "text": "A passenger frisk during a traffic stop requires more than the passenger's mere presence in the vehicle. An officer may frisk a passenger only where there is reasonable, articulable suspicion that the particular passenger is armed and dangerous, the standard set out in Terry v. Ohio, 392 U.S. 1 (1968). Arizona v. Johnson, 555 U.S. 323 (2009), confirms that this individualized standard governs passengers just as it governs drivers, and that general officer-safety concerns tied to the stop itself — without something specific to the passenger being frisked — do not satisfy it.",
-        "citations": [
-          { "case": "Terry v. Ohio", "citation": "392 U.S. 1 (1968)", "jurisdiction": "federal", "propositions": ["reasonable suspicion the person is armed and dangerous required for any protective frisk"] },
-          { "case": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "jurisdiction": "federal", "propositions": ["Terry frisk standard applies to passengers individually, not derivatively from the stop"] }
+        "authorities": [
+          { "type": "case", "name": "Terry v. Ohio", "citation": "392 U.S. 1 (1968)", "jurisdiction": "federal", "propositions": ["reasonable suspicion the person is armed and dangerous required for any protective frisk"] },
+          { "type": "case", "name": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "jurisdiction": "federal", "propositions": ["Terry frisk standard applies to passengers individually, not derivatively from the stop"] }
         ]
       },
       {
@@ -62,8 +62,8 @@
         "state": "FILL_IN — e.g. 'CA'",
         "status": "NEEDS_RESEARCH",
         "text": "PLACEHOLDER — fill in once you've identified your state's controlling (or persuasive) authority on passenger frisks. Some states may require an even more specific or contemporaneous basis than Johnson's federal floor.",
-        "citations": [
-          { "case": "PLACEHOLDER — insert controlling state case", "citation": "", "jurisdiction": "state", "propositions": [] }
+        "authorities": [
+          { "type": "case", "name": "PLACEHOLDER — insert controlling state case", "citation": "", "jurisdiction": "state", "propositions": [] }
         ]
       }
     ]

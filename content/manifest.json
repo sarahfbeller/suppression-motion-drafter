@@ -61,6 +61,20 @@
     "rendering": "Render once at the end of the motion's full output (after every matched issue's law paragraph and notes), not repeated per issue."
   },
 
+  "authority_schema": {
+    "description": "Every legal authority cited in a segment's law_paragraph text lives in ONE unified 'authorities' array — replacing the earlier case-shaped 'citations' array and the one-off 'statutory_citations' array. Each entry carries a 'type' so different kinds of authority share one shape instead of each getting its own array.",
+    "shape": { "type": "case | statute | constitution | rule", "name": "the case name, or the statute/rule/constitutional provision identifier", "citation": "reporter citation for a case; empty string for statute/constitution/rule, where 'name' already IS the citation", "jurisdiction": "federal | state", "propositions": ["what this authority is cited for"] },
+    "examples": {
+      "case": { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "jurisdiction": "federal", "propositions": ["stop unlawful once prolonged beyond original mission"] },
+      "statute": { "type": "statute", "name": "AS 28.35.033(e)", "citation": "", "jurisdiction": "state", "propositions": ["officer must clearly and expressly inform of the right to an independent test"] },
+      "constitution": { "type": "constitution", "name": "Alaska Const. art. I, § 7", "citation": "", "jurisdiction": "state", "propositions": ["due process basis for the right"] },
+      "rule": { "type": "rule", "name": "Alaska Criminal Rule 5(b)", "citation": "", "jurisdiction": "state", "propositions": ["implements the right to communicate with counsel or a relative/friend after arrest"] }
+    },
+    "why_one_array": "Cases, statutes, constitutional provisions, and court rules all serve the same function in a law paragraph — a citation backing a proposition. They only differ in what 'name' and 'citation' look like. One array with a 'type' tag scales to future authority kinds (municipal code, regulations, secondary sources) without adding a new array every time one shows up.",
+    "migration_history": "Earlier files used a case-shaped 'citations' array (key 'case' instead of 'name', no 'type' field), and independent-test-advisement-failure.json briefly had a separate 'statutory_citations' array as a stopgap. All issue files have since been migrated to this unified 'authorities' array.",
+    "open_question_not_yet_decided": "Every authority entry still repeats 'jurisdiction', which always matches its parent segment's jurisdiction in every file so far — this may be fully redundant, same pattern as fields removed earlier (uses_questions, question_bank_file). Not removed yet since it wasn't part of what was asked; worth a deliberate decision rather than another silent carry-over."
+  },
+
   "segment_tagging_convention": {
     "federal_scotus_or_undivided": "jurisdiction: 'federal', circuit: 'any' — renders whenever federal law is desired, regardless of which circuit is selected. Use this for SCOTUS holdings and any circuit-level rule you haven't found a split on.",
     "federal_circuit_specific": "jurisdiction: 'federal', circuit: '9th' (etc.) — renders ALONGSIDE the 'any' segment (both together, not instead of it) when case_session.federal_circuit matches. Add one whenever you find your circuit's own case restating, applying, or elaborating the proposition — this is routine, not limited to circuit splits. Practitioners generally want their own circuit's authority cited in addition to the controlling case as a matter of course.",
@@ -76,7 +90,7 @@
       "4. toRender = (federalSegments if 'federal' in desiredJurisdictions) + (stateSegments if 'state' in desiredJurisdictions), federal first",
       "5. IF toRender is empty: set warning (e.g. 'no_state_authority_for_<state>' or 'no_circuit_specific_authority'), fall back to any 'any'-circuit federal segment if one exists — never render nothing, never silently use an unresearched placeholder",
       "6. IF 'federal' in desiredJurisdictions AND case_session.federal_circuit NOT IN issue.circuits_reviewed: add soft warning 'circuit_specific_authority_not_researched' — this fires even when toRender is non-empty, since it means nobody has checked whether this circuit has its own case worth citing on this issue yet, not that none exists",
-      "7. text = join segment texts in toRender order; citations = flattened segment citations",
+      "7. text = join segment texts in toRender order; authorities = flattened segment authorities",
       "8. return { text, citations, warnings: [] }  // warnings is a list — both a step-5 and step-6 warning can fire together"
     ]
   },
@@ -148,7 +162,7 @@
       "label": "Failure to Clearly and Expressly Advise of Right to an Independent Chemical Test",
       "file": "content/issues/independent-test-advisement-failure.json",
       "jurisdiction_status": { "state": "unreviewed" },
-      "note": "No 'federal' key, same reason as denial-of-contact-before-breath-test. Also introduces a 'statutory_citations' field not yet formally documented in this manifest — see _citation_schema_note in the issue file."
+      "note": "No 'federal' key, same reason as denial-of-contact-before-breath-test."
     },
     {
       "id": "independent-test-comprehension-barrier",

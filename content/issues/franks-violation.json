@@ -35,8 +35,8 @@
         "jurisdiction": "federal",
         "circuit": "any",
         "text": "Under Franks v. Delaware, 438 U.S. 154 (1978), a defendant is entitled to an evidentiary hearing on the validity of a search warrant affidavit where he makes a substantial preliminary showing that the affiant knowingly and intentionally, or with reckless disregard for the truth, included a false statement in the warrant affidavit, and the false statement was necessary to the finding of probable cause. The same analysis applies to material omissions where the affiant's conduct amounts to reckless disregard for the truth. If, after excising the false material or including the omitted information, the affidavit's remaining content is insufficient to establish probable cause, the warrant must be voided and the fruits of the search excluded.",
-        "citations": [
-          { "case": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "jurisdiction": "federal", "propositions": ["substantial preliminary showing standard", "knowing/reckless false statement", "materiality requirement"] }
+        "authorities": [
+          { "type": "case", "name": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "jurisdiction": "federal", "propositions": ["substantial preliminary showing standard", "knowing/reckless false statement", "materiality requirement"] }
         ]
       },
       {
@@ -44,8 +44,8 @@
         "jurisdiction": "federal",
         "circuit": "4th",
         "text": "In the Fourth Circuit, the same Franks analysis governs material omissions, not just affirmative false statements. See United States v. Colkley, 899 F.2d 297 (4th Cir. 1990).",
-        "citations": [
-          { "case": "United States v. Colkley", "citation": "899 F.2d 297 (4th Cir. 1990)", "jurisdiction": "federal", "propositions": ["omissions analyzed under Franks"] }
+        "authorities": [
+          { "type": "case", "name": "United States v. Colkley", "citation": "899 F.2d 297 (4th Cir. 1990)", "jurisdiction": "federal", "propositions": ["omissions analyzed under Franks"] }
         ],
         "note": "Example of a circuit-specific segment — Colkley is 4th Circuit authority, not SCOTUS. Add a segment like this whenever your circuit has its own case applying this proposition, whether or not other circuits agree — this is routine, not limited to genuine circuit splits. If not researched yet for your actual circuit, mark status: NEEDS_RESEARCH instead of leaving 4th Circuit law in as a stand-in."
       },
@@ -55,8 +55,8 @@
         "state": "FILL_IN — e.g. 'CA'",
         "status": "NEEDS_RESEARCH",
         "text": "PLACEHOLDER — fill in once you've identified your state's controlling (or persuasive) authority on Franks-type challenges. Some states apply a lower threshold for omissions than the federal standard — say so explicitly if true in yours.",
-        "citations": [
-          { "case": "PLACEHOLDER — insert controlling state case", "citation": "", "jurisdiction": "state", "propositions": [] }
+        "authorities": [
+          { "type": "case", "name": "PLACEHOLDER — insert controlling state case", "citation": "", "jurisdiction": "state", "propositions": [] }
         ]
       }
     ]

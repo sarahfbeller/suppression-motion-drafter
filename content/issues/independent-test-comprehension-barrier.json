@@ -49,9 +49,9 @@
         "jurisdiction": "state",
         "state": "AK",
         "text": "Even where police give a clear and express advisement of the right to an independent chemical test, the right is not honored if the defendant could not knowingly and intelligently understand that advisement. A defendant with too poor a grasp of English to understand an advisement given only in English may be unable to make a knowing and intelligent decision regarding the right, even where the advisement itself followed correct procedure. A waiver of the right to an independent test is valid only if it is knowing and intelligent, and a defendant whose intoxication was severe enough that they could not understand what they were giving up has not validly waived the right.",
-        "citations": [
-          { "case": "Ahtuangaruak v. State", "citation": "820 P.2d 310 (Alaska App. 1991)", "jurisdiction": "state", "propositions": ["advisement given only in English can fail to convey the right to a defendant with insufficient English comprehension"] },
-          { "case": "Gundersen v. Municipality of Anchorage", "citation": "792 P.2d 673 (Alaska 1990)", "jurisdiction": "state", "propositions": ["waiver of the right to an independent test is valid only if knowing and intelligent"] }
+        "authorities": [
+          { "type": "case", "name": "Ahtuangaruak v. State", "citation": "820 P.2d 310 (Alaska App. 1991)", "jurisdiction": "state", "propositions": ["advisement given only in English can fail to convey the right to a defendant with insufficient English comprehension"] },
+          { "type": "case", "name": "Gundersen v. Municipality of Anchorage", "citation": "792 P.2d 673 (Alaska 1990)", "jurisdiction": "state", "propositions": ["waiver of the right to an independent test is valid only if knowing and intelligent"] }
         ]
       }
     ]
