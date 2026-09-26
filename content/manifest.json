@@ -65,6 +65,12 @@
     "rendering": "Render once at the end of the motion's full output (after every matched issue's law paragraph and notes), not repeated per issue."
   },
 
+  "field_audience_convention": {
+    "description": "practice_notes is attorney-facing output — it ships in the actual generated motion, alongside the rendered law_paragraph text and any [NOTE: ...] flags. It is NOT a place for the author (whoever is writing this issue file) to leave themselves reminders, caveats about unverified content, or scope limitations on a citation.",
+    "author_only_notes_go_in_underscore_fields": "An author-facing note — 'I haven't verified whether this case covers X', 'this segment needs research', 'why this field exists' — goes in an underscore-prefixed field instead (e.g. '_jurisdiction_note'), which is understood throughout this project to never render to the end user. If no existing underscore field fits, add a new one rather than reaching for practice_notes.",
+    "test": "Would an attorney want this sentence to appear in their actual motion, or in something they'd hand a client? If yes, practice_notes. If it's really about the state of the file itself — what's confirmed, what's a guess, what still needs checking — it's an author note, not a practice note."
+  },
+
   "rule_statements_schema": {
     "description": "law_paragraph is an ORDERED LIST of small rule statements (law_paragraph.rule_statements), not a fixed set of whole-paragraph segments per court. Each statement is one sentence, or two at most — one proposition — with its own authorities array. Rendering walks the list in order, and for each statement includes only the authorities whose court is actually desired for this motion — so the SAME statement can render with just a SCOTUS citation in a federal motion, a genuine SCOTUS + state PARALLEL citation in a state motion (e.g. 'Rodriguez v. United States, 575 U.S. 348 (2015); Simmons v. State, 435 P.3d 975 (Alaska App. 2018)'), or a lone state/circuit citation if that's genuinely all that exists for that specific point.",
     "shape": {
