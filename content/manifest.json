@@ -1,171 +1,53 @@
 {
-  "_description": "Single source of truth for the app: the case-level session schema (forum/jurisdiction lives here, asked once) plus the index of every issue file in content/issues/.",
+  "_description": "App configuration plus schema documentation. The executable version of the schema is scripts/validate.py; if this file and the validator disagree, the validator wins and this file should be corrected.",
+
+  "courts": {
+    "_description": "Every court code used anywhere (authority.court, applicable_courts, case session). 'kind' drives citation ordering (scotus, then circuit, then state) and which forum a court belongs to.",
+    "SCOTUS": { "kind": "scotus", "display_name": "U.S. Supreme Court" },
+    "9th Circuit": { "kind": "circuit", "display_name": "Ninth Circuit" },
+    "AK": { "kind": "state", "display_name": "Alaska" }
+  },
 
   "case_session_schema": {
-    "case_id": "string, generated per session",
-    "created": "ISO date",
+    "_description": "Asked once at the start of the wizard, before any issue questions. Options use the same { id, label } shape as the question bank.",
     "forum": {
       "type": "multiple_choice",
       "prompt": "Is this motion being filed in state or federal court?",
-      "options": ["State court", "Federal court"],
-      "asked": "once, at the very start of the wizard, before any issue-taxonomy questions — every issue's law_paragraph rendering reads this instead of asking again",
-      "note": "SCOTUS authority binds state courts too, so a state-court filing always includes SCOTUS + the selected state together — there is no 'state only, no SCOTUS' option."
+      "options": [
+        { "id": "state_court", "label": "State court" },
+        { "id": "federal_court", "label": "Federal court" }
+      ]
     },
-    "state_name": {
-      "type": "dropdown",
+    "state": {
+      "type": "multiple_choice",
       "prompt": "Which state?",
-      "options": ["Alaska"],
-      "asked": "once, only if forum is 'State court'",
-      "note": "Currently only one option, matching this project's present scope. Its value maps to the court code 'AK' used throughout rule_statements' authorities. Expanding to a new state later means adding a dropdown option here and a new court value (e.g. 'CA') on the affected authorities — no other structural change."
+      "asked_when": "forum is state_court",
+      "options": [ { "id": "AK", "label": "Alaska" } ],
+      "note": "Option ids are court codes from 'courts'. Only Alaska is in scope for now; adding a state means adding it to 'courts' and here."
     },
     "federal_circuit": {
-      "type": "dropdown",
-      "prompt": "Which federal circuit applies?",
-      "options": ["9th Circuit"],
-      "asked": "once, only if forum is 'Federal court'",
-      "note": "Currently only one option, matching this project's present scope. Its value is used directly as the court code. Expanding to a new circuit later means adding a dropdown option here and using its name as a new court value."
+      "type": "multiple_choice",
+      "prompt": "Which federal circuit?",
+      "asked_when": "forum is federal_court",
+      "options": [ { "id": "9th Circuit", "label": "Ninth Circuit" } ],
+      "note": "Option ids are court codes from 'courts'. Only the Ninth Circuit is in scope for now."
     },
-    "answers": "object — keyed by question id, populated as the attorney moves through each issue's trigger.questions",
-    "matched_issues": "array of issue ids — populated by matching logic, not asked directly"
+    "answers": "object keyed by question id; values are option ids (see question_types). A question the tree skipped is simply absent."
   },
 
-  "circuits_reviewed_field": {
-    "location": "top level of each issue file, e.g. issue.circuits_reviewed",
-    "format": "array of court values (from federal_circuit) that have actually been checked for their OWN case law on this issue, e.g. ['9th Circuit'] — a circuit CAN be in this list with no circuit-specific authority added to any rule statement yet, meaning 'checked, nothing beyond SCOTUS worth citing'",
-    "why_separate_from_rule_statements": "Without this, there's no way to distinguish 'checked, nothing circuit-specific to add' from 'nobody has looked yet' — both look identical (no circuit-specific authority anywhere in the issue) unless tracked explicitly.",
-    "tracked_at_issue_level_only": "Deliberately NOT tracked per rule statement, even though citations now resolve per statement (see rule_statements_schema) — that would be more precise but more bookkeeping than needed. One issue-level field is enough.",
-    "current_scope": "Only ever contains '9th Circuit' for now, since that's the only circuit in scope."
-  },
+  "desired_courts": "State court -> [SCOTUS, <state>]. Federal court -> [SCOTUS, <federal_circuit>]. SCOTUS binds both, so it is always included; circuit authority is never used in a state-court filing, and state authority is never used in a federal one.",
 
-  "review_condition_rendering": {
-    "description": "Separate from resolveLawParagraph. After an issue is matched (or considered) and its law_paragraph text is rendered, check the issue's review_conditions: for each one whose 'when' evaluates true against case_session.answers, append its display_note to the output.",
-    "format": "Append on its own line after the law paragraph text, wrapped as: [NOTE: <display_note>] — all-caps 'NOTE' and brackets so it's visually distinct from the drafted law text when the attorney reviews the output.",
-    "why_separate_from_flag": "'flag' is a short machine-readable id (for logging/analytics — e.g. tracking how often intent_below_franks_standard fires across cases). 'display_note' is the attorney-facing sentence that actually explains the judgment call. Never surface 'flag' itself in the output — it's not written for a human reader."
-  },
+  "category_order": ["stop-legality", "frisk-scope", "warrant-defects", "chemical-test-rights"],
 
-  "excluded_explanations_rendering": {
-    "description": "For issues whose match_condition did NOT pass, check excluded_explanations: if any entry's 'when' evaluates true against case_session.answers, the issue was a close call worth explaining, even though it isn't included in the motion.",
-    "steps": [
-      "1. For every issue considered (not just matched ones), if match_condition failed, check its excluded_explanations list.",
-      "2. Collect { issue_label, display_note } for each entry whose 'when' evaluates true.",
-      "3. If any were collected, render them together in ONE section at the very end of the full document — after all matched issues' law paragraphs/notes, and after cross_cutting_reminders — e.g. under a heading like 'Issues Considered But Not Included'.",
-      "4. If nothing was collected, omit the section entirely — don't show an empty heading."
-    ],
-    "why_separate_from_review_conditions": "review_conditions flags a shaky INCLUDED issue, rendered inline with that issue's law paragraph. excluded_explanations explains a NOT-included issue, rendered once at the end since there's no law paragraph to attach it to — the issue never made it into the motion body at all.",
-    "why_not_every_failed_match_gets_one": "Most excluded issues fail match_condition simply because the fact pattern doesn't exist for this case (e.g. no warrant was used at all) — that's not a close call and needs no explanation. excluded_explanations only fires for the specific, legally meaningful near-misses you've deliberately documented, not every unmatched issue."
-  },
-
-  "cross_cutting_reminders": {
-    "description": "Standing and fruit-of-the-poisonous-tree/attenuation aren't triggered by a specific fact pattern the way most issues are — they apply to EVERY suppression issue, always. Rather than referencing them per-issue (which doesn't scale and is easy to forget on any given issue file), render a single reminder once per motion, whenever at least one issue matched — not once per matched issue.",
-    "applies_when": "case_session.matched_issues is non-empty",
-    "reminders": [
-      { "id": "standing", "display_note": "Before relying on any issue above, confirm the defendant has standing to challenge it — i.e., a reasonable expectation of privacy in the place or thing searched. Standing is assessed separately for each matched issue; having it for one doesn't establish it for another." },
-      { "id": "fruit-of-poisonous-tree", "display_note": "For each matched issue, consider whether the evidence you're seeking to suppress is a direct or derivative product of that violation, versus sufficiently attenuated to survive suppression even if the underlying issue is found." }
-    ],
-    "rendering": "Render once at the end of the motion's full output (after every matched issue's law paragraph and notes), not repeated per issue."
-  },
-
-  "field_audience_convention": {
-    "description": "practice_notes is attorney-facing output — it ships in the actual generated motion, alongside the rendered law_paragraph text and any [NOTE: ...] flags. It is NOT a place for the author (whoever is writing this issue file) to leave themselves reminders, caveats about unverified content, or scope limitations on a citation.",
-    "author_only_notes_go_in_underscore_fields": "An author-facing note — 'I haven't verified whether this case covers X', 'this segment needs research', 'why this field exists' — goes in an underscore-prefixed field instead (e.g. '_jurisdiction_note'), which is understood throughout this project to never render to the end user. If no existing underscore field fits, add a new one rather than reaching for practice_notes.",
-    "test": "Would an attorney want this sentence to appear in their actual motion, or in something they'd hand a client? If yes, practice_notes. If it's really about the state of the file itself — what's confirmed, what's a guess, what still needs checking — it's an author note, not a practice note."
-  },
-
-  "rule_statements_schema": {
-    "description": "law_paragraph is an ORDERED LIST of small rule statements (law_paragraph.rule_statements), not a fixed set of whole-paragraph segments per court. Each statement is one sentence, or two at most — one proposition — with its own authorities array. Rendering walks the list in order, and for each statement includes only the authorities whose court is actually desired for this motion — so the SAME statement can render with just a SCOTUS citation in a federal motion, a genuine SCOTUS + state PARALLEL citation in a state motion (e.g. 'Rodriguez v. United States, 575 U.S. 348 (2015); Simmons v. State, 435 P.3d 975 (Alaska App. 2018)'), or a lone state/circuit citation if that's genuinely all that exists for that specific point.",
-    "shape": {
-      "id": "short slug, unique within the issue",
-      "text": "a BARE proposition. NEVER embed a case name or citation in this text, even mid-sentence — e.g. 'Illinois v. Caballes permits a dog sniff...' is wrong; write 'A dog sniff is permissible only if...' instead, and put Caballes in authorities. This can be a direct quotation — the whole quotation is then the proposition.",
-      "authorities": "see authority_schema — every entry here is understood to support exactly this statement's text, nothing more, nothing less"
-    },
-    "why_this_replaced_segments": "The earlier model had one whole paragraph per court (a 'federal_rule' segment, a 'state_rule' segment), concatenated when both applied. That could only ever produce two separate paragraphs saying the same thing twice — it structurally could not produce a genuine parallel citation within one sentence. Breaking the paragraph into atomic, independently-citable statements lets each proposition resolve its own citation(s) independently.",
-    "omission_behavior": "If a statement's authorities produce no match for the desired courts (e.g. only a state citation exists, but the motion is federal-only), the ENTIRE statement — sentence and all — is omitted from the rendered paragraph. Never show a bare, uncited sentence.",
-    "research_completeness_tracked_at_issue_level_only": "A statement lacking an AK authority does NOT mean 'confirmed nothing exists' — it just isn't attached yet. Whether a given court has actually been researched for an issue is tracked by circuits_reviewed / jurisdiction_status at the ISSUE level (unchanged), not per statement — a deliberate choice to avoid unnecessary bookkeeping granularity.",
-    "no_more_placeholder_objects": "There is no more NEEDS_RESEARCH segment-level placeholder, and no more empty-string placeholder text sitting in a file. A statement you haven't finished researching for a given court simply has no authority entry for that court — nothing to blank out, nothing that could be mistaken for real content at a skim."
-  },
-
-  "authority_schema": {
-    "description": "Every legal authority cited anywhere lives inside a rule statement's 'authorities' array (see rule_statements_schema). Each entry carries a 'type' (case/statute/constitution/rule) and a 'court' field.",
-    "shape": { "type": "case | statute | constitution | rule", "name": "the case name, or the statute/rule/constitutional provision identifier", "citation": "reporter citation for a case; empty string for statute/constitution/rule, where 'name' already IS the citation", "court": "SCOTUS | 9th Circuit | AK" },
-    "examples": {
-      "case_scotus": { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS" },
-      "case_state": { "type": "case", "name": "Simmons v. State", "citation": "435 P.3d 975 (Alaska App. 2018)", "court": "AK" },
-      "statute": { "type": "statute", "name": "AS 28.35.033(e)", "citation": "", "court": "AK" },
-      "constitution": { "type": "constitution", "name": "Alaska Const. art. I, § 7", "citation": "", "court": "AK" },
-      "rule": { "type": "rule", "name": "Alaska Criminal Rule 5(b)", "citation": "", "court": "AK" }
-    },
-    "why_no_propositions_field": "A rule statement is deliberately atomic — one sentence, one proposition. Every authority attached to it necessarily supports that same single point, so a separate 'propositions' field on each authority would just re-paraphrase the statement's own text, which is already more complete and more accurate than any shorthand summary. If a statement seems to need two different propositions tracked separately across its authorities, that's a sign it should be split into two rule statements instead.",
-    "why_court_not_jurisdiction": "A separate 'jurisdiction' field (federal/state) plus a 'circuit'/'state' field was the same redundancy problem fixed once already at the segment level (segments have since been eliminated entirely — see rule_statements_schema). One 'court' value says everything needed, more precisely.",
-    "migration_history": "citations (case-shaped, per-segment) -> statutory_citations stopgap -> unified 'authorities' array with a 'jurisdiction' field, per-segment -> 'court' field replacing 'jurisdiction', still per-segment -> segments eliminated entirely; 'authorities' now lives on each atomic rule statement instead, with 'propositions' dropped since the statement's own text already is the proposition."
-  },
-
-  "court_tagging_convention": {
-    "SCOTUS": "court: 'SCOTUS' on an authority — genuine U.S. Supreme Court authority only, including the U.S. Constitution as SCOTUS interprets it. Binding on federal and state courts alike, so an authority tagged this way is included in EVERY rendering of the rule statement it's attached to, regardless of forum. Do NOT tag a circuit-level case 'SCOTUS' just because you haven't found a split — if it isn't actually a Supreme Court case, tag it with the real circuit instead.",
-    "circuit_specific": "court: '9th Circuit' — included in a statement's rendering only when case_session.federal_circuit matches (i.e. only in a 'Federal court' filing in that circuit). Add one whenever the 9th Circuit has its own case on a statement's proposition — routine, not limited to genuine splits. NEVER included in a 'State court' rendering, even on the same statement — the 9th Circuit isn't binding on Alaska's state courts.",
-    "state_specific": "court: 'AK' — included only when case_session.state_name matches (i.e. only in a 'State court' filing). Also used for AK statutes, constitutional provisions, and court rules — 'court' means 'whose law this authority represents', not literally 'which court decided it'.",
-    "current_scope": "Only three court values are in use right now — SCOTUS, 9th Circuit, and AK — matching the one-option dropdowns in case_session_schema. Expanding later just means a new dropdown option plus tagging new authorities with the new court value — no change to rule_statements structure or the resolver.",
-    "history": "This value space was previously attached to whole SEGMENTS (one court per paragraph-sized chunk). Segments were eliminated in favor of per-statement 'authorities' arrays (see rule_statements_schema) once it became clear a genuine parallel citation requires resolving citations within one sentence, not choosing between whole alternate paragraphs. The court values and their meaning carried over unchanged — only the level they attach to moved from segment to individual authority."
-  },
-
-  "applicable_courts_field": {
-    "location": "top level of each issue file, e.g. issue.applicable_courts",
-    "format": "array of court values (same value space as authority.court — 'SCOTUS' | '9th Circuit' | 'AK') — which courts this ISSUE is known to exist in at all, regardless of research status.",
-    "why_court_not_forum": "An earlier version used 'applicable_forums': ['State court'] — but 'state court' wrongly implies the issue applies in ANY state. The three chemical-test-rights issues are known to exist only under Alaska's specific implied-consent statute; whether an equivalent exists elsewhere hasn't been checked and must not be assumed. 'applicable_courts': ['AK'] says exactly what's known.",
-    "scotus_alone_is_universal": "Listing 'SCOTUS' alone is sufficient to mean 'applies in every circuit and every state' — desiredCourts always includes SCOTUS regardless of forum, so the intersection is guaranteed non-empty. Do NOT also list '9th Circuit' and 'AK' alongside SCOTUS for a genuinely federal-constitutional issue — that's redundant, not extra-safe. Only list a specific court ALONE (no SCOTUS) when the issue is NOT grounded in SCOTUS doctrine and is known to exist only in that court's own law.",
-    "how_it_differs_from_content_coverage": "This is about whether an issue exists in a court at all, not whether content has been written for it yet. Whether an authority has actually been added for a given circuit/state on any rule statement (and circuits_reviewed) is a completely separate, finer-grained question from this field.",
-    "how_it_is_checked": [
-      "Decision tree / wizard: compute desiredCourts from case_session (see resolver_logic). Before asking an issue's trigger questions at all, skip the entire issue if desiredCourts has no overlap with issue.applicable_courts.",
-      "resolveLawParagraph (see resolver_logic step 1): same intersection check. An issue with no overlap is skipped entirely — no warning, no fallback, nothing rendered."
-    ],
-    "current_values": "['SCOTUS'] for all three Fourth Amendment issues (franks-violation, prolonged-stop, passenger-frisk-suspicionless). ['AK'] only for all three chemical-test-rights issues."
-  },
-
-  "resolver_logic": {
-    "function": "resolveLawParagraph(issue, case_session)",
-    "steps": [
-      "0. desiredCourts = forumToCourts(case_session) — 'State court' -> {SCOTUS, courtCodeForState(case_session.state_name)} e.g. {SCOTUS, AK}; 'Federal court' -> {SCOTUS, case_session.federal_circuit} e.g. {SCOTUS, 9th Circuit}",
-      "1. IF desiredCourts has NO overlap with issue.applicable_courts: skip this issue entirely — no warning, no output. See applicable_courts_field.",
-      "2. FOR each statement in issue.law_paragraph.rule_statements, in order: (a) matchingAuthorities = statement.authorities where authority.court IN desiredCourts; (b) IF matchingAuthorities is empty, omit this statement entirely from the rendered paragraph; (c) ELSE render as statement.text + ' ' + citationString(matchingAuthorities) + '.' — see citation_string_formatting.",
-      "3. text = the rendered (non-omitted) statements from step 2, concatenated in order with a space between them",
-      "4. authorities = every matchingAuthorities collected across all rendered statements, flattened",
-      "5. IF every statement was omitted in step 2 (text is empty): set warning 'no_authority_found' — shouldn't normally happen for an applicable issue, since the core SCOTUS-backed statement(s) should always match, but worth catching explicitly rather than silently returning nothing",
-      "6. IF case_session.forum == 'Federal court' AND case_session.federal_circuit NOT IN issue.circuits_reviewed: add soft warning 'circuit_specific_authority_not_researched' — fires even when text is non-empty, since it means nobody has checked whether this circuit has its own authority worth adding to any rule statement yet. NEVER fires for a 'State court' filing.",
-      "7. return { text, authorities, warnings: [] }  // warnings is a list — both a step-5 and step-6 warning can fire together"
-    ]
-  },
-
-  "citation_string_formatting": {
-    "description": "How resolver_logic step 2c turns a statement's matchingAuthorities into the trailing citation text.",
-    "single_authority": "IF authority.citation is non-empty (a case): '<name>, <citation>' — e.g. 'Rodriguez v. United States, 575 U.S. 348 (2015)'. IF authority.citation is empty (statute/rule/constitution, where name already IS the citation): just '<name>' — e.g. 'AS 28.35.033(e)'.",
-    "multiple_authorities": "Join with '; ' (semicolon-space) — this is what produces a genuine parallel citation, e.g. 'Rodriguez v. United States, 575 U.S. 348 (2015); Simmons v. State, 435 P.3d 975 (Alaska App. 2018)'.",
-    "ordering": "SCOTUS first, then circuit, then state — matches the SCOTUS-first convention used elsewhere in this project."
-  },
-
-  "question_types": {
-    "option_shape": "Every multiple_choice and multi_select option is an object { id, label }. 'id' is a short snake_case slug, unique within its question, and is what gets stored in case_session.answers and referenced by conditions. 'label' is display text only — it can be reworded freely without breaking anything, because nothing matches on it.",
-    "id_stability_rule": "Never change an option's id once conditions reference it — change only the label. If an option's MEANING changes (not just its wording), give it a new id and update the conditions that referenced the old one, since those conditions were written against the old meaning.",
-    "yes_no": "No options array. Answer is the id 'yes' or 'no'.",
-    "multiple_choice": "Answer is a single option id — pick exactly one.",
-    "multi_select": "Answer is an array of option ids — pick any number, including zero or all.",
-    "short_text": "Answer is a free-text string, not matched against any option list — used for fact-gathering (e.g. q_duration), never referenced in a condition."
-  },
-
-  "condition_shape": {
-    "description": "The shape used by match_condition, and by 'when' inside review_conditions/excluded_explanations, is the same: either a single leaf { question, op, value } or a compound { all: [...] } / { any: [...] } of leaves (and compounds can nest). Every 'value' is an option id (or 'yes'/'no' for yes_no questions) — never display label text.",
-    "ops_for_scalar_answers": {
-      "description": "For yes_no and multiple_choice questions (answer is a single id).",
-      "ops": ["equals", "not_equals", "in", "not_in"]
-    },
-    "ops_for_array_answers": {
-      "description": "For multi_select questions (answer is an array of ids). Do NOT use equals/in against a multi_select answer — those compare a single value and give unreliable results against an array.",
-      "ops": {
-        "includes": "true if the given option id is present in the answer array",
-        "not_includes": "true if the given option id is absent from the answer array",
-        "not_empty": "true if at least one option was selected, regardless of which — value is omitted for this op",
-        "empty": "true if no options were selected — value is omitted for this op"
-      }
-    }
-  },
+  "issues": [
+    { "id": "prolonged-stop", "file": "content/issues/prolonged-stop.json" },
+    { "id": "passenger-frisk-suspicionless", "file": "content/issues/passenger-frisk-suspicionless.json" },
+    { "id": "franks-violation", "file": "content/issues/franks-violation.json" },
+    { "id": "denial-of-contact-before-breath-test", "file": "content/issues/denial-of-contact-before-breath-test.json" },
+    { "id": "independent-test-advisement-failure", "file": "content/issues/independent-test-advisement-failure.json" },
+    { "id": "independent-test-comprehension-barrier", "file": "content/issues/independent-test-comprehension-barrier.json" }
+  ],
+  "_issues_note": "Only id and file live here. Label, category, and everything else live in the issue file itself, so there is one place to edit. Output order is category_order first, then the order of this list within a category.",
 
   "question_bank_topics": [
     "content/questions/warrant-affidavit.json",
@@ -174,53 +56,128 @@
     "content/questions/chemical-test-station.json"
   ],
 
-  "issues": [
-    {
-      "id": "franks-violation",
-      "category": "warrant-defects",
-      "label": "Franks Violation — False Statement or Material Omission in Affidavit",
-      "file": "content/issues/franks-violation.json",
-      "jurisdiction_status": { "federal": "unreviewed", "state": "needs_research" }
+  "issue_schema": {
+    "id": "matches the file name and the manifest entry",
+    "category": "one of category_order",
+    "label": "internal/memo name for the issue, may include case names, e.g. '(Copelin/Zsupnik)'",
+    "motion_heading": "court-facing argument heading for this section of the motion. Written as advocacy, no citations.",
+    "status": "'unreviewed' or 'reviewed' — see review_status",
+    "last_reviewed": "ISO date, empty unless reviewed",
+    "reviewed_by": "name, empty unless reviewed",
+    "applicable_courts": "see applicable_courts_field",
+    "trigger": "{ description, match_condition, review_conditions?, excluded_explanations?, non_gating_questions? }",
+    "law_paragraph": "{ rule_statements: [...] } — see rule_statements_schema",
+    "practice_notes": "attorney-facing tips; rendered in the attorney memo, never in the motion",
+    "underscore_fields": "Any key starting with '_' (e.g. '_author_notes') is a note to the author. Never rendered anywhere. The validator ignores underscore keys when checking for unknown fields."
+  },
+
+  "review_status": {
+    "values": {
+      "unreviewed": "Default for every new or edited issue. last_reviewed and reviewed_by must be empty.",
+      "reviewed": "A lawyer has read the issue file and confirmed its rule statements and authorities are accurate and complete for every in-scope court the issue applies to. last_reviewed and reviewed_by must be filled in."
     },
-    {
-      "id": "prolonged-stop",
-      "category": "stop-legality",
-      "label": "Stop Prolonged Beyond Its Original Purpose",
-      "file": "content/issues/prolonged-stop.json",
-      "jurisdiction_status": { "federal": "unreviewed", "state": "unreviewed" }
+    "reset_on_edit": "Any change to law_paragraph, trigger, or practice_notes should set status back to 'unreviewed'. Not yet enforced by tooling — git history is the audit trail for now.",
+    "why_no_circuits_reviewed": "circuits_reviewed was removed. It tracked research for circuits but not states (AK had the same 'checked vs. not looked' ambiguity with no field), it generated a warning about the app's own research status, and with one circuit and one state in scope a single issue-level signoff covers the same ground. If multiple circuits or states come into scope later, per-court review status is the natural replacement."
+  },
+
+  "applicable_courts_field": {
+    "meaning": "Which courts this issue is known to exist in at all, independent of how much content has been written.",
+    "scotus_alone_is_universal": "['SCOTUS'] means the issue applies in every forum, because desired_courts always includes SCOTUS. Don't also list the circuit or state.",
+    "state_or_circuit_only": "List a specific court alone (e.g. ['AK']) when the issue rests on that court's own law and hasn't been confirmed anywhere else. Never generalize to 'any state'.",
+    "effect": "If desired_courts doesn't intersect applicable_courts, the issue is skipped entirely: its questions are never asked and nothing about it is rendered."
+  },
+
+  "question_types": {
+    "option_shape": "multiple_choice and multi_select options are { id, label }. The id is stored in answers and referenced by conditions; the label is display text only and can be reworded freely.",
+    "id_stability_rule": "Never change an id once conditions reference it — change only the label. If an option's meaning changes, give it a new id and update every condition that used the old one.",
+    "yes_no": "No options array. Answer is 'yes' or 'no'.",
+    "multiple_choice": "Answer is one option id.",
+    "multi_select": "Answer is an array of option ids (possibly empty).",
+    "short_text": "Free text. Never referenced in a condition."
+  },
+
+  "condition_shape": {
+    "description": "Used by match_condition, review_conditions[].when, excluded_explanations[].when, and rule_statements[].when. Either a leaf { question, op, value } or a compound { all: [...] } / { any: [...] }; compounds can nest. Values are option ids, never labels.",
+    "unanswered_questions": "If a leaf's question is absent from answers (skipped by the tree or left blank), the leaf evaluates to false — for every op, including not_equals, not_in, not_includes, and empty. A condition can only be satisfied by answers the attorney actually gave.",
+    "ops_for_scalar_answers": {
+      "applies_to": "yes_no and multiple_choice",
+      "equals": "answer == value (single id)",
+      "not_equals": "answer != value (single id)",
+      "in": "answer is in value (list of ids)",
+      "not_in": "answer is not in value (list of ids)"
     },
-    {
-      "id": "passenger-frisk-suspicionless",
-      "category": "frisk-scope",
-      "label": "Frisk Extended to a Passenger Without Individualized Suspicion",
-      "file": "content/issues/passenger-frisk-suspicionless.json",
-      "jurisdiction_status": { "federal": "unreviewed", "state": "needs_research" }
-    },
-    {
-      "id": "denial-of-contact-before-breath-test",
-      "category": "chemical-test-rights",
-      "label": "Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)",
-      "file": "content/issues/denial-of-contact-before-breath-test.json",
-      "jurisdiction_status": { "state": "unreviewed" },
-      "note": "applicable_courts: ['AK'] only — confirmed to exist under Alaska's specific implied-consent statute; no claim made about SCOTUS, the 9th Circuit, or any other state."
-    },
-    {
-      "id": "independent-test-advisement-failure",
-      "category": "chemical-test-rights",
-      "label": "Failure to Clearly and Expressly Advise of Right to an Independent Chemical Test",
-      "file": "content/issues/independent-test-advisement-failure.json",
-      "jurisdiction_status": { "state": "unreviewed" },
-      "note": "applicable_courts: ['AK'] only, same reason as denial-of-contact-before-breath-test."
-    },
-    {
-      "id": "independent-test-comprehension-barrier",
-      "category": "chemical-test-rights",
-      "label": "Comprehension Barrier Preventing Knowing Understanding of Right to Independent Test",
-      "file": "content/issues/independent-test-comprehension-barrier.json",
-      "jurisdiction_status": { "state": "unreviewed" },
-      "note": "applicable_courts: ['AK'] only, same reason as the other chemical-test-rights issues."
+    "ops_for_array_answers": {
+      "applies_to": "multi_select",
+      "includes": "value (single id) is in the answer array",
+      "not_includes": "value (single id) is not in the answer array",
+      "not_empty": "at least one option selected; no value",
+      "empty": "no options selected; no value"
     }
+  },
+
+  "rule_statements_schema": {
+    "description": "law_paragraph.rule_statements is an ordered list. Each statement is one proposition (a sentence, two at most) with its own authorities. The rendered paragraph is the statements that survive filtering, in order.",
+    "shape": {
+      "id": "slug, unique within the issue",
+      "text": "the bare proposition. Never embed a case name or citation, even mid-sentence. May be a direct quotation.",
+      "when": "optional condition. If present, the statement renders only when it evaluates true. Use it for facts that change which propositions belong in the motion — e.g. which remedy applies, or a point that only matters if a relative (not an attorney) was requested.",
+      "authorities": "see authority_schema; every authority supports exactly this statement's text"
+    },
+    "filtering": "A statement renders only if (1) its when is absent or true, and (2) at least one of its authorities is for a desired court. If (1) holds but (2) fails, the statement is dropped from the motion and listed in the memo as a gap, so the attorney knows a relevant proposition is missing.",
+    "use_when_for_advocacy": "A defense motion shouldn't volunteer propositions that help the prosecution unless the facts make them unavoidable. Example: in denial-of-contact-before-breath-test, the 'reasonable time' balancing statement renders only when timing is actually disputed, not when the request was denied outright."
+  },
+
+  "authority_schema": {
+    "shape": {
+      "type": "case | statute | constitution | rule",
+      "name": "case name, or the statute/rule/constitutional provision identifier",
+      "citation": "cases: '<volume> <reporter> <first page> (<court> <year>)', e.g. '435 P.3d 975 (Alaska App. 2018)'. Non-cases: empty string, since the name is the citation.",
+      "pincite": "cases only, required key: the pinpoint page(s) for THIS statement's proposition, e.g. '354' or '90-91'. Empty string until researched. Because authorities live on individual statements, the same case can carry different pincites in different statements.",
+      "court": "a code from 'courts' — whose law this is, not literally which court decided it (AK statutes are 'AK')"
+    },
+    "rendering": "Case: '*Name*, <volume reporter first-page>, <pincite> (<court year>)' — the pincite is inserted before the parenthetical, and omitted if empty. Non-case: 'Name'. Multiple authorities on one statement are joined with '; ', ordered SCOTUS, then circuit, then state — this produces parallel citations such as '*Rodriguez v. United States*, 575 U.S. 348 (2015); *Simmons v. State*, 435 P.3d 975 (Alaska App. 2018)'.",
+    "not_yet_supported": "Short forms (Id., short case names on repeat citations) and signals (See, see also, cf.). A paragraph that cites the same case in several statements repeats the full citation each time."
+  },
+
+  "deliverables": {
+    "motion": {
+      "audience": "The court. Copy-ready text for the argument section of the attorney's own motion template.",
+      "contents": "An 'ARGUMENT' heading, then one numbered section per included issue (I, II, III...) with the issue's motion_heading and its rendered law paragraph. Nothing else: no notes, no brackets, no practice tips, no internal labels.",
+      "empty_case": "If no issue matched, the motion contains only a line saying so, and the memo explains."
+    },
+    "memo": {
+      "audience": "The attorney only. Never filed.",
+      "sections": [
+        "Case settings: forum and which courts' authority was used.",
+        "Included issues, numbered to match the motion: the issue label, any review_conditions notes that fired, practice notes, gaps (statements dropped for lack of authority in this forum), a coverage note when a SCOTUS-grounded section cites no circuit/state authority, and a flag if the issue's content is unreviewed.",
+        "Issues considered but not included: excluded_explanations that fired, under each issue's label.",
+        "Reminders for every motion: cross_cutting_reminders, whenever at least one issue was included."
+      ]
+    }
+  },
+
+  "rendering_logic": [
+    "1. courts = desired_courts(session).",
+    "2. Walk issues in output order (category_order, then manifest list order).",
+    "3. Skip any issue whose applicable_courts doesn't intersect courts.",
+    "4. If match_condition is true: render the law paragraph (see rule_statements_schema filtering). Collect review_conditions whose when is true, practice_notes, gaps, and the coverage/unreviewed flags for the memo. If every statement was filtered out, the issue goes in the memo as 'matched, but no law paragraph is available in this forum' and is left out of the motion.",
+    "5. If match_condition is false: collect excluded_explanations whose when is true, for the memo. Check these for every unmatched issue, every time.",
+    "6. Number the issues that produced a paragraph, render motion and memo.",
+    "Reference implementation: scripts/engine.py and scripts/render.py."
   ],
 
-  "coverage_note": "To check how much research remains, scan all issue files' rule_statements for authorities missing a given court, or check jurisdiction_status/circuits_reviewed across the issues array."
+  "cross_cutting_reminders": [
+    { "id": "standing", "display_note": "Before relying on any issue in the motion, confirm the defendant has standing to challenge it — a reasonable expectation of privacy in the place or thing searched. Standing is assessed separately for each issue; having it for one doesn't establish it for another." },
+    { "id": "fruit-of-poisonous-tree", "display_note": "For each issue, consider whether the evidence you're seeking to suppress is a direct or derivative product of that violation, or sufficiently attenuated to survive suppression even if the violation is found." }
+  ],
+
+  "field_audience_convention": {
+    "motion_text": "motion_heading and rule statement text/authorities. Written for the court.",
+    "memo_text": "practice_notes, review_conditions[].display_note, excluded_explanations[].display_note, cross_cutting_reminders. Written for the attorney.",
+    "author_notes": "Anything starting with '_'. Written for whoever maintains the content — what's unverified, what still needs research, why something is structured a certain way. Never rendered.",
+    "test": "Would an attorney want this sentence in front of the court? Motion. In front of themselves while deciding what to file? Memo. Is it really about the state of the file? Author note.",
+    "flag_vs_display_note": "'flag' is a short machine id for logging; never render it."
+  },
+
+  "validation": "Run `python3 scripts/validate.py` from the repo root before every commit. Errors mean something is broken; warnings are worth reading but may be intentional. `python3 -m unittest discover tests` checks that the validator still catches every known class of bug."
 }

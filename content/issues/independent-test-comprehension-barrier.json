@@ -2,10 +2,10 @@
   "id": "independent-test-comprehension-barrier",
   "category": "chemical-test-rights",
   "label": "Comprehension Barrier Preventing Knowing Understanding of Right to Independent Test",
+  "motion_heading": "The Defendant Could Not Knowingly and Intelligently Understand the Advisement of the Right to an Independent Chemical Test",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
-  "circuits_reviewed": [],
   "applicable_courts": [
     "AK"
   ],
@@ -38,50 +38,100 @@
         },
         "flag": "novel_comprehension_theory",
         "display_note": "The cases reviewed here directly support a language barrier (Ahtuangaruak) and severe intoxication (Gundersen) as comprehension barriers that invalidate a waiver of the independent-test right. A different kind of barrier is a reasonable extension of the same principle but wasn't found squarely addressed — expect to argue by analogy rather than cite a case directly on point."
-      },
-      {
-        "when": {
-          "question": "q_breath_test_administered",
-          "op": "equals",
-          "value": "yes"
-        },
-        "flag": "remedy_is_suppression",
-        "display_note": "Because a breath test was administered here, the remedy for this violation is suppression of that test result."
-      },
-      {
-        "when": {
-          "question": "q_breath_test_administered",
-          "op": "equals",
-          "value": "no"
-        },
-        "flag": "remedy_is_favorable_presumption",
-        "display_note": "Because no breath test was administered, suppression is not a meaningful remedy — instead, seek a presumption that an independent test would have yielded a favorable result (a BAC of .04 or below). Nelson v. State, 512 P.3d 86, 90-91 (Alaska App. 2022), applying Snyder v. State, 930 P.2d 1274, 1278-79 (Alaska 1996)."
       }
     ]
   },
   "law_paragraph": {
     "rule_statements": [
       {
-        "id": "language_barrier",
-        "text": "A defendant with too poor a grasp of English to understand an advisement given only in English may be unable to make a knowing and intelligent decision regarding the right to an independent test, even where the advisement itself followed correct procedure.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Ahtuangaruak v. State",
-            "citation": "820 P.2d 310 (Alaska App. 1991)",
-            "court": "AK"
-          }
-        ]
-      },
-      {
-        "id": "intoxication_barrier",
-        "text": "A waiver of the right to an independent test is valid only if it is knowing and intelligent, and a defendant whose intoxication was severe enough that they could not understand what they were giving up has not validly waived the right.",
+        "id": "waiver_standard",
+        "text": "A waiver of the right to an independent test is valid only if it is knowing and intelligent.",
         "authorities": [
           {
             "type": "case",
             "name": "Gundersen v. Municipality of Anchorage",
             "citation": "792 P.2d 673 (Alaska 1990)",
-            "court": "AK"
+            "court": "AK",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "language_barrier",
+        "text": "A defendant with too poor a grasp of English to understand an advisement given only in English may be unable to make a knowing and intelligent decision regarding the right to an independent test, even where the advisement itself followed correct procedure.",
+        "when": {
+          "question": "q_comprehension_barrier",
+          "op": "equals",
+          "value": "language"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Ahtuangaruak v. State",
+            "citation": "820 P.2d 310 (Alaska App. 1991)",
+            "court": "AK",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "intoxication_barrier",
+        "text": "A defendant whose intoxication was severe enough that they could not understand what they were giving up has not validly waived the right.",
+        "when": {
+          "question": "q_comprehension_barrier",
+          "op": "equals",
+          "value": "intoxication"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Gundersen v. Municipality of Anchorage",
+            "citation": "792 P.2d 673 (Alaska 1990)",
+            "court": "AK",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "remedy_suppression_when_test_exists",
+        "text": "Where a breath test was administered and is in evidence, the remedy for a violation of this right is suppression of that test result.",
+        "when": {
+          "question": "q_breath_test_administered",
+          "op": "equals",
+          "value": "yes"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Nelson v. State",
+            "citation": "512 P.3d 86 (Alaska App. 2022)",
+            "court": "AK",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "remedy_presumption_when_no_test",
+        "text": "Where no breath test exists to suppress, the fact-finder must instead presume that an independent test, had one been conducted, would have yielded a favorable result.",
+        "when": {
+          "question": "q_breath_test_administered",
+          "op": "equals",
+          "value": "no"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Nelson v. State",
+            "citation": "512 P.3d 86 (Alaska App. 2022)",
+            "court": "AK",
+            "pincite": "90-91"
+          },
+          {
+            "type": "case",
+            "name": "Snyder v. State",
+            "citation": "930 P.2d 1274 (Alaska 1996)",
+            "court": "AK",
+            "pincite": "1278-79"
           }
         ]
       }
@@ -91,5 +141,9 @@
     "Document the defendant's actual English proficiency at the time of the advisement — an interpreter's later availability at trial doesn't cure a station-house advisement given only in English when the decision had to be made.",
     "For an intoxication-based comprehension claim, be aware of the tension: the same BAC or observations that support this claim may also support the state's case on the underlying DUI charge. Weigh how heavily to lean on this theory alongside your other defenses.",
     "This is closely related to, but distinct from, the failure-to-advise issue — here the advisement was procedurally proper, but the defendant's ability to receive it wasn't. Don't conflate the two in briefing; they rest on different facts."
+  ],
+  "_author_notes": [
+    "The two remedy statements (suppression vs. favorable presumption) were previously memo-style notes on this issue and are now court-facing text. Nelson and Snyder address failure to advise; confirm the same remedies apply to an invalid waiver caused by a comprehension barrier.",
+    "Nelson/Snyder pincites carried over from independent-test-advisement-failure — verify."
   ]
 }

@@ -2,10 +2,10 @@
   "id": "independent-test-advisement-failure",
   "category": "chemical-test-rights",
   "label": "Failure to Clearly and Expressly Advise of Right to an Independent Chemical Test",
+  "motion_heading": "The Defendant Was Not Clearly and Expressly Advised of the Right to an Independent Chemical Test",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
-  "circuits_reviewed": [],
   "applicable_courts": [
     "AK"
   ],
@@ -32,24 +32,6 @@
         },
         "flag": "advisement_adequacy_factual",
         "display_note": "Whether an advisement was clear and express enough is fact-specific — document exactly what was said. Note that the state, not the defendant, may choose which type of independent test to offer (Velarde v. State, 353 P.3d 355 (Alaska App. 2015)), so an incomplete list of test options isn't itself a defect — focus on whether the right itself, and the process for the test actually offered, were clearly conveyed."
-      },
-      {
-        "when": {
-          "question": "q_breath_test_administered",
-          "op": "equals",
-          "value": "yes"
-        },
-        "flag": "remedy_is_suppression",
-        "display_note": "Because a breath test was administered here, the remedy for this violation is suppression of that test result."
-      },
-      {
-        "when": {
-          "question": "q_breath_test_administered",
-          "op": "equals",
-          "value": "no"
-        },
-        "flag": "remedy_is_favorable_presumption",
-        "display_note": "Because no breath test was administered, suppression is not a meaningful remedy — instead, seek a presumption that an independent test would have yielded a favorable result (a BAC of .04 or below). Nelson v. State, 512 P.3d 86, 90-91 (Alaska App. 2022), applying Snyder v. State, 930 P.2d 1274, 1278-79 (Alaska 1996)."
       }
     ],
     "excluded_explanations": [
@@ -69,7 +51,7 @@
           ]
         },
         "flag": "test_type_choice_is_states_not_defendants",
-        "display_note": "Failure to Advise of Independent Test Right was considered but not included: the advisement was otherwise clear, and the only complaint is that the officer explained just one type of test (e.g. blood) without mentioning alternatives. Alaska law gives the state, not the defendant, the choice of which type of independent test to offer — this alone is not a violation. See Velarde v. State, 353 P.3d 355 (Alaska App. 2015)."
+        "display_note": "The advisement was otherwise clear, and the only complaint is that the officer explained just one type of test (e.g. blood) without mentioning alternatives. Alaska law gives the state, not the defendant, the choice of which type of independent test to offer — this alone is not a violation. See Velarde v. State, 353 P.3d 355 (Alaska App. 2015)."
       }
     ]
   },
@@ -95,19 +77,22 @@
             "type": "case",
             "name": "Gundersen v. Municipality of Anchorage",
             "citation": "792 P.2d 673 (Alaska 1990)",
-            "court": "AK"
+            "court": "AK",
+            "pincite": ""
           },
           {
             "type": "case",
             "name": "Anchorage v. Serrano",
             "citation": "649 P.2d 256 (Alaska App. 1982)",
-            "court": "AK"
+            "court": "AK",
+            "pincite": ""
           },
           {
             "type": "case",
             "name": "Crim v. Municipality of Anchorage",
             "citation": "903 P.2d 586 (Alaska App. 1995)",
-            "court": "AK"
+            "court": "AK",
+            "pincite": ""
           }
         ]
       },
@@ -119,37 +104,51 @@
             "type": "case",
             "name": "Gundersen v. Municipality of Anchorage",
             "citation": "792 P.2d 673 (Alaska 1990)",
-            "court": "AK"
+            "court": "AK",
+            "pincite": ""
           }
         ]
       },
       {
         "id": "remedy_suppression_when_test_exists",
         "text": "Where a breath test was administered and is in evidence, the remedy for a violation of this right is suppression of that test result.",
+        "when": {
+          "question": "q_breath_test_administered",
+          "op": "equals",
+          "value": "yes"
+        },
         "authorities": [
           {
             "type": "case",
             "name": "Nelson v. State",
             "citation": "512 P.3d 86 (Alaska App. 2022)",
-            "court": "AK"
+            "court": "AK",
+            "pincite": ""
           }
         ]
       },
       {
         "id": "remedy_presumption_when_no_test",
         "text": "Where no breath test exists to suppress, the fact-finder must instead presume that an independent test, had one been conducted, would have yielded a favorable result.",
+        "when": {
+          "question": "q_breath_test_administered",
+          "op": "equals",
+          "value": "no"
+        },
         "authorities": [
           {
             "type": "case",
             "name": "Nelson v. State",
             "citation": "512 P.3d 86 (Alaska App. 2022)",
-            "court": "AK"
+            "court": "AK",
+            "pincite": "90-91"
           },
           {
             "type": "case",
             "name": "Snyder v. State",
             "citation": "930 P.2d 1274 (Alaska 1996)",
-            "court": "AK"
+            "court": "AK",
+            "pincite": "1278-79"
           }
         ]
       }
@@ -159,5 +158,8 @@
     "Determine early whether a breath test was actually administered and is in evidence — the available remedy differs sharply: suppression of an existing test, versus a favorable-BAC presumption if none exists. Don't assume suppression is available in every case.",
     "The state, not the defendant, gets to choose which type of independent test to offer (e.g. blood vs. breath) — an incomplete explanation of alternatives isn't itself a violation. Focus on whether the right itself, and the offered test's process, were clearly conveyed.",
     "This overlaps closely with the comprehension-barrier issue — if the advisement was properly given but the defendant couldn't understand it (language, intoxication), that's a different issue resting on different facts, not this one."
+  ],
+  "_author_notes": [
+    "Pincites for Nelson (90-91) and Snyder (1278-79) on remedy_presumption_when_no_test come from earlier research notes, not a direct read of the opinions. Verify."
   ]
 }

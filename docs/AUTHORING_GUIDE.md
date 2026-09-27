@@ -16,12 +16,11 @@ Not read by the app — this is for whoever (you) is authoring content.
   not the literal opposite of what's required. A condition that can never co-occur with
   inclusion is dead code that will never reach the attorney. (This bug happened twice
   already — once with `q_independent_suspicion`, once with `q_intent` — before we caught
-  the pattern.)
+  the pattern. `scripts/validate.py` now checks this automatically.)
 - [ ] **Which review/excluded condition is this?**
-  - Included, but shaky → `review_conditions` (renders inline as `[NOTE: ...]` under that
-    issue's law paragraph)
-  - Excluded, but a documented close call → `excluded_explanations` (renders once, in the
-    closing "Issues Considered But Not Included" section)
+  - Included, but shaky → `review_conditions` (shown in the attorney memo under that issue)
+  - Excluded, but a documented close call → `excluded_explanations` (shown in the memo's
+    "Issues considered but not included" section)
 - [ ] **Is a cross-cutting concept trying to sneak in as a per-issue link?** Standing and
   fruit-of-the-poisonous-tree apply to every issue, always — they're handled once, globally,
   via `cross_cutting_reminders` in `manifest.json`, not referenced per issue. If a new concept
@@ -36,23 +35,21 @@ Not read by the app — this is for whoever (you) is authoring content.
 
 - **`excluded_explanations` must be checked for every unmatched issue, every time — not just
   when convenient.** The per-issue flow is: check `match_condition` first; if it passes, check
-  `review_conditions` (inline note); if it fails, check `excluded_explanations` anyway (closing
-  section). It's easy to structurally treat `excluded_explanations` as an afterthought that only
+  `review_conditions` (memo note); if it fails, check `excluded_explanations` anyway (memo's
+  near-miss section). It's easy to structurally treat `excluded_explanations` as an afterthought that only
   runs "if there's time" — but if it's skipped for any unmatched issue, a documented near-miss
   will silently fail to appear, with no error to signal the gap.
 
 ## Never fabricate legal content
 
-- If you don't have real law to cite (state law especially, since scope so far is one state +
-  federal), use an obvious placeholder (`status: "NEEDS_RESEARCH"`, `PLACEHOLDER — ...` text)
-  — never a plausible-sounding but made-up citation. A fake citation that reads as real is far
-  more dangerous than an obvious gap.
+- If you don't have real law to cite for a court, leave that court's authority off the rule
+  statement — never a plausible-sounding but made-up citation, and never placeholder text
+  (the validator rejects `PLACEHOLDER`, `TODO`, `FILL_IN`). A missing authority shows up in the
+  memo as a gap; a fake citation that reads as real is far more dangerous.
 - Same logic for circuits: don't borrow another circuit's case as a stand-in for your own
-  circuit's law. Mark it `NEEDS_RESEARCH` and note which circuit is actually needed.
-- `circuits_reviewed` tracks which circuits have been *checked* for a split — a circuit can be
-  in this list with no circuit-specific segment authored, meaning "checked, no split found."
-  This is what lets `circuit_specific_authority_not_researched` distinguish "no split exists"
-  from "nobody's looked yet." Keep it updated as you research each issue.
+  circuit's law. Note the gap in `_author_notes` instead.
+- Record anything unverified (a pincite from secondary notes, a case you haven't read) in
+  `_author_notes`, not in `practice_notes`.
 
 ## What goes in a field vs. what gets derived
 
@@ -60,17 +57,19 @@ Not read by the app — this is for whoever (you) is authoring content.
   it'll drift out of sync. (We removed `uses_questions`, `question_bank_file`, and
   `related_issues` for this reason.)
 - If it's information that exists *only* because you know it (schema rationale, "why this
-  question isn't gating," a segment's authoring status) — that's fine to keep as a field, even
-  though no end user ever sees it. The test is "is this the only place this fact lives," not
+  question isn't gating," what's still unverified) — that's fine to keep, in an `_`-prefixed
+  field, even though no end user ever sees it. The test is "is this the only place this fact lives," not
   "will a human ever read this."
 - `flag` (short, machine-readable) and `display_note` (attorney-facing sentence) are different
   things — never surface a `flag` value directly to the end user.
 
 ## Defaults for every new issue file
 
-- `status: "unreviewed"` — only a human lawyer changes this, never set automatically.
-- `last_reviewed: ""` — filled in only once review actually happens.
-- `circuits_reviewed: []` unless circuits have actually been checked.
+- `status: "unreviewed"` — only a human lawyer changes this, never set automatically. Set it
+  back to `unreviewed` whenever the legal content changes.
+- `last_reviewed: ""` and `reviewed_by: ""` — filled in only once review actually happens.
+- `motion_heading` — required; the court-facing heading for this section of the motion.
+- `pincite: ""` on every case authority until the pinpoint page is researched.
 
 ## Open items / things not yet decided
 

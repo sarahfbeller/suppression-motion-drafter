@@ -2,10 +2,10 @@
   "id": "prolonged-stop",
   "category": "stop-legality",
   "label": "Stop Prolonged Beyond Its Original Purpose",
+  "motion_heading": "The Stop Was Unlawfully Prolonged Beyond Its Original Purpose",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
-  "circuits_reviewed": [],
   "applicable_courts": [
     "SCOTUS"
   ],
@@ -57,13 +57,15 @@
             "type": "case",
             "name": "Rodriguez v. United States",
             "citation": "575 U.S. 348 (2015)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           },
           {
             "type": "case",
             "name": "Simmons v. State",
             "citation": "435 P.3d 975 (Alaska App. 2018)",
-            "court": "AK"
+            "court": "AK",
+            "pincite": ""
           }
         ]
       },
@@ -75,19 +77,35 @@
             "type": "case",
             "name": "Rodriguez v. United States",
             "citation": "575 U.S. 348 (2015)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           }
         ]
       },
       {
         "id": "dog_sniff_no_added_time",
         "text": "A dog sniff is permissible only if it does not add time to the stop.",
+        "when": {
+          "any": [
+            {
+              "question": "q_extension_event",
+              "op": "includes",
+              "value": "canine_sniff"
+            },
+            {
+              "question": "q_extension_event",
+              "op": "includes",
+              "value": "wait_for_backup_or_k9"
+            }
+          ]
+        },
         "authorities": [
           {
             "type": "case",
             "name": "Illinois v. Caballes",
             "citation": "543 U.S. 405 (2005)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           }
         ]
       },
@@ -99,7 +117,8 @@
             "type": "case",
             "name": "Rodriguez v. United States",
             "citation": "575 U.S. 348 (2015)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           }
         ]
       }

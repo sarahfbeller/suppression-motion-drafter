@@ -2,10 +2,10 @@
   "id": "passenger-frisk-suspicionless",
   "category": "frisk-scope",
   "label": "Frisk Extended to a Passenger Without Individualized Suspicion",
+  "motion_heading": "The Frisk of the Defendant Was Not Supported by Reasonable Suspicion That the Defendant Was Armed and Dangerous",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
-  "circuits_reviewed": [],
   "applicable_courts": [
     "SCOTUS"
   ],
@@ -55,7 +55,8 @@
             "type": "case",
             "name": "Arizona v. Johnson",
             "citation": "555 U.S. 323 (2009)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           }
         ]
       },
@@ -67,13 +68,15 @@
             "type": "case",
             "name": "Terry v. Ohio",
             "citation": "392 U.S. 1 (1968)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           },
           {
             "type": "case",
             "name": "Arizona v. Johnson",
             "citation": "555 U.S. 323 (2009)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           }
         ]
       },
@@ -85,7 +88,8 @@
             "type": "case",
             "name": "Arizona v. Johnson",
             "citation": "555 U.S. 323 (2009)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           }
         ]
       }

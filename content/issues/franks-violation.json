@@ -2,10 +2,10 @@
   "id": "franks-violation",
   "category": "warrant-defects",
   "label": "Franks Violation — False Statement or Material Omission in Affidavit",
+  "motion_heading": "The Defendant Is Entitled to a Franks Hearing Because the Warrant Affidavit Contained Material Falsehoods or Omissions",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
-  "circuits_reviewed": [],
   "applicable_courts": [
     "SCOTUS"
   ],
@@ -50,7 +50,7 @@
           "value": "negligent"
         },
         "flag": "franks_intent_insufficient",
-        "display_note": "Franks Violation was considered but not included: the available evidence suggests simple negligence or mistake by the affiant, which does not meet the Franks standard (requires deliberate falsehood or reckless disregard for the truth). If discovery reveals greater culpability, this issue may become viable."
+        "display_note": "The available evidence suggests simple negligence or mistake by the affiant, which does not meet the Franks standard (requires deliberate falsehood or reckless disregard for the truth). If discovery reveals greater culpability, this issue may become viable."
       }
     ]
   },
@@ -64,13 +64,22 @@
             "type": "case",
             "name": "Franks v. Delaware",
             "citation": "438 U.S. 154 (1978)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           }
         ]
       },
       {
         "id": "omissions_extension",
         "text": "The same analysis applies to material omissions from the affidavit, not just affirmative false statements.",
+        "when": {
+          "question": "q_affidavit_accuracy",
+          "op": "in",
+          "value": [
+            "material_omission",
+            "both"
+          ]
+        },
         "authorities": []
       },
       {
@@ -81,7 +90,8 @@
             "type": "case",
             "name": "Franks v. Delaware",
             "citation": "438 U.S. 154 (1978)",
-            "court": "SCOTUS"
+            "court": "SCOTUS",
+            "pincite": ""
           }
         ]
       }
@@ -90,7 +100,9 @@
   "practice_notes": [
     "A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.",
     "Request the officer's underlying notes, dispatch recordings, or informant file in discovery before filing — they're often the source of the contradiction.",
-    "Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant.",
-    "The 'omissions_extension' rule statement has no authority attached yet — Franks itself addresses false statements, not omissions directly. The omissions extension is well-established circuit-court gloss, but which court's case to cite (SCOTUS has never squarely held this, so far as researched) needs confirming before this statement will render at all."
+    "Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant."
+  ],
+  "_author_notes": [
+    "omissions_extension has no authority yet, so it never renders. Franks itself addresses false statements; the omissions extension is circuit-level doctrine. A possible 9th Circuit source is United States v. Stanert, 762 F.2d 775 (9th Cir. 1985) — unverified. Alaska authority not yet researched."
   ]
 }

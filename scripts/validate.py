@@ -1,0 +1,671 @@
+#!/usr/bin/env python3
+"""Validate all content in the repo.
+
+Usage (from the repo root):
+    python3 scripts/validate.py            # errors fail, warnings are printed
+    python3 scripts/validate.py --strict   # warnings fail too
+
+Errors mean something is broken. Warnings are worth reading but may be intentional.
+"""
+import glob
+import itertools
+import json
+import os
+import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import engine as E  # noqa: E402
+
+UNANSWERED = object()
+ENUMERATION_LIMIT = 200_000
+UNCERTAIN_OPTION_IDS = {"unknown", "not_sure", "unclear"}
+
+QUESTION_TYPES = {"yes_no", "multiple_choice", "multi_select", "short_text"}
+ISSUE_KEYS = {"id", "category", "label", "motion_heading", "status", "last_reviewed",
+              "reviewed_by", "applicable_courts", "trigger", "law_paragraph", "practice_notes"}
+TRIGGER_KEYS = {"description", "match_condition", "review_conditions",
+                "excluded_explanations", "non_gating_questions"}
+NOTE_KEYS = {"when", "flag", "display_note"}
+STATEMENT_KEYS = {"id", "text", "when", "authorities"}
+CASE_KEYS = {"type", "name", "citation", "pincite", "court"}
+OTHER_AUTHORITY_KEYS = {"type", "name", "citation", "court"}
+AUTHORITY_TYPES = {"case", "statute", "constitution", "rule"}
+QUESTION_KEYS = {"id", "type", "prompt", "options"}
+
+SLUG_RE = re.compile(r"^[a-z0-9]+(?:[-_][a-z0-9]+)*$")
+OPTION_ID_RE = re.compile(r"^[a-z0-9]+(?:_[a-z0-9]+)*$")
+QUESTION_ID_RE = re.compile(r"^q_[a-z0-9]+(?:_[a-z0-9]+)*$")
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+CITATION_IN_TEXT = [
+    (re.compile(r"\b[A-Z][\w.'&-]* v\. [A-Z]"), "a case name"),
+    (re.compile(r"\b\d+ (?:U\.S\.|S\. ?Ct\.|L\. ?Ed\.|F\.(?: ?Supp\.)?(?: ?\dd| ?4th)?|P\.(?: ?\dd)?) \d+"), "a reporter citation"),
+    (re.compile(r"\bAS \d+\.\d+"), "an Alaska statute citation"),
+    (re.compile(r"\b[Ii]d\. "), "an 'Id.' citation"),
+    (re.compile(r"\b(?:Alaska|Fed\.) (?:Criminal Rule|Crim\.|R\.|Const\.)"), "a rule or constitution citation"),
+    (re.compile(r"§"), "a section symbol"),
+]
+PLACEHOLDER_RE = re.compile(r"\b(?:PLACEHOLDER|FILL_IN|TODO|TBD|XXX)\b")
+AUTHOR_NOTE_RE = re.compile(
+    r"\b(?:prior draft|placeholder|todo|tbd|not (?:yet )?(?:verified|confirmed)|unverified|"
+    r"no citation (?:was|has been)|needs? (?:more )?research|was removed|"
+    r"this (?:rule statement|statement|segment|field)\b)", re.I)
+
+
+class QuestionBank(dict):
+    """id -> question for every question that passed structural checks.
+
+    'broken' holds ids of questions that failed them (already reported), so
+    conditions referencing them are skipped instead of crashing or double-reporting.
+    """
+    def __init__(self):
+        super().__init__()
+        self.broken = set()
+
+
+class Report:
+    def __init__(self):
+        self.errors, self.warnings = [], []
+
+    def err(self, where, msg):
+        self.errors.append(f"{where}: {msg}")
+
+    def warn(self, where, msg):
+        self.warnings.append(f"{where}: {msg}")
+
+
+def public_keys(d):
+    return {k for k in d if not k.startswith("_")}
+
+
+def check_keys(r, where, d, allowed, required=()):
+    if not isinstance(d, dict):
+        r.err(where, "expected an object")
+        return False
+    extra = public_keys(d) - allowed
+    if extra:
+        r.err(where, f"unknown field(s) {sorted(extra)} — stale field, or a typo? "
+                     f"(author-only notes must start with '_')")
+    missing = [k for k in required if k not in d]
+    if missing:
+        r.err(where, f"missing required field(s) {missing}")
+    return not extra and not missing
+
+
+def iter_public_strings(node):
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if not k.startswith("_"):
+                yield from iter_public_strings(v)
+    elif isinstance(node, list):
+        for v in node:
+            yield from iter_public_strings(v)
+    elif isinstance(node, str):
+        yield node
+
+
+def citation_in(text):
+    for rx, what in CITATION_IN_TEXT:
+        if rx.search(text):
+            return what
+    return None
+
+
+# --------------------------------------------------------------------------- manifest
+
+def check_manifest(r, root):
+    path = os.path.join(root, "content", "manifest.json")
+    where = "content/manifest.json"
+    try:
+        m = E.load_json(path)
+    except Exception as e:  # noqa: BLE001
+        r.err(where, f"cannot load: {e}")
+        return None
+    required = ["courts", "case_session_schema", "category_order", "issues",
+                "question_bank_topics", "cross_cutting_reminders"]
+    for k in required:
+        if k not in m:
+            r.err(where, f"missing '{k}'")
+    if any(k not in m for k in required):
+        return None
+
+    courts = {k: v for k, v in m["courts"].items() if not k.startswith("_")}
+    for code, c in courts.items():
+        if c.get("kind") not in E.KIND_RANK:
+            r.err(where, f"court {code!r} has invalid kind {c.get('kind')!r}")
+        if not c.get("display_name"):
+            r.err(where, f"court {code!r} has no display_name")
+    if courts.get("SCOTUS", {}).get("kind") != "scotus":
+        r.err(where, "courts must define SCOTUS with kind 'scotus'")
+    m["courts"] = courts
+
+    cs = m["case_session_schema"]
+    forum_ids = {o["id"] for o in cs.get("forum", {}).get("options", [])}
+    if forum_ids != {"state_court", "federal_court"}:
+        r.err(where, "case_session_schema.forum options must be state_court and federal_court")
+    for field, kind in (("state", "state"), ("federal_circuit", "circuit")):
+        for o in cs.get(field, {}).get("options", []):
+            if courts.get(o["id"], {}).get("kind") != kind:
+                r.err(where, f"case_session_schema.{field} option {o['id']!r} is not a {kind} in courts")
+
+    for rem in m["cross_cutting_reminders"]:
+        check_keys(r, f"{where} cross_cutting_reminders", rem, {"id", "display_note"}, ["id", "display_note"])
+
+    listed_q = [os.path.normpath(p) for p in m["question_bank_topics"]]
+    actual_q = sorted(os.path.relpath(p, root) for p in glob.glob(os.path.join(root, "content", "questions", "*.json")))
+    for p in listed_q:
+        if not os.path.exists(os.path.join(root, p)):
+            r.err(where, f"question_bank_topics lists {p}, which doesn't exist")
+    for p in actual_q:
+        if os.path.normpath(p) not in listed_q:
+            r.err(where, f"{p} exists but isn't listed in question_bank_topics")
+
+    ids = [e.get("id") for e in m["issues"]]
+    if len(ids) != len(set(ids)):
+        r.err(where, "duplicate issue ids in issues list")
+    listed_i = []
+    for e in m["issues"]:
+        check_keys(r, f"{where} issues[{e.get('id')}]", e, {"id", "file"}, ["id", "file"])
+        f = os.path.normpath(e.get("file", ""))
+        listed_i.append(f)
+        if not os.path.exists(os.path.join(root, f)):
+            r.err(where, f"issue {e.get('id')!r} points to {f}, which doesn't exist")
+        elif os.path.splitext(os.path.basename(f))[0] != e.get("id"):
+            r.err(where, f"issue id {e.get('id')!r} doesn't match file name {f}")
+    for p in glob.glob(os.path.join(root, "content", "issues", "*.json")):
+        rel = os.path.normpath(os.path.relpath(p, root))
+        if rel not in listed_i:
+            r.err(where, f"{rel} exists but isn't listed in manifest issues")
+    return m
+
+
+# --------------------------------------------------------------------------- questions
+
+def check_questions(r, root, m):
+    questions = QuestionBank()
+    for rel in m["question_bank_topics"]:
+        path = os.path.join(root, rel)
+        if not os.path.exists(path):
+            continue
+        try:
+            data = E.load_json(path)
+        except Exception as e:  # noqa: BLE001
+            r.err(rel, f"cannot load: {e}")
+            continue
+        if not isinstance(data, list):
+            r.err(rel, "question file must be a list")
+            continue
+        for q in data:
+            qid = q.get("id", "?")
+            where = f"{rel} {qid}"
+            n_errors = len(r.errors)
+            check_keys(r, where, q, QUESTION_KEYS, ["id", "type", "prompt"])
+            if not QUESTION_ID_RE.match(str(qid)):
+                r.err(where, "question id must look like q_snake_case")
+            if qid in questions:
+                r.err(where, "duplicate question id (also defined in another place)")
+            if q.get("type") not in QUESTION_TYPES:
+                r.err(where, f"invalid type {q.get('type')!r}")
+                questions.broken.add(qid)
+                continue
+            if not q.get("prompt"):
+                r.err(where, "empty prompt")
+            if q["type"] in ("yes_no", "short_text"):
+                if "options" in q:
+                    r.err(where, f"{q['type']} questions must not have options")
+            else:
+                opts = q.get("options")
+                if not isinstance(opts, list) or not opts:
+                    r.err(where, "needs a non-empty options list")
+                    questions.broken.add(qid)
+                    continue
+                seen_ids, seen_labels = set(), set()
+                for o in opts:
+                    if not isinstance(o, dict) or set(o) != {"id", "label"}:
+                        r.err(where, f"option must be exactly {{id, label}}: {o!r}")
+                        continue
+                    if not OPTION_ID_RE.match(o["id"]):
+                        r.err(where, f"option id {o['id']!r} must be snake_case")
+                    if o["id"] in seen_ids:
+                        r.err(where, f"duplicate option id {o['id']!r}")
+                    if o["label"] in seen_labels:
+                        r.err(where, f"duplicate option label {o['label']!r}")
+                    if not o["label"]:
+                        r.err(where, "empty option label")
+                    seen_ids.add(o["id"])
+                    seen_labels.add(o["label"])
+            if len(r.errors) > n_errors:
+                questions.broken.add(qid)
+            else:
+                questions[qid] = q
+    return questions
+
+
+def domain(q):
+    if q["type"] == "yes_no":
+        vals = ["yes", "no"]
+    elif q["type"] == "multiple_choice":
+        vals = [o["id"] for o in q["options"]]
+    else:  # multi_select: every subset
+        ids = [o["id"] for o in q["options"]]
+        vals = [list(c) for n in range(len(ids) + 1) for c in itertools.combinations(ids, n)]
+    return vals + [UNANSWERED]
+
+
+# --------------------------------------------------------------------------- conditions
+
+def check_condition(r, where, cond, questions):
+    """Structural check. Returns True if the condition is safe to evaluate."""
+    if not isinstance(cond, dict):
+        r.err(where, "condition must be an object")
+        return False
+    if "all" in cond or "any" in cond:
+        if len(cond) != 1:
+            r.err(where, "a compound condition must have exactly one key, 'all' or 'any'")
+            return False
+        kids = cond.get("all", cond.get("any"))
+        if not isinstance(kids, list) or not kids:
+            r.err(where, "'all'/'any' needs a non-empty list")
+            return False
+        return all([check_condition(r, where, c, questions) for c in kids])
+    if not check_keys(r, where, cond, {"question", "op", "value"}, ["question", "op"]):
+        return False
+    qid, op = cond["question"], cond["op"]
+    if qid in getattr(questions, "broken", ()):
+        return False  # already reported where the question is defined
+    q = questions.get(qid)
+    if q is None:
+        r.err(where, f"references unknown question {qid!r}")
+        return False
+    qt = q["type"]
+    if qt == "short_text":
+        r.err(where, f"{qid} is short_text and can't be used in a condition")
+        return False
+    allowed = E.ARRAY_OPS if qt == "multi_select" else E.SCALAR_OPS
+    if op not in allowed:
+        r.err(where, f"op {op!r} can't be used with {qt} question {qid} (allowed: {sorted(allowed)})")
+        return False
+    valid = set(domain(q)) - {UNANSWERED} if qt != "multi_select" else {o["id"] for o in q["options"]}
+    if op in E.VALUELESS_OPS:
+        if "value" in cond:
+            r.err(where, f"op {op!r} takes no value")
+            return False
+        return True
+    if "value" not in cond:
+        r.err(where, f"op {op!r} needs a value")
+        return False
+    v = cond["value"]
+    if op in E.LIST_VALUE_OPS:
+        if not isinstance(v, list) or not v:
+            r.err(where, f"op {op!r} needs a non-empty list of option ids")
+            return False
+        bad = [x for x in v if x not in valid]
+    else:
+        if isinstance(v, list):
+            r.err(where, f"op {op!r} takes a single option id, not a list")
+            return False
+        bad = [] if v in valid else [v]
+    if bad:
+        r.err(where, f"{qid}: {bad} not valid option ids (valid: {sorted(valid)})")
+        return False
+    return True
+
+
+def assignments(qids, questions):
+    qids = sorted(qids)
+    for combo in itertools.product(*(domain(questions[q]) for q in qids)):
+        yield {q: v for q, v in zip(qids, combo) if v is not UNANSWERED}
+
+
+def space_size(qids, questions):
+    n = 1
+    for q in qids:
+        n *= len(domain(questions[q]))
+    return n
+
+
+# --------------------------------------------------------------------------- issues
+
+def check_issue(r, where, issue, m, questions, used_questions):
+    if not check_keys(r, where, issue, ISSUE_KEYS, sorted(ISSUE_KEYS)):
+        if not all(k in issue for k in ("trigger", "law_paragraph", "applicable_courts")):
+            return
+    courts = m["courts"]
+
+    if not SLUG_RE.match(str(issue.get("id", ""))):
+        r.err(where, "id must be a lowercase slug")
+    if issue.get("category") not in m["category_order"]:
+        r.err(where, f"category {issue.get('category')!r} not in manifest category_order")
+    if not issue.get("label"):
+        r.err(where, "empty label")
+    heading = issue.get("motion_heading", "")
+    if not heading:
+        r.err(where, "empty motion_heading")
+    elif citation_in(heading):
+        r.err(where, f"motion_heading contains {citation_in(heading)}")
+
+    status = issue.get("status")
+    if status not in ("unreviewed", "reviewed"):
+        r.err(where, f"status must be 'unreviewed' or 'reviewed', not {status!r}")
+    elif status == "reviewed":
+        if not DATE_RE.match(issue.get("last_reviewed", "")):
+            r.err(where, "reviewed issues need last_reviewed as YYYY-MM-DD")
+        if not issue.get("reviewed_by"):
+            r.err(where, "reviewed issues need reviewed_by")
+    elif issue.get("last_reviewed") or issue.get("reviewed_by"):
+        r.err(where, "unreviewed issues must have empty last_reviewed and reviewed_by")
+
+    ac = issue.get("applicable_courts", [])
+    if not isinstance(ac, list) or not ac:
+        r.err(where, "applicable_courts must be a non-empty list")
+        ac = []
+    for c in ac:
+        if c not in courts:
+            r.err(where, f"applicable_courts has unknown court {c!r}")
+    if len(ac) != len(set(ac)):
+        r.err(where, "applicable_courts has duplicates")
+    if "SCOTUS" in ac and len(ac) > 1:
+        r.warn(where, "applicable_courts lists SCOTUS plus other courts — SCOTUS alone already covers every forum")
+    if "SCOTUS" in ac:
+        reachable_courts = set(courts)
+    else:
+        reachable_courts = {"SCOTUS"} | {c for c in ac if c in courts}
+
+    for s in iter_public_strings(issue):
+        if PLACEHOLDER_RE.search(s):
+            r.err(where, f"placeholder text found: {s[:70]!r}")
+
+    # ---- trigger
+    trig = issue.get("trigger", {})
+    check_keys(r, f"{where} trigger", trig, TRIGGER_KEYS, ["description", "match_condition"])
+    conds_ok = True
+    match = trig.get("match_condition")
+    if match is not None:
+        conds_ok &= check_condition(r, f"{where} match_condition", match, questions)
+        if conds_ok:
+            used_questions |= E.condition_questions(match)
+
+    flags = set()
+    for kind in ("review_conditions", "excluded_explanations"):
+        for i, note in enumerate(trig.get(kind, [])):
+            nw = f"{where} {kind}[{i}]"
+            if not check_keys(r, nw, note, NOTE_KEYS, sorted(NOTE_KEYS)):
+                conds_ok = False
+                continue
+            ok = check_condition(r, nw, note["when"], questions)
+            conds_ok &= ok
+            if ok:
+                used_questions |= E.condition_questions(note["when"])
+            if not SLUG_RE.match(note["flag"]) or "-" in note["flag"]:
+                r.err(nw, f"flag {note['flag']!r} must be snake_case")
+            if note["flag"] in flags:
+                r.err(nw, f"duplicate flag {note['flag']!r}")
+            flags.add(note["flag"])
+            if not note["display_note"]:
+                r.err(nw, "empty display_note")
+            elif AUTHOR_NOTE_RE.search(note["display_note"]):
+                r.warn(nw, "display_note reads like a note to the author, but it's shown to the "
+                           "attorney — move it to an '_'-prefixed field?")
+
+    for qid in trig.get("non_gating_questions", {}):
+        if qid not in questions:
+            r.err(f"{where} non_gating_questions", f"unknown question {qid!r}")
+        else:
+            used_questions.add(qid)
+
+    # ---- law paragraph
+    lp = issue.get("law_paragraph", {})
+    check_keys(r, f"{where} law_paragraph", lp, {"rule_statements"}, ["rule_statements"])
+    statements = lp.get("rule_statements", [])
+    if not statements:
+        r.err(where, "law_paragraph has no rule_statements")
+    stmt_ids, missing_pincites, total_cases = set(), 0, 0
+    for st in statements:
+        sw = f"{where} statement {st.get('id', '?')}"
+        if not check_keys(r, sw, st, STATEMENT_KEYS, ["id", "text", "authorities"]):
+            continue
+        if not SLUG_RE.match(st["id"]):
+            r.err(sw, "id must be a lowercase slug")
+        if st["id"] in stmt_ids:
+            r.err(sw, "duplicate statement id")
+        stmt_ids.add(st["id"])
+        text = st["text"]
+        if not text:
+            r.err(sw, "empty text")
+        else:
+            what = citation_in(text)
+            if what:
+                r.err(sw, f"text embeds {what} — citations belong only in 'authorities'")
+            if not re.search(r"[.?!][\"'”’]?$", text):
+                r.err(sw, "text must end with sentence punctuation (the citation follows it)")
+        if "when" in st:
+            ok = check_condition(r, sw + " when", st["when"], questions)
+            conds_ok &= ok
+            if ok:
+                used_questions |= E.condition_questions(st["when"])
+        auths = st["authorities"]
+        if not isinstance(auths, list):
+            r.err(sw, "authorities must be a list")
+            continue
+        if not auths:
+            r.warn(sw, "has no authorities, so it never renders (it will show up as a gap in the memo)")
+        seen = set()
+        for a in auths:
+            aw = f"{sw} authority {a.get('name', '?')!r}"
+            t = a.get("type")
+            if t not in AUTHORITY_TYPES:
+                r.err(aw, f"invalid type {t!r}")
+                continue
+            check_keys(r, aw, a, CASE_KEYS if t == "case" else OTHER_AUTHORITY_KEYS,
+                       sorted(CASE_KEYS if t == "case" else OTHER_AUTHORITY_KEYS))
+            if not a.get("name"):
+                r.err(aw, "empty name")
+            court = a.get("court")
+            if court not in courts:
+                r.err(aw, f"unknown court {court!r}")
+            elif court not in reachable_courts:
+                r.err(aw, f"court {court!r} can never be cited: this issue only applies in "
+                          f"{sorted(ac)}, so {court!r} is never a desired court")
+            key = (a.get("name"), court)
+            if key in seen:
+                r.err(aw, "cited twice in the same statement")
+            seen.add(key)
+            if t == "case":
+                total_cases += 1
+                if not E.CITATION_RE.match(a.get("citation", "")):
+                    r.err(aw, f"citation {a.get('citation')!r} must look like "
+                              f"'<vol> <reporter> <page> (<court> <year>)'")
+                if not isinstance(a.get("pincite", None), str):
+                    r.err(aw, "pincite must be a string (empty until researched)")
+                elif not a["pincite"]:
+                    missing_pincites += 1
+            elif a.get("citation", "") != "":
+                r.err(aw, f"{t} authorities keep citation empty — the name is the citation")
+    if missing_pincites:
+        r.warn(where, f"{missing_pincites} of {total_cases} case authorities have no pincite yet")
+
+    # ---- practice notes
+    pn = issue.get("practice_notes", [])
+    if not isinstance(pn, list):
+        r.err(where, "practice_notes must be a list")
+        pn = []
+    for note in pn:
+        if not isinstance(note, str) or not note:
+            r.err(where, "practice_notes entries must be non-empty strings")
+        elif AUTHOR_NOTE_RE.search(note):
+            r.warn(f"{where} practice_notes", f"reads like a note to the author, but practice notes "
+                                               f"go to the attorney — move it to '_author_notes'? {note[:70]!r}")
+
+    if conds_ok and match is not None:
+        check_reachability(r, where, trig, statements, questions)
+
+
+def check_reachability(r, where, trig, statements, questions):
+    match = trig["match_condition"]
+    mq = E.condition_questions(match)
+
+    def explore(extra_cond):
+        qids = mq | (E.condition_questions(extra_cond) if extra_cond else set())
+        if space_size(qids, questions) > ENUMERATION_LIMIT:
+            return None
+        return assignments(qids, questions)
+
+    space = explore(None)
+    if space is None:
+        r.warn(where, "too many answer combinations to check reachability — skipped")
+        return
+    if not any(E.eval_condition(match, a) for a in space):
+        r.err(where, "match_condition can never be true for any combination of answers")
+        return
+
+    for i, rc in enumerate(trig.get("review_conditions", [])):
+        space = explore(rc["when"])
+        if space is not None and not any(E.eval_condition(match, a) and E.eval_condition(rc["when"], a) for a in space):
+            r.err(f"{where} review_conditions[{i}] ({rc['flag']})",
+                  "can never fire on an included issue — its 'when' contradicts match_condition")
+
+    for i, ex in enumerate(trig.get("excluded_explanations", [])):
+        space = explore(ex["when"])
+        if space is not None and not any((not E.eval_condition(match, a)) and E.eval_condition(ex["when"], a) for a in space):
+            r.err(f"{where} excluded_explanations[{i}] ({ex['flag']})",
+                  "can never fire — whenever its 'when' is true, the issue is included")
+
+    for st in statements:
+        if "when" not in st:
+            continue
+        combos = explore(st["when"])
+        if combos is None:
+            continue
+        fires = redundant = False
+        redundant = True
+        for a in combos:
+            if E.eval_condition(match, a):
+                w = E.eval_condition(st["when"], a)
+                fires |= w
+                redundant &= w
+        if not fires:
+            r.err(f"{where} statement {st['id']}", "'when' can never be true on an included issue, "
+                                                   "so this statement never renders")
+        elif redundant:
+            r.warn(f"{where} statement {st['id']}", "'when' is true whenever the issue matches — it can be removed")
+
+    # An "I don't know" answer that alone knocks the issue out, with no explanation to the attorney.
+    excluded = trig.get("excluded_explanations", [])
+    ex_qids = set().union(*[E.condition_questions(e["when"]) for e in excluded]) if excluded else set()
+    for qid in sorted(mq):
+        q = questions[qid]
+        if q["type"] != "multiple_choice":
+            continue
+        for uid in [o["id"] for o in q["options"] if o["id"] in UNCERTAIN_OPTION_IDS]:
+            qids = mq | ex_qids
+            if space_size(qids, questions) > ENUMERATION_LIMIT:
+                continue
+            alternatives = [o["id"] for o in q["options"] if o["id"] != uid]
+            for a in assignments(qids, questions):
+                if a.get(qid) != uid or E.eval_condition(match, a):
+                    continue
+                if any(E.eval_condition(e["when"], a) for e in excluded):
+                    continue
+                if any(E.eval_condition(match, {**a, qid: alt}) for alt in alternatives):
+                    r.warn(where, f"answering {qid} = {uid!r} silently excludes this issue (a different "
+                                  f"answer would have included it, and no excluded_explanation fires). "
+                                  f"Include-with-review-note, or add a near-miss explanation?")
+                    break
+
+
+# --------------------------------------------------------------------------- example sessions
+
+def check_sessions(r, root, m, questions):
+    for path in sorted(glob.glob(os.path.join(root, "examples", "sessions", "*.json"))):
+        where = os.path.relpath(path, root)
+        try:
+            s = E.load_json(path)
+        except Exception as e:  # noqa: BLE001
+            r.err(where, f"cannot load: {e}")
+            continue
+        forum = s.get("forum")
+        if forum == "state_court":
+            if m["courts"].get(s.get("state"), {}).get("kind") != "state":
+                r.err(where, f"state {s.get('state')!r} is not a state court code")
+        elif forum == "federal_court":
+            if m["courts"].get(s.get("federal_circuit"), {}).get("kind") != "circuit":
+                r.err(where, f"federal_circuit {s.get('federal_circuit')!r} is not a circuit court code")
+        else:
+            r.err(where, f"forum must be state_court or federal_court, not {forum!r}")
+        for qid, ans in s.get("answers", {}).items():
+            q = questions.get(qid)
+            if q is None:
+                r.err(where, f"answer for unknown question {qid!r}")
+                continue
+            if q["type"] == "short_text":
+                ok = isinstance(ans, str)
+            elif q["type"] == "multi_select":
+                ids = {o["id"] for o in q["options"]}
+                ok = isinstance(ans, list) and all(x in ids for x in ans)
+            else:
+                ok = ans in (set(domain(q)) - {UNANSWERED})
+            if not ok:
+                r.err(where, f"invalid answer for {qid}: {ans!r}")
+
+
+# --------------------------------------------------------------------------- main
+
+def validate(root):
+    r = Report()
+    m = check_manifest(r, root)
+    if m is None:
+        return r
+    questions = check_questions(r, root, m)
+    used = set()
+    headings = {}
+    for entry in m["issues"]:
+        path = os.path.join(root, entry.get("file", ""))
+        if not os.path.exists(path):
+            continue
+        where = os.path.relpath(path, root)
+        try:
+            issue = E.load_json(path)
+        except Exception as e:  # noqa: BLE001
+            r.err(where, f"cannot load: {e}")
+            continue
+        if issue.get("id") != entry.get("id"):
+            r.err(where, f"id {issue.get('id')!r} doesn't match manifest entry {entry.get('id')!r}")
+        check_issue(r, where, issue, m, questions, used)
+        h = issue.get("motion_heading")
+        if h:
+            if h in headings:
+                r.warn(where, f"same motion_heading as {headings[h]}")
+            headings[h] = where
+    for qid, q in sorted(questions.items()):
+        if qid not in used:
+            if q["type"] == "short_text":
+                r.warn(f"question {qid}", "short_text answer is collected but nothing uses it yet")
+            else:
+                r.warn(f"question {qid}", "not referenced by any issue")
+    check_sessions(r, root, m, questions)
+    return r
+
+
+def main(argv):
+    strict = "--strict" in argv
+    args = [a for a in argv if not a.startswith("--")]
+    root = args[0] if args else os.getcwd()
+    r = validate(root)
+    if r.errors:
+        print(f"ERRORS ({len(r.errors)}):")
+        for e in r.errors:
+            print(f"  {e}")
+    if r.warnings:
+        print(f"WARNINGS ({len(r.warnings)}):")
+        for w in r.warnings:
+            print(f"  {w}")
+    if not r.errors and not r.warnings:
+        print("All checks passed.")
+    elif not r.errors:
+        print("No errors.")
+    return 1 if r.errors or (strict and r.warnings) else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
