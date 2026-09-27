@@ -1,0 +1,22 @@
+{
+  "courts": {
+    "SCOTUS": {
+      "kind": "scotus",
+      "display_name": "U.S. Supreme Court"
+    },
+    "9th Circuit": {
+      "kind": "circuit",
+      "display_name": "Ninth Circuit"
+    },
+    "AK": {
+      "kind": "state",
+      "display_name": "Alaska"
+    }
+  },
+  "phase_order": [
+    "stop-initiation",
+    "stop-conduct",
+    "warrant-issuance",
+    "post-arrest-testing"
+  ]
+}

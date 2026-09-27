@@ -1,0 +1,165 @@
+# Content schema
+
+What each content file and field is, and who reads it. The enforced version of this schema is
+`scripts/validate.py`; engine behavior is in `scripts/engine.py` and `scripts/render.py`. If this
+file disagrees with them, the code wins and this file should be corrected.
+
+## Files
+
+| File | Contents |
+|---|---|
+| `content/config.json` | `courts` and `phase_order` |
+| `content/session.json` | Questions asked once at the start: forum, state, federal circuit. A placeholder until the decision tree is designed. |
+| `content/questions/*.json` | The question bank, grouped by topic. Every file in the directory is loaded. |
+| `content/issues/*.json` | One issue per file; the file name is the issue id. Every file in the directory is loaded. |
+
+Any key starting with `_` (e.g. `_author_notes`), in any file, is a note to the maintainer. It is
+never rendered, and the validator ignores it when checking for unknown fields.
+
+## Courts and forums
+
+`config.courts` maps each court code to `{ kind, display_name }`. `kind` is `scotus`, `circuit`,
+or `state`; it orders parallel citations (Supreme Court, then circuit, then state) and says which
+forum a court belongs to.
+
+The courts whose authority is cited in a case:
+
+- State court: SCOTUS and the state.
+- Federal court: SCOTUS and the circuit.
+
+Circuit authority is never cited in a state-court motion, and state authority never in a federal one.
+
+## Case session
+
+A case session is `{ forum, state | federal_circuit, answers }`. `forum` is `state_court` or
+`federal_court`; `state` and `federal_circuit` are court codes. `answers` maps question id to
+answer (see question types). A question the tree skipped is absent.
+
+## Questions
+
+Each question is `{ id, type, prompt, options? }`. Ids look like `q_snake_case`.
+
+| Type | Options | Answer |
+|---|---|---|
+| `yes_no` | none | `"yes"` or `"no"` |
+| `multiple_choice` | required | one option id |
+| `multi_select` | required | array of option ids, possibly empty |
+| `short_text` | none | free text; never used in a condition |
+
+Options are `{ id, label }`. The id is stored in answers and used by conditions; the label is
+display text and can be reworded freely. Never change an id that a condition uses. If an option's
+meaning changes, give it a new id and update every condition.
+
+Questions hold content only. Ordering, branching, and skip logic belong to the decision tree.
+
+## Issues
+
+| Field | Meaning |
+|---|---|
+| `id` | Lowercase slug, same as the file name. |
+| `phase` | When in the encounter the violation happened; one of `config.phase_order`. Sets the default order of sections in the motion. |
+| `label` | Memo name for the issue; may include case names. |
+| `motion_heading` | Court-facing argument heading. Advocacy, no citations. |
+| `status`, `last_reviewed`, `reviewed_by` | See review status. |
+| `applicable_courts` | Where the issue exists at all (see below). |
+| `trigger` | `{ description, match_condition, review_conditions?, excluded_explanations?, non_gating_questions? }` |
+| `law_paragraph` | `{ rule_statements: [...] }` |
+| `practice_notes` | Tips for the attorney. Memo only. |
+
+**Order in the motion.** Issues are ordered by `phase`, then alphabetically by id. If two issues in
+the same phase need a set order, split the phase rather than adding an ordering field. Attorneys
+reorder sections in their own documents; the app doesn't.
+
+**`applicable_courts`.** `["SCOTUS"]` means the issue applies in every forum; don't also list the
+circuit or state. List a specific court alone (e.g. `["AK"]`) when the issue rests on that court's
+own law and hasn't been confirmed anywhere else. If none of the case's courts are in the list, the
+issue is skipped entirely: nothing about it is rendered.
+
+**`trigger`.**
+
+- `description`: free-text summary of when the issue applies. Not rendered.
+- `match_condition`: the issue is included when this is true.
+- `review_conditions`: `[{ when, flag, display_note }]`. For an included issue, each note whose
+  `when` is true goes in the memo under that issue.
+- `excluded_explanations`: same shape. For an issue that didn't match, each note whose `when` is
+  true goes in the memo's "considered but not included" section. These are checked for every
+  unmatched issue.
+- `non_gating_questions`: question id → why that question bears on the issue but isn't part of
+  `match_condition`. Not rendered. Listing a question here counts as using it.
+
+`flag` is a short snake_case id, unique within the issue. It is never rendered.
+
+## Conditions
+
+Used by `match_condition`, every `when`, and nothing else. A condition is a leaf
+`{ question, op, value }` or a compound `{ all: [...] }` / `{ any: [...] }`; compounds can nest.
+Values are option ids, never labels.
+
+| Question type | Ops |
+|---|---|
+| `yes_no`, `multiple_choice` | `equals`, `not_equals` (one id); `in`, `not_in` (list of ids) |
+| `multi_select` | `includes`, `not_includes` (one id); `not_empty`, `empty` (no value) |
+
+If a leaf's question is unanswered, the leaf is false for every op, including the negative ones.
+A condition can only be satisfied by answers the attorney actually gave.
+
+## Rule statements
+
+`law_paragraph.rule_statements` is an ordered list of `{ id, text, when?, authorities }`.
+
+- `text`: one proposition (a sentence, two at most). Never a case name or citation, even
+  mid-sentence. May be a direct quotation. Ends with sentence punctuation.
+- `when`: optional condition. Use it for facts that change which propositions belong in the
+  motion, and to keep propositions that help the prosecution out unless the facts make them relevant.
+- `authorities`: each one supports exactly this statement's text.
+
+A statement renders if its `when` is absent or true **and** at least one authority is for one of
+the case's courts. If the `when` holds but no authority does, the statement is dropped from the
+motion and listed in the memo as a gap.
+
+## Authorities
+
+`{ type, name, citation, pincite, court }`. `type` is `case`, `statute`, `constitution`, or `rule`.
+
+- Cases: `citation` is `'<volume> <reporter> <first page> (<court> <year>)'`. `pincite` is
+  required; it's the pinpoint for this statement's proposition, and empty until researched.
+- Everything else: `citation` is `""` (the name is the citation) and there is no `pincite`.
+- `court` is a code from `config.courts`: whose law this is, not which court decided it.
+
+Rendered as `*Name*, <volume reporter page>, <pincite> (<court year>)`, with the pincite left out
+when empty. Several authorities on one statement are joined with `; `, ordered Supreme Court, then
+circuit, then state. Short forms (*Id.*) and signals (*See*) aren't supported yet.
+
+## Review status
+
+- `unreviewed`: the default for every new or edited issue. `last_reviewed` and `reviewed_by` are empty.
+- `reviewed`: a lawyer has confirmed the rule statements and authorities are accurate and complete
+  for every in-scope court the issue applies to. `last_reviewed` (YYYY-MM-DD) and `reviewed_by` are filled in.
+
+Any change to `motion_heading`, `applicable_courts`, `trigger`, `law_paragraph`, or
+`practice_notes` sets the status back to `unreviewed`. Not enforced by tooling yet.
+
+## Who reads what
+
+- **The court (motion):** `motion_heading`, rule statement `text`, authorities.
+- **The attorney (memo):** `practice_notes`, and the `display_note` of review conditions and
+  excluded explanations.
+- **The maintainer:** `_`-prefixed fields, `trigger.description`, `non_gating_questions`, `flag`.
+
+The test: would an attorney want this sentence in front of the court? Motion. In front of
+themselves while deciding what to file? Memo. Is it about the state of the file? Author note.
+
+## Output
+
+**Motion:** an "ARGUMENT" heading, then one numbered section per included issue (I, II, III…) with
+its `motion_heading` and law paragraph. Nothing else. If no issue produced a paragraph, a single
+line says so.
+
+**Memo** (never filed):
+
+1. Case settings: forum, and whose authority was cited.
+2. Included issues, numbered to match the motion: label; an unreviewed-content flag; a coverage
+   note when a SCOTUS-grounded section cites no circuit or state authority; gaps; review notes that
+   fired; practice notes. An issue that matched but had every statement dropped is listed here as
+   "not in motion."
+3. Issues considered but not included: excluded explanations that fired.

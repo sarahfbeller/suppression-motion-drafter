@@ -134,7 +134,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_stale_issue_fields(self):
         for field in ("uses_questions", "question_bank_file", "related_issues",
-                      "jurisdiction", "circuits_reviewed", "applicable_forums"):
+                      "jurisdiction", "circuits_reviewed", "applicable_forums", "category"):
             with self.subTest(field=field):
                 self.setUp()
                 r = self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d.update({field: []}))
@@ -152,10 +152,18 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
                 self.setUp()
                 self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", fn), "unknown field")
 
-    def test_stale_manifest_issue_fields(self):
-        def f(m):
-            m["issues"][0]["jurisdiction_status"] = {"federal": "unreviewed"}
-        self.assertError(self.run_with("content/manifest.json", f), "unknown field")
+    def test_stale_config_fields(self):
+        for field in ("category_order", "issues", "question_bank_topics", "cross_cutting_reminders",
+                      "case_session_schema", "desired_courts"):
+            with self.subTest(field=field):
+                self.setUp()
+                r = self.run_with("content/config.json", lambda c: c.update({field: []}))
+                self.assertError(r, "unknown field")
+
+    def test_manifest_reintroduced(self):
+        with open(os.path.join(self.tmp, "content", "manifest.json"), "w") as f:
+            json.dump({}, f)
+        self.assertError(V.validate(self.tmp), "the manifest was split up")
 
     # ---- rule statement text
 
@@ -228,17 +236,20 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             d["applicable_courts"] = ["SCOTUS", "9th Circuit", "AK"]
         self.assertWarning(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "SCOTUS alone already covers")
 
-    # ---- manifest and question bank
+    # ---- config, file layout, and question bank
 
-    def test_issue_file_missing_from_manifest(self):
-        def f(m):
-            m["issues"] = [e for e in m["issues"] if e["id"] != "prolonged-stop"]
-        self.assertError(self.run_with("content/manifest.json", f), "isn't listed in manifest issues")
+    def test_issue_id_not_matching_file_name(self):
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d.update({"id": "prolonged"})),
+                         "doesn't match the file name")
 
-    def test_question_file_missing_from_manifest(self):
-        def f(m):
-            m["question_bank_topics"].remove("content/questions/vehicle-occupants.json")
-        self.assertError(self.run_with("content/manifest.json", f), "isn't listed in question_bank_topics")
+    def test_phase_not_in_phase_order(self):
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d.update({"phase": "stop"})),
+                         "not in config phase_order")
+
+    def test_session_option_not_a_court(self):
+        def f(s):
+            s["state"]["options"].append({"id": "WA", "label": "Washington"})
+        self.assertError(self.run_with("content/session.json", f), "is not a state in config courts")
 
     def test_duplicate_option_id(self):
         def f(qs):

@@ -1,6 +1,6 @@
 {
   "id": "passenger-frisk-suspicionless",
-  "category": "frisk-scope",
+  "phase": "stop-conduct",
   "label": "Frisk Extended to a Passenger Without Individualized Suspicion",
   "motion_heading": "The Frisk of the Defendant Was Not Supported by Reasonable Suspicion That the Defendant Was Armed and Dangerous",
   "status": "unreviewed",

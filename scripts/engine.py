@@ -4,6 +4,7 @@ Used by validate.py (to check content) and render.py (to produce the motion and
 memo), so both agree on exactly what a condition means and how text renders.
 Standard library only.
 """
+import glob
 import json
 import os
 import re
@@ -26,22 +27,26 @@ def load_json(path):
         return json.load(f)
 
 
+def content_files(root, kind):
+    """Every JSON file in content/<kind>/, sorted by path."""
+    return sorted(glob.glob(os.path.join(root, "content", kind, "*.json")))
+
+
 def load_repo(root):
-    """Load manifest, question bank (id -> question), and issues in output order."""
-    manifest = load_json(os.path.join(root, "content", "manifest.json"))
+    """Load config, question bank (id -> question), and issues in output order."""
+    config = load_json(os.path.join(root, "content", "config.json"))
     questions = {}
-    for rel in manifest["question_bank_topics"]:
-        for q in load_json(os.path.join(root, rel)):
+    for path in content_files(root, "questions"):
+        for q in load_json(path):
             questions[q["id"]] = q
-    issues = [load_json(os.path.join(root, e["file"])) for e in manifest["issues"]]
-    return manifest, questions, ordered_issues(manifest, issues)
+    issues = [load_json(path) for path in content_files(root, "issues")]
+    return config, questions, ordered_issues(config, issues)
 
 
-def ordered_issues(manifest, issues):
-    cat_rank = {c: i for i, c in enumerate(manifest["category_order"])}
-    indexed = list(enumerate(issues))
-    indexed.sort(key=lambda p: (cat_rank.get(p[1].get("category"), len(cat_rank)), p[0]))
-    return [issue for _, issue in indexed]
+def ordered_issues(config, issues):
+    """Order issues by phase (when in the encounter the violation happened), then by id."""
+    phase_rank = {p: i for i, p in enumerate(config["phase_order"])}
+    return sorted(issues, key=lambda i: (phase_rank.get(i.get("phase"), len(phase_rank)), i.get("id", "")))
 
 
 # --------------------------------------------------------------------------- conditions
@@ -96,8 +101,8 @@ def desired_courts(session):
     return ["SCOTUS", session["federal_circuit"]]
 
 
-def court_rank(manifest, code):
-    return KIND_RANK[manifest["courts"][code]["kind"]]
+def court_rank(config, code):
+    return KIND_RANK[config["courts"][code]["kind"]]
 
 
 def format_authority(a, italic=True):
@@ -111,14 +116,14 @@ def format_authority(a, italic=True):
     return a["name"]
 
 
-def render_law_paragraph(issue, answers, courts, manifest):
+def render_law_paragraph(issue, answers, courts, config):
     """Return (paragraph_text, authorities_used, gap_statement_texts)."""
     parts, used, gaps = [], [], []
     for st in issue["law_paragraph"]["rule_statements"]:
         if "when" in st and not eval_condition(st["when"], answers):
             continue
         auths = [a for a in st["authorities"] if a["court"] in courts]
-        auths.sort(key=lambda a: court_rank(manifest, a["court"]))  # stable within a court
+        auths.sort(key=lambda a: court_rank(config, a["court"]))  # stable within a court
         if not auths:
             gaps.append(st["text"])
             continue
@@ -129,7 +134,7 @@ def render_law_paragraph(issue, answers, courts, manifest):
 
 # --------------------------------------------------------------------------- session evaluation
 
-def evaluate_session(manifest, issues, session):
+def evaluate_session(config, issues, session):
     """Evaluate every issue for one case. Returns a structured result for rendering."""
     courts = desired_courts(session)
     answers = session.get("answers", {})
@@ -141,7 +146,7 @@ def evaluate_session(manifest, issues, session):
             continue
         trig = issue["trigger"]
         if eval_condition(trig["match_condition"], answers):
-            text, used, gaps = render_law_paragraph(issue, answers, courts, manifest)
+            text, used, gaps = render_law_paragraph(issue, answers, courts, config)
             entry = {
                 "issue": issue,
                 "paragraph": text,

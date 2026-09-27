@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Standing instructions for working in this repo. Read this first, then `README.md`,
-`content/manifest.json`, and `docs/AUTHORING_GUIDE.md`.
+`docs/SCHEMA.md`, and `docs/AUTHORING_GUIDE.md`.
 
 ## What this is
 
@@ -35,18 +35,19 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
 
 - Every new issue file starts `status: "unreviewed"`, with empty `last_reviewed` and `reviewed_by`.
 - Only the maintainer (or another lawyer) marks an issue reviewed. Never set it yourself.
-- If you change an issue's legal content, set it back to `unreviewed` and say so.
+- If you change an issue's legal content (any field listed under "Review status" in
+  `docs/SCHEMA.md`), set it back to `unreviewed` and say so.
 
 ## Who reads what
 
 - **Motion text** (the court): `motion_heading`, rule statement `text`, authorities.
 - **Memo text** (the attorney): `practice_notes`, `review_conditions` and
-  `excluded_explanations` display notes, cross-cutting reminders.
+  `excluded_explanations` display notes.
 - **Author notes** (the maintainer): any `_`-prefixed field. Never rendered. Notes about
   the state of the file — what's unverified, why something is structured a certain way —
   go here, never in `practice_notes`.
 
-## Design principles (details in the manifest)
+## Design principles (details in docs/SCHEMA.md)
 
 - The question bank is content only. All ordering, branching, and skip logic belongs to
   the decision tree (not yet built). Never put flow logic on a question.

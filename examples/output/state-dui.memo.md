@@ -49,8 +49,3 @@
 ### Failure to Clearly and Expressly Advise of Right to an Independent Chemical Test
 
 The advisement was otherwise clear, and the only complaint is that the officer explained just one type of test (e.g. blood) without mentioning alternatives. Alaska law gives the state, not the defendant, the choice of which type of independent test to offer — this alone is not a violation. See Velarde v. State, 353 P.3d 355 (Alaska App. 2015).
-
-## Reminders for every motion
-
-- Before relying on any issue in the motion, confirm the defendant has standing to challenge it — a reasonable expectation of privacy in the place or thing searched. Standing is assessed separately for each issue; having it for one doesn't establish it for another.
-- For each issue, consider whether the evidence you're seeking to suppress is a direct or derivative product of that violation, or sufficiently attenuated to survive suppression even if the violation is found.

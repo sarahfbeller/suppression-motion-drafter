@@ -22,7 +22,7 @@ ENUMERATION_LIMIT = 200_000
 UNCERTAIN_OPTION_IDS = {"unknown", "not_sure", "unclear"}
 
 QUESTION_TYPES = {"yes_no", "multiple_choice", "multi_select", "short_text"}
-ISSUE_KEYS = {"id", "category", "label", "motion_heading", "status", "last_reviewed",
+ISSUE_KEYS = {"id", "phase", "label", "motion_heading", "status", "last_reviewed",
               "reviewed_by", "applicable_courts", "trigger", "law_paragraph", "practice_notes"}
 TRIGGER_KEYS = {"description", "match_condition", "review_conditions",
                 "excluded_explanations", "non_gating_questions"}
@@ -112,82 +112,82 @@ def citation_in(text):
     return None
 
 
-# --------------------------------------------------------------------------- manifest
+# --------------------------------------------------------------------------- config and session
 
-def check_manifest(r, root):
-    path = os.path.join(root, "content", "manifest.json")
-    where = "content/manifest.json"
+SESSION_FIELDS = {"forum", "state", "federal_circuit"}
+SESSION_QUESTION_KEYS = {"type", "prompt", "options", "asked_when"}
+
+
+def load_or_report(r, root, rel):
     try:
-        m = E.load_json(path)
+        return E.load_json(os.path.join(root, rel))
     except Exception as e:  # noqa: BLE001
-        r.err(where, f"cannot load: {e}")
-        return None
-    required = ["courts", "case_session_schema", "category_order", "issues",
-                "question_bank_topics", "cross_cutting_reminders"]
-    for k in required:
-        if k not in m:
-            r.err(where, f"missing '{k}'")
-    if any(k not in m for k in required):
+        r.err(rel, f"cannot load: {e}")
         return None
 
-    courts = {k: v for k, v in m["courts"].items() if not k.startswith("_")}
-    for code, c in courts.items():
-        if c.get("kind") not in E.KIND_RANK:
-            r.err(where, f"court {code!r} has invalid kind {c.get('kind')!r}")
-        if not c.get("display_name"):
+
+def check_config(r, root):
+    if os.path.exists(os.path.join(root, "content", "manifest.json")):
+        r.err("content/manifest.json", "the manifest was split up — config goes in content/config.json, "
+                                       "schema documentation in docs/SCHEMA.md; issue and question files "
+                                       "are found by directory")
+    where = "content/config.json"
+    c = load_or_report(r, root, where)
+    if c is None:
+        return None
+    if not check_keys(r, where, c, {"courts", "phase_order"}, ["courts", "phase_order"]):
+        return None
+
+    courts = {k: v for k, v in c["courts"].items() if not k.startswith("_")}
+    for code, ct in courts.items():
+        check_keys(r, f"{where} courts[{code}]", ct, {"kind", "display_name"}, ["kind", "display_name"])
+        if ct.get("kind") not in E.KIND_RANK:
+            r.err(where, f"court {code!r} has invalid kind {ct.get('kind')!r}")
+        if not ct.get("display_name"):
             r.err(where, f"court {code!r} has no display_name")
     if courts.get("SCOTUS", {}).get("kind") != "scotus":
         r.err(where, "courts must define SCOTUS with kind 'scotus'")
-    m["courts"] = courts
+    c["courts"] = courts
 
-    cs = m["case_session_schema"]
-    forum_ids = {o["id"] for o in cs.get("forum", {}).get("options", [])}
+    phases = c["phase_order"]
+    if not isinstance(phases, list) or not phases:
+        r.err(where, "phase_order must be a non-empty list")
+        c["phase_order"] = []
+    else:
+        if len(phases) != len(set(phases)):
+            r.err(where, "phase_order has duplicates")
+        for ph in phases:
+            if not SLUG_RE.match(str(ph)):
+                r.err(where, f"phase {ph!r} must be a lowercase slug")
+
+    check_session_schema(r, root, courts)
+    return c
+
+
+def check_session_schema(r, root, courts):
+    where = "content/session.json"
+    s = load_or_report(r, root, where)
+    if s is None:
+        return
+    if not check_keys(r, where, s, SESSION_FIELDS, sorted(SESSION_FIELDS)):
+        return
+    for field in SESSION_FIELDS:
+        check_keys(r, f"{where} {field}", s[field], SESSION_QUESTION_KEYS, ["type", "prompt", "options"])
+    forum_ids = {o["id"] for o in s["forum"].get("options", [])}
     if forum_ids != {"state_court", "federal_court"}:
-        r.err(where, "case_session_schema.forum options must be state_court and federal_court")
+        r.err(where, "forum options must be state_court and federal_court")
     for field, kind in (("state", "state"), ("federal_circuit", "circuit")):
-        for o in cs.get(field, {}).get("options", []):
+        for o in s[field].get("options", []):
             if courts.get(o["id"], {}).get("kind") != kind:
-                r.err(where, f"case_session_schema.{field} option {o['id']!r} is not a {kind} in courts")
-
-    for rem in m["cross_cutting_reminders"]:
-        check_keys(r, f"{where} cross_cutting_reminders", rem, {"id", "display_note"}, ["id", "display_note"])
-
-    listed_q = [os.path.normpath(p) for p in m["question_bank_topics"]]
-    actual_q = sorted(os.path.relpath(p, root) for p in glob.glob(os.path.join(root, "content", "questions", "*.json")))
-    for p in listed_q:
-        if not os.path.exists(os.path.join(root, p)):
-            r.err(where, f"question_bank_topics lists {p}, which doesn't exist")
-    for p in actual_q:
-        if os.path.normpath(p) not in listed_q:
-            r.err(where, f"{p} exists but isn't listed in question_bank_topics")
-
-    ids = [e.get("id") for e in m["issues"]]
-    if len(ids) != len(set(ids)):
-        r.err(where, "duplicate issue ids in issues list")
-    listed_i = []
-    for e in m["issues"]:
-        check_keys(r, f"{where} issues[{e.get('id')}]", e, {"id", "file"}, ["id", "file"])
-        f = os.path.normpath(e.get("file", ""))
-        listed_i.append(f)
-        if not os.path.exists(os.path.join(root, f)):
-            r.err(where, f"issue {e.get('id')!r} points to {f}, which doesn't exist")
-        elif os.path.splitext(os.path.basename(f))[0] != e.get("id"):
-            r.err(where, f"issue id {e.get('id')!r} doesn't match file name {f}")
-    for p in glob.glob(os.path.join(root, "content", "issues", "*.json")):
-        rel = os.path.normpath(os.path.relpath(p, root))
-        if rel not in listed_i:
-            r.err(where, f"{rel} exists but isn't listed in manifest issues")
-    return m
+                r.err(where, f"{field} option {o['id']!r} is not a {kind} in config courts")
 
 
 # --------------------------------------------------------------------------- questions
 
-def check_questions(r, root, m):
+def check_questions(r, root):
     questions = QuestionBank()
-    for rel in m["question_bank_topics"]:
-        path = os.path.join(root, rel)
-        if not os.path.exists(path):
-            continue
+    for path in E.content_files(root, "questions"):
+        rel = os.path.relpath(path, root)
         try:
             data = E.load_json(path)
         except Exception as e:  # noqa: BLE001
@@ -327,16 +327,16 @@ def space_size(qids, questions):
 
 # --------------------------------------------------------------------------- issues
 
-def check_issue(r, where, issue, m, questions, used_questions):
+def check_issue(r, where, issue, config, questions, used_questions):
     if not check_keys(r, where, issue, ISSUE_KEYS, sorted(ISSUE_KEYS)):
         if not all(k in issue for k in ("trigger", "law_paragraph", "applicable_courts")):
             return
-    courts = m["courts"]
+    courts = config["courts"]
 
     if not SLUG_RE.match(str(issue.get("id", ""))):
         r.err(where, "id must be a lowercase slug")
-    if issue.get("category") not in m["category_order"]:
-        r.err(where, f"category {issue.get('category')!r} not in manifest category_order")
+    if issue.get("phase") not in config["phase_order"]:
+        r.err(where, f"phase {issue.get('phase')!r} not in config phase_order")
     if not issue.get("label"):
         r.err(where, "empty label")
     heading = issue.get("motion_heading", "")
@@ -576,7 +576,7 @@ def check_reachability(r, where, trig, statements, questions):
 
 # --------------------------------------------------------------------------- example sessions
 
-def check_sessions(r, root, m, questions):
+def check_sessions(r, root, config, questions):
     for path in sorted(glob.glob(os.path.join(root, "examples", "sessions", "*.json"))):
         where = os.path.relpath(path, root)
         try:
@@ -586,10 +586,10 @@ def check_sessions(r, root, m, questions):
             continue
         forum = s.get("forum")
         if forum == "state_court":
-            if m["courts"].get(s.get("state"), {}).get("kind") != "state":
+            if config["courts"].get(s.get("state"), {}).get("kind") != "state":
                 r.err(where, f"state {s.get('state')!r} is not a state court code")
         elif forum == "federal_court":
-            if m["courts"].get(s.get("federal_circuit"), {}).get("kind") != "circuit":
+            if config["courts"].get(s.get("federal_circuit"), {}).get("kind") != "circuit":
                 r.err(where, f"federal_circuit {s.get('federal_circuit')!r} is not a circuit court code")
         else:
             r.err(where, f"forum must be state_court or federal_court, not {forum!r}")
@@ -613,25 +613,22 @@ def check_sessions(r, root, m, questions):
 
 def validate(root):
     r = Report()
-    m = check_manifest(r, root)
-    if m is None:
+    config = check_config(r, root)
+    if config is None:
         return r
-    questions = check_questions(r, root, m)
+    questions = check_questions(r, root)
     used = set()
     headings = {}
-    for entry in m["issues"]:
-        path = os.path.join(root, entry.get("file", ""))
-        if not os.path.exists(path):
-            continue
+    for path in E.content_files(root, "issues"):
         where = os.path.relpath(path, root)
         try:
             issue = E.load_json(path)
         except Exception as e:  # noqa: BLE001
             r.err(where, f"cannot load: {e}")
             continue
-        if issue.get("id") != entry.get("id"):
-            r.err(where, f"id {issue.get('id')!r} doesn't match manifest entry {entry.get('id')!r}")
-        check_issue(r, where, issue, m, questions, used)
+        if issue.get("id") != os.path.splitext(os.path.basename(path))[0]:
+            r.err(where, f"id {issue.get('id')!r} doesn't match the file name")
+        check_issue(r, where, issue, config, questions, used)
         h = issue.get("motion_heading")
         if h:
             if h in headings:
@@ -643,7 +640,7 @@ def validate(root):
                 r.warn(f"question {qid}", "short_text answer is collected but nothing uses it yet")
             else:
                 r.warn(f"question {qid}", "not referenced by any issue")
-    check_sessions(r, root, m, questions)
+    check_sessions(r, root, config, questions)
     return r
 
 

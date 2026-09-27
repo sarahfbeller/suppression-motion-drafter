@@ -5,7 +5,7 @@ Usage (from the repo root):
     python3 scripts/render.py examples/sessions/state-dui.json [--out examples/output]
 
 Writes <session-name>.motion.md and <session-name>.memo.md. This is a reference
-implementation of the rendering rules in content/manifest.json, not the final app.
+implementation of the rendering rules in docs/SCHEMA.md, not the final app.
 """
 import os
 import sys
@@ -32,8 +32,8 @@ def render_motion(result):
     return "\n".join(lines)
 
 
-def render_memo(result, manifest, session):
-    courts = manifest["courts"]
+def render_memo(result, config, session):
+    courts = config["courts"]
     forum = "State court" if session["forum"] == "state_court" else "Federal court"
     specific = result["courts"][1]
     specific_name = courts[specific]["display_name"]
@@ -75,9 +75,6 @@ def render_memo(result, manifest, session):
         for nm in result["near_misses"]:
             lines += [f"### {nm['issue']['label']}", "", nm["note"], ""]
 
-    if result["included"] or result["no_paragraph"]:
-        lines += ["## Reminders for every motion", ""]
-        lines += [f"- {r['display_note']}" for r in manifest["cross_cutting_reminders"]] + [""]
     return "\n".join(lines)
 
 
@@ -90,14 +87,14 @@ def main(argv):
         print(__doc__)
         return 2
     root = os.getcwd()
-    manifest, _questions, issues = E.load_repo(root)
+    config, _questions, issues = E.load_repo(root)
     os.makedirs(out_dir, exist_ok=True)
     for session_path in args:
         session = E.load_json(session_path)
-        result = E.evaluate_session(manifest, issues, session)
+        result = E.evaluate_session(config, issues, session)
         name = os.path.splitext(os.path.basename(session_path))[0]
         for suffix, text in (("motion", render_motion(result)),
-                             ("memo", render_memo(result, manifest, session))):
+                             ("memo", render_memo(result, config, session))):
             path = os.path.join(out_dir, f"{name}.{suffix}.md")
             with open(path, "w", encoding="utf-8") as f:
                 f.write(text)

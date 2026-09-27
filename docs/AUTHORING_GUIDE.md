@@ -20,10 +20,9 @@ Not read by the app — this is for whoever (you) is authoring content.
   - Excluded, but a documented close call → `excluded_explanations` (shown in the memo's
     "Issues considered but not included" section)
 - [ ] **Is a cross-cutting concept trying to sneak in as a per-issue link?** Standing and
-  fruit-of-the-poisonous-tree apply to every issue, always — they're handled once, globally,
-  via `cross_cutting_reminders` in `manifest.json`, not referenced per issue. If a new concept
-  applies universally rather than to one specific fact pattern, it probably belongs there, not
-  in an issue file.
+  fruit-of-the-poisonous-tree apply to every issue — don't reference them per issue. There is
+  currently no place for concepts like these (`cross_cutting_reminders` was removed); raise it
+  with the maintainer rather than adding one to an issue file.
 - [ ] **Is a genuinely separate but related issue better left to the decision tree?** We
   removed `related_issues` entirely — trust that a well-built issue with its own
   `match_condition` will surface independently when its own facts are present. Don't

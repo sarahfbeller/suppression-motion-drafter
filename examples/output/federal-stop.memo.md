@@ -6,21 +6,7 @@
 
 ## Issues included in the motion
 
-### I. Stop Prolonged Beyond Its Original Purpose
-
-**Check before filing:**
-
-- This section's legal content has not yet been reviewed by an attorney. Check every proposition and citation before filing.
-- This section cites only U.S. Supreme Court authority; no Ninth Circuit authority is cited. Consider adding a Ninth Circuit case if one exists.
-
-**Practice notes:**
-
-- Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
-- Get the dispatch log and any body-cam/dash-cam timestamps in discovery early — this issue lives and dies on minute-by-minute sequencing.
-- Pin down the officer's own testimony on when each original-purpose task was completed; officers sometimes pad task completion time in reports to avoid a Rodriguez problem.
-- If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later.
-
-### II. Frisk Extended to a Passenger Without Individualized Suspicion
+### I. Frisk Extended to a Passenger Without Individualized Suspicion
 
 **Check before filing:**
 
@@ -33,6 +19,20 @@
 - Pin down exactly what the officer said or wrote to justify the frisk — vague references to 'officer safety' or the neighborhood, without anything tied to this specific passenger, are the weakest part of the government's position.
 - If the passenger was also asked for ID and that added time to the stop, that may raise a separate timing issue independent of the frisk itself.
 - A passenger has standing to challenge the stop itself and any search of their own person (Brendlin v. California, 551 U.S. 249 (2007)), but standing to challenge a search of the vehicle's contents is analyzed separately — don't assume one covers the other.
+
+### II. Stop Prolonged Beyond Its Original Purpose
+
+**Check before filing:**
+
+- This section's legal content has not yet been reviewed by an attorney. Check every proposition and citation before filing.
+- This section cites only U.S. Supreme Court authority; no Ninth Circuit authority is cited. Consider adding a Ninth Circuit case if one exists.
+
+**Practice notes:**
+
+- Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
+- Get the dispatch log and any body-cam/dash-cam timestamps in discovery early — this issue lives and dies on minute-by-minute sequencing.
+- Pin down the officer's own testimony on when each original-purpose task was completed; officers sometimes pad task completion time in reports to avoid a Rodriguez problem.
+- If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later.
 
 ### III. Franks Violation — False Statement or Material Omission in Affidavit
 
@@ -47,8 +47,3 @@
 - A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.
 - Request the officer's underlying notes, dispatch recordings, or informant file in discovery before filing — they're often the source of the contradiction.
 - Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant.
-
-## Reminders for every motion
-
-- Before relying on any issue in the motion, confirm the defendant has standing to challenge it — a reasonable expectation of privacy in the place or thing searched. Standing is assessed separately for each issue; having it for one doesn't establish it for another.
-- For each issue, consider whether the evidence you're seeking to suppress is a direct or derivative product of that violation, or sufficiently attenuated to survive suppression even if the violation is found.

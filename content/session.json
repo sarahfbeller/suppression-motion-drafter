@@ -1,0 +1,38 @@
+{
+  "forum": {
+    "type": "multiple_choice",
+    "prompt": "Is this motion being filed in state or federal court?",
+    "options": [
+      {
+        "id": "state_court",
+        "label": "State court"
+      },
+      {
+        "id": "federal_court",
+        "label": "Federal court"
+      }
+    ]
+  },
+  "state": {
+    "type": "multiple_choice",
+    "prompt": "Which state?",
+    "asked_when": "forum is state_court",
+    "options": [
+      {
+        "id": "AK",
+        "label": "Alaska"
+      }
+    ]
+  },
+  "federal_circuit": {
+    "type": "multiple_choice",
+    "prompt": "Which federal circuit?",
+    "asked_when": "forum is federal_court",
+    "options": [
+      {
+        "id": "9th Circuit",
+        "label": "Ninth Circuit"
+      }
+    ]
+  }
+}

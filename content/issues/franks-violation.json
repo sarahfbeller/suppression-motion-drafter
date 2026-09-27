@@ -1,6 +1,6 @@
 {
   "id": "franks-violation",
-  "category": "warrant-defects",
+  "phase": "warrant-issuance",
   "label": "Franks Violation — False Statement or Material Omission in Affidavit",
   "motion_heading": "The Defendant Is Entitled to a Franks Hearing Because the Warrant Affidavit Contained Material Falsehoods or Omissions",
   "status": "unreviewed",
