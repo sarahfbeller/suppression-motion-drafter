@@ -7,7 +7,7 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "applicable_courts": [
-    "AK"
+    "ak"
   ],
   "trigger": {
     "description": "Ask whenever the defendant submitted to (or refused) a breath test following a DUI arrest, to determine whether they were denied a reasonable opportunity to contact an attorney or a relative/friend before deciding.",
@@ -130,13 +130,13 @@
             "type": "statute",
             "name": "AS 12.25.150(b)",
             "citation": "",
-            "court": "AK"
+            "court": "ak"
           },
           {
             "type": "rule",
             "name": "Alaska Criminal Rule 5(b)",
             "citation": "",
-            "court": "AK"
+            "court": "ak"
           }
         ]
       },
@@ -148,7 +148,7 @@
             "type": "case",
             "name": "Copelin v. State",
             "citation": "659 P.2d 1206 (Alaska 1983)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -166,7 +166,7 @@
             "type": "case",
             "name": "Zsupnik v. State",
             "citation": "789 P.2d 357 (Alaska 1990)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -184,14 +184,14 @@
             "type": "case",
             "name": "Zsupnik v. State",
             "citation": "789 P.2d 357 (Alaska 1990)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           },
           {
             "type": "case",
             "name": "Winfrey v. State",
             "citation": "78 P.3d 725 (Alaska App. 2003)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -209,7 +209,7 @@
             "type": "case",
             "name": "Farrell v. Municipality of Anchorage",
             "citation": "682 P.2d 1128 (Alaska App. 1984)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -227,7 +227,7 @@
             "type": "case",
             "name": "Municipality of Anchorage v. Marrs",
             "citation": "694 P.2d 1163 (Alaska App. 1985)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]

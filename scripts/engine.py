@@ -16,6 +16,9 @@ LIST_VALUE_OPS = {"in", "not_in"}
 
 KIND_RANK = {"scotus": 0, "circuit": 1, "state": 2}
 
+SCOTUS = "scotus"
+FILING_COURT = "q_filing_court"  # answer is the state or circuit court code whose law binds, besides SCOTUS
+
 # '<volume> <reporter> <first page> (<court> <year>)'
 CITATION_RE = re.compile(r"^(?P<base>\d+ .+? \d+) (?P<paren>\([^()]*\d{4}\))$")
 
@@ -95,10 +98,9 @@ def condition_questions(cond):
 
 # --------------------------------------------------------------------------- courts & citations
 
-def desired_courts(session):
-    if session["forum"] == "state_court":
-        return ["SCOTUS", session["state"]]
-    return ["SCOTUS", session["federal_circuit"]]
+def binding_courts(answers):
+    """SCOTUS binds every forum; the filing court adds its state or circuit."""
+    return [SCOTUS, answers[FILING_COURT]]
 
 
 def court_rank(config, code):
@@ -136,8 +138,8 @@ def render_law_paragraph(issue, answers, courts, config):
 
 def evaluate_session(config, issues, session):
     """Evaluate every issue for one case. Returns a structured result for rendering."""
-    courts = desired_courts(session)
     answers = session.get("answers", {})
+    courts = binding_courts(answers)
     specific = courts[1]
     result = {"courts": courts, "included": [], "no_paragraph": [], "near_misses": []}
 
@@ -154,7 +156,7 @@ def evaluate_session(config, issues, session):
                                  if eval_condition(rc["when"], answers)],
                 "gaps": gaps,
                 "unreviewed": issue["status"] != "reviewed",
-                "missing_specific_court": ("SCOTUS" in issue["applicable_courts"]
+                "missing_specific_court": (SCOTUS in issue["applicable_courts"]
                                            and specific not in {a["court"] for a in used}),
             }
             (result["included"] if text else result["no_paragraph"]).append(entry)

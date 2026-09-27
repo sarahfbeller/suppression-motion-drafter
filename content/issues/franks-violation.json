@@ -7,7 +7,7 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "applicable_courts": [
-    "SCOTUS"
+    "scotus"
   ],
   "trigger": {
     "description": "Ask when a search was conducted pursuant to a warrant and there is reason to believe the supporting affidavit contained inaccuracies or omissions.",
@@ -64,7 +64,7 @@
             "type": "case",
             "name": "Franks v. Delaware",
             "citation": "438 U.S. 154 (1978)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           }
         ]
@@ -90,7 +90,7 @@
             "type": "case",
             "name": "Franks v. Delaware",
             "citation": "438 U.S. 154 (1978)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           }
         ]

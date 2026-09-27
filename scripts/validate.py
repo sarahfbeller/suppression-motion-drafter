@@ -112,10 +112,7 @@ def citation_in(text):
     return None
 
 
-# --------------------------------------------------------------------------- config and session
-
-SESSION_FIELDS = {"forum", "state", "federal_circuit"}
-SESSION_QUESTION_KEYS = {"type", "prompt", "options", "asked_when"}
+# --------------------------------------------------------------------------- config
 
 
 def load_or_report(r, root, rel):
@@ -131,6 +128,9 @@ def check_config(r, root):
         r.err("content/manifest.json", "the manifest was split up — config goes in content/config.json, "
                                        "schema documentation in docs/SCHEMA.md; issue and question files "
                                        "are found by directory")
+    if os.path.exists(os.path.join(root, "content", "session.json")):
+        r.err("content/session.json", f"the forum/state/circuit questions were replaced by the "
+                                      f"{E.FILING_COURT} question in the question bank")
     where = "content/config.json"
     c = load_or_report(r, root, where)
     if c is None:
@@ -140,13 +140,15 @@ def check_config(r, root):
 
     courts = {k: v for k, v in c["courts"].items() if not k.startswith("_")}
     for code, ct in courts.items():
+        if not OPTION_ID_RE.match(code):
+            r.err(where, f"court code {code!r} must be snake_case (court codes are option ids of {E.FILING_COURT})")
         check_keys(r, f"{where} courts[{code}]", ct, {"kind", "display_name"}, ["kind", "display_name"])
         if ct.get("kind") not in E.KIND_RANK:
             r.err(where, f"court {code!r} has invalid kind {ct.get('kind')!r}")
         if not ct.get("display_name"):
             r.err(where, f"court {code!r} has no display_name")
-    if courts.get("SCOTUS", {}).get("kind") != "scotus":
-        r.err(where, "courts must define SCOTUS with kind 'scotus'")
+    if courts.get(E.SCOTUS, {}).get("kind") != "scotus":
+        r.err(where, f"courts must define {E.SCOTUS!r} with kind 'scotus'")
     c["courts"] = courts
 
     phases = c["phase_order"]
@@ -160,26 +162,28 @@ def check_config(r, root):
             if not SLUG_RE.match(str(ph)):
                 r.err(where, f"phase {ph!r} must be a lowercase slug")
 
-    check_session_schema(r, root, courts)
     return c
 
 
-def check_session_schema(r, root, courts):
-    where = "content/session.json"
-    s = load_or_report(r, root, where)
-    if s is None:
+def check_filing_court(r, questions, config):
+    """The one question the engine itself reads: its options are the state and circuit court codes."""
+    where = f"question {E.FILING_COURT}"
+    q = questions.get(E.FILING_COURT)
+    if q is None:
+        if E.FILING_COURT not in questions.broken:
+            r.err(where, "missing — the engine needs it to know which courts bind the case")
         return
-    if not check_keys(r, where, s, SESSION_FIELDS, sorted(SESSION_FIELDS)):
+    if q["type"] != "multiple_choice":
+        r.err(where, "must be multiple_choice")
         return
-    for field in SESSION_FIELDS:
-        check_keys(r, f"{where} {field}", s[field], SESSION_QUESTION_KEYS, ["type", "prompt", "options"])
-    forum_ids = {o["id"] for o in s["forum"].get("options", [])}
-    if forum_ids != {"state_court", "federal_court"}:
-        r.err(where, "forum options must be state_court and federal_court")
-    for field, kind in (("state", "state"), ("federal_circuit", "circuit")):
-        for o in s[field].get("options", []):
-            if courts.get(o["id"], {}).get("kind") != kind:
-                r.err(where, f"{field} option {o['id']!r} is not a {kind} in config courts")
+    courts = config["courts"]
+    offered = {o["id"] for o in q["options"]}
+    for code in sorted(offered):
+        if courts.get(code, {}).get("kind") not in ("state", "circuit"):
+            r.err(where, f"option {code!r} is not a state or circuit court in config courts")
+    for code in sorted(set(courts) - offered):
+        if courts[code]["kind"] != "scotus":
+            r.warn(where, f"court {code!r} is in config but isn't offered as a filing court")
 
 
 # --------------------------------------------------------------------------- questions
@@ -274,6 +278,9 @@ def check_condition(r, where, cond, questions):
     qid, op = cond["question"], cond["op"]
     if qid in getattr(questions, "broken", ()):
         return False  # already reported where the question is defined
+    if qid == E.FILING_COURT:
+        r.err(where, f"conditions can't use {qid} (undecided — use applicable_courts for where an issue applies)")
+        return False
     q = questions.get(qid)
     if q is None:
         r.err(where, f"references unknown question {qid!r}")
@@ -365,12 +372,12 @@ def check_issue(r, where, issue, config, questions, used_questions):
             r.err(where, f"applicable_courts has unknown court {c!r}")
     if len(ac) != len(set(ac)):
         r.err(where, "applicable_courts has duplicates")
-    if "SCOTUS" in ac and len(ac) > 1:
-        r.warn(where, "applicable_courts lists SCOTUS plus other courts — SCOTUS alone already covers every forum")
-    if "SCOTUS" in ac:
+    if E.SCOTUS in ac and len(ac) > 1:
+        r.warn(where, f"applicable_courts lists {E.SCOTUS!r} plus other courts — it alone already covers every forum")
+    if E.SCOTUS in ac:
         reachable_courts = set(courts)
     else:
-        reachable_courts = {"SCOTUS"} | {c for c in ac if c in courts}
+        reachable_courts = {E.SCOTUS} | {c for c in ac if c in courts}
 
     for s in iter_public_strings(issue):
         if PLACEHOLDER_RE.search(s):
@@ -584,15 +591,10 @@ def check_sessions(r, root, config, questions):
         except Exception as e:  # noqa: BLE001
             r.err(where, f"cannot load: {e}")
             continue
-        forum = s.get("forum")
-        if forum == "state_court":
-            if config["courts"].get(s.get("state"), {}).get("kind") != "state":
-                r.err(where, f"state {s.get('state')!r} is not a state court code")
-        elif forum == "federal_court":
-            if config["courts"].get(s.get("federal_circuit"), {}).get("kind") != "circuit":
-                r.err(where, f"federal_circuit {s.get('federal_circuit')!r} is not a circuit court code")
-        else:
-            r.err(where, f"forum must be state_court or federal_court, not {forum!r}")
+        if not check_keys(r, where, s, {"answers"}, ["answers"]):
+            continue
+        if E.FILING_COURT not in s["answers"]:
+            r.err(where, f"no answer for {E.FILING_COURT}")
         for qid, ans in s.get("answers", {}).items():
             q = questions.get(qid)
             if q is None:
@@ -617,6 +619,7 @@ def validate(root):
     if config is None:
         return r
     questions = check_questions(r, root)
+    check_filing_court(r, questions, config)
     used = set()
     headings = {}
     for path in E.content_files(root, "issues"):
@@ -635,7 +638,7 @@ def validate(root):
                 r.warn(where, f"same motion_heading as {headings[h]}")
             headings[h] = where
     for qid, q in sorted(questions.items()):
-        if qid not in used:
+        if qid not in used and qid != E.FILING_COURT:
             if q["type"] == "short_text":
                 r.warn(f"question {qid}", "short_text answer is collected but nothing uses it yet")
             else:

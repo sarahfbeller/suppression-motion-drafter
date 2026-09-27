@@ -9,31 +9,30 @@ file disagrees with them, the code wins and this file should be corrected.
 | File | Contents |
 |---|---|
 | `content/config.json` | `courts` and `phase_order` |
-| `content/session.json` | Questions asked once at the start: forum, state, federal circuit. A placeholder until the decision tree is designed. |
 | `content/questions/*.json` | The question bank, grouped by topic. Every file in the directory is loaded. |
 | `content/issues/*.json` | One issue per file; the file name is the issue id. Every file in the directory is loaded. |
 
 Any key starting with `_` (e.g. `_author_notes`), in any file, is a note to the maintainer. It is
 never rendered, and the validator ignores it when checking for unknown fields.
 
-## Courts and forums
+## Courts and the filing court
 
-`config.courts` maps each court code to `{ kind, display_name }`. `kind` is `scotus`, `circuit`,
-or `state`; it orders parallel citations (Supreme Court, then circuit, then state) and says which
-forum a court belongs to.
+`config.courts` maps each court code to `{ kind, display_name }`. Codes are snake_case (`scotus`,
+`9th_cir`, `ak`). `kind` is `scotus`, `circuit`, or `state`; it orders parallel citations (Supreme
+Court, then circuit, then state) and says whether a filing is in state or federal court.
 
-The courts whose authority is cited in a case:
+`q_filing_court` (in `content/questions/case-setup.json`) asks where the motion is being filed.
+Its option ids are the state and circuit court codes. The courts whose authority is cited in a
+case are `scotus` plus that answer, so circuit authority is never cited in a state-court motion,
+and state authority never in a federal one.
 
-- State court: SCOTUS and the state.
-- Federal court: SCOTUS and the circuit.
-
-Circuit authority is never cited in a state-court motion, and state authority never in a federal one.
+It's the one question the engine reads directly. Conditions can't use it yet; whether they should
+is undecided.
 
 ## Case session
 
-A case session is `{ forum, state | federal_circuit, answers }`. `forum` is `state_court` or
-`federal_court`; `state` and `federal_circuit` are court codes. `answers` maps question id to
-answer (see question types). A question the tree skipped is absent.
+A case session is `{ answers }`: question id → answer (see question types). It must answer
+`q_filing_court`. A question the tree skipped is absent.
 
 ## Questions
 
@@ -70,8 +69,8 @@ Questions hold content only. Ordering, branching, and skip logic belong to the d
 the same phase need a set order, split the phase rather than adding an ordering field. Attorneys
 reorder sections in their own documents; the app doesn't.
 
-**`applicable_courts`.** `["SCOTUS"]` means the issue applies in every forum; don't also list the
-circuit or state. List a specific court alone (e.g. `["AK"]`) when the issue rests on that court's
+**`applicable_courts`.** `["scotus"]` means the issue applies in every forum; don't also list the
+circuit or state. List a specific court alone (e.g. `["ak"]`) when the issue rests on that court's
 own law and hasn't been confirmed anywhere else. If none of the case's courts are in the list, the
 issue is skipped entirely: nothing about it is rendered.
 

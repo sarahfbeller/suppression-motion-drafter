@@ -26,7 +26,7 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
   Ninth Circuit law is never cited in a state-court motion; Alaska law is never cited in a
   federal one; SCOTUS is cited in both.
 - **Don't research or assume other states' law.** Issues confirmed only under Alaska law
-  stay `applicable_courts: ["AK"]` until the maintainer says otherwise.
+  stay `applicable_courts: ["ak"]` until the maintainer says otherwise.
 - *Palmer v. State* (Alaska 1979) is superseded by AS 28.35.033(e) and later cases. Don't cite it.
 - Flag anything you added from memory or secondary sources as unverified in
   `_author_notes`, and say so in your reply.

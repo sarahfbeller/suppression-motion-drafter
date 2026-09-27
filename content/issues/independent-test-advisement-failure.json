@@ -7,7 +7,7 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "applicable_courts": [
-    "AK"
+    "ak"
   ],
   "trigger": {
     "description": "Ask whenever the defendant was arrested for DUI and asked to submit to a breath test, to determine whether police clearly and expressly advised them of the right to an independent chemical test.",
@@ -65,7 +65,7 @@
             "type": "statute",
             "name": "AS 28.35.033(e)",
             "citation": "",
-            "court": "AK"
+            "court": "ak"
           }
         ]
       },
@@ -77,21 +77,21 @@
             "type": "case",
             "name": "Gundersen v. Municipality of Anchorage",
             "citation": "792 P.2d 673 (Alaska 1990)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           },
           {
             "type": "case",
             "name": "Anchorage v. Serrano",
             "citation": "649 P.2d 256 (Alaska App. 1982)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           },
           {
             "type": "case",
             "name": "Crim v. Municipality of Anchorage",
             "citation": "903 P.2d 586 (Alaska App. 1995)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -104,7 +104,7 @@
             "type": "case",
             "name": "Gundersen v. Municipality of Anchorage",
             "citation": "792 P.2d 673 (Alaska 1990)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -122,7 +122,7 @@
             "type": "case",
             "name": "Nelson v. State",
             "citation": "512 P.3d 86 (Alaska App. 2022)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -140,14 +140,14 @@
             "type": "case",
             "name": "Nelson v. State",
             "citation": "512 P.3d 86 (Alaska App. 2022)",
-            "court": "AK",
+            "court": "ak",
             "pincite": "90-91"
           },
           {
             "type": "case",
             "name": "Snyder v. State",
             "citation": "930 P.2d 1274 (Alaska 1996)",
-            "court": "AK",
+            "court": "ak",
             "pincite": "1278-79"
           }
         ]

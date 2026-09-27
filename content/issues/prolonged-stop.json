@@ -7,7 +7,7 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "applicable_courts": [
-    "SCOTUS"
+    "scotus"
   ],
   "trigger": {
     "description": "Ask whenever there was a traffic or investigative stop, to determine whether it was extended beyond the time reasonably required for its original purpose.",
@@ -57,14 +57,14 @@
             "type": "case",
             "name": "Rodriguez v. United States",
             "citation": "575 U.S. 348 (2015)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           },
           {
             "type": "case",
             "name": "Simmons v. State",
             "citation": "435 P.3d 975 (Alaska App. 2018)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -77,7 +77,7 @@
             "type": "case",
             "name": "Rodriguez v. United States",
             "citation": "575 U.S. 348 (2015)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           }
         ]
@@ -104,7 +104,7 @@
             "type": "case",
             "name": "Illinois v. Caballes",
             "citation": "543 U.S. 405 (2005)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           }
         ]
@@ -117,7 +117,7 @@
             "type": "case",
             "name": "Rodriguez v. United States",
             "citation": "575 U.S. 348 (2015)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           }
         ]

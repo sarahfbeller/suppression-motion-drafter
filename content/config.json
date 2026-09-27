@@ -1,14 +1,14 @@
 {
   "courts": {
-    "SCOTUS": {
+    "scotus": {
       "kind": "scotus",
       "display_name": "U.S. Supreme Court"
     },
-    "9th Circuit": {
+    "9th_cir": {
       "kind": "circuit",
       "display_name": "Ninth Circuit"
     },
-    "AK": {
+    "ak": {
       "kind": "state",
       "display_name": "Alaska"
     }

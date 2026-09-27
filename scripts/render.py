@@ -32,10 +32,10 @@ def render_motion(result):
     return "\n".join(lines)
 
 
-def render_memo(result, config, session):
+def render_memo(result, config):
     courts = config["courts"]
-    forum = "State court" if session["forum"] == "state_court" else "Federal court"
     specific = result["courts"][1]
+    forum = "State court" if courts[specific]["kind"] == "state" else "Federal court"
     specific_name = courts[specific]["display_name"]
     cited = " and ".join(courts[c]["display_name"] for c in result["courts"])
 
@@ -94,7 +94,7 @@ def main(argv):
         result = E.evaluate_session(config, issues, session)
         name = os.path.splitext(os.path.basename(session_path))[0]
         for suffix, text in (("motion", render_motion(result)),
-                             ("memo", render_memo(result, config, session))):
+                             ("memo", render_memo(result, config))):
             path = os.path.join(out_dir, f"{name}.{suffix}.md")
             with open(path, "w", encoding="utf-8") as f:
                 f.write(text)

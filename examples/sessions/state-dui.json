@@ -1,8 +1,7 @@
 {
   "_description": "State-court DUI. Stop prolonged while waiting for a K-9 unit (suspicion timing unclear). Defendant asked to call a relative for advice and was refused. Independent-test advisement was clear but given only in English to a non-English speaker, and mentioned only one test type.",
-  "forum": "state_court",
-  "state": "AK",
   "answers": {
+    "q_filing_court": "ak",
     "q_stop_type": "traffic_violation",
     "q_original_purpose_completed": "yes",
     "q_extension_event": ["wait_for_backup_or_k9"],

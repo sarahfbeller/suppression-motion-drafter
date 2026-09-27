@@ -7,7 +7,7 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "applicable_courts": [
-    "SCOTUS"
+    "scotus"
   ],
   "trigger": {
     "description": "Ask whenever the defendant was a passenger, to determine whether a frisk of that passenger was supported by suspicion specific to them, rather than general concerns tied to the stop itself.",
@@ -55,7 +55,7 @@
             "type": "case",
             "name": "Arizona v. Johnson",
             "citation": "555 U.S. 323 (2009)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           }
         ]
@@ -68,14 +68,14 @@
             "type": "case",
             "name": "Terry v. Ohio",
             "citation": "392 U.S. 1 (1968)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           },
           {
             "type": "case",
             "name": "Arizona v. Johnson",
             "citation": "555 U.S. 323 (2009)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           }
         ]
@@ -88,7 +88,7 @@
             "type": "case",
             "name": "Arizona v. Johnson",
             "citation": "555 U.S. 323 (2009)",
-            "court": "SCOTUS",
+            "court": "scotus",
             "pincite": ""
           }
         ]

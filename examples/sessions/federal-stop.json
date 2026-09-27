@@ -1,8 +1,7 @@
 {
   "_description": "Federal-court stop, Ninth Circuit. Dog sniff after the stop's mission ended; passenger frisked on generalized suspicion; later warrant affidavit with a reckless material omission.",
-  "forum": "federal_court",
-  "federal_circuit": "9th Circuit",
   "answers": {
+    "q_filing_court": "9th_cir",
     "q_stop_type": "traffic_violation",
     "q_original_purpose_completed": "yes",
     "q_extension_event": ["canine_sniff", "unrelated_questioning"],

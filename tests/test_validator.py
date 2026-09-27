@@ -154,7 +154,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_stale_config_fields(self):
         for field in ("category_order", "issues", "question_bank_topics", "cross_cutting_reminders",
-                      "case_session_schema", "desired_courts"):
+                      "case_session_schema", "desired_courts", "session"):
             with self.subTest(field=field):
                 self.setUp()
                 r = self.run_with("content/config.json", lambda c: c.update({field: []}))
@@ -187,7 +187,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         def f(d):
             stmt(d, "core_prolongation_rule")["authorities"].append(
                 {"type": "case", "name": "PLACEHOLDER — insert controlling Alaska case",
-                 "citation": "1 P.3d 1 (Alaska 2000)", "pincite": "", "court": "AK"})
+                 "citation": "1 P.3d 1 (Alaska 2000)", "pincite": "", "court": "ak"})
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "placeholder")
 
     # ---- audience
@@ -222,7 +222,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         def f(d):
             stmt(d, "core_communication_right")["authorities"].append(
                 {"type": "case", "name": "United States v. Example", "citation": "1 F.3d 1 (9th Cir. 2000)",
-                 "pincite": "", "court": "9th Circuit"})
+                 "pincite": "", "court": "9th_cir"})
         self.assertError(self.run_with(f"{ISSUES}/denial-of-contact-before-breath-test.json", f), "can never be cited")
 
     # ---- review status and applicability
@@ -233,8 +233,8 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_scotus_plus_redundant_courts(self):
         def f(d):
-            d["applicable_courts"] = ["SCOTUS", "9th Circuit", "AK"]
-        self.assertWarning(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "SCOTUS alone already covers")
+            d["applicable_courts"] = ["scotus", "9th_cir", "ak"]
+        self.assertWarning(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "alone already covers every forum")
 
     # ---- config, file layout, and question bank
 
@@ -246,10 +246,45 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d.update({"phase": "stop"})),
                          "not in config phase_order")
 
-    def test_session_option_not_a_court(self):
-        def f(s):
-            s["state"]["options"].append({"id": "WA", "label": "Washington"})
-        self.assertError(self.run_with("content/session.json", f), "is not a state in config courts")
+    # ---- filing court
+
+    def test_session_json_reintroduced(self):
+        with open(os.path.join(self.tmp, "content", "session.json"), "w") as f:
+            json.dump({}, f)
+        self.assertError(V.validate(self.tmp), "replaced by the q_filing_court question")
+
+    def test_old_session_fields(self):
+        for field, value in (("forum", "state_court"), ("state", "ak"), ("federal_circuit", "9th_cir")):
+            with self.subTest(field=field):
+                self.setUp()
+                r = self.run_with("examples/sessions/state-dui.json", lambda s: s.update({field: value}))
+                self.assertError(r, "unknown field")
+
+    def test_session_without_filing_court(self):
+        r = self.run_with("examples/sessions/state-dui.json", lambda s: s["answers"].pop("q_filing_court"))
+        self.assertError(r, "no answer for q_filing_court")
+
+    def test_filing_court_option_not_a_court(self):
+        def f(qs):
+            qs[0]["options"].append({"id": "wa", "label": "Washington state court"})
+        self.assertError(self.run_with("content/questions/case-setup.json", f),
+                         "is not a state or circuit court")
+
+    def test_scotus_as_filing_court(self):
+        def f(qs):
+            qs[0]["options"].append({"id": "scotus", "label": "Supreme Court"})
+        self.assertError(self.run_with("content/questions/case-setup.json", f),
+                         "is not a state or circuit court")
+
+    def test_court_code_not_snake_case(self):
+        def f(c):
+            c["courts"]["9th Circuit"] = c["courts"].pop("9th_cir")
+        self.assertError(self.run_with("content/config.json", f), "must be snake_case")
+
+    def test_condition_on_filing_court(self):
+        def f(d):
+            stmt(d, "core_prolongation_rule")["when"] = {"question": "q_filing_court", "op": "equals", "value": "ak"}
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "conditions can't use q_filing_court")
 
     def test_duplicate_option_id(self):
         def f(qs):

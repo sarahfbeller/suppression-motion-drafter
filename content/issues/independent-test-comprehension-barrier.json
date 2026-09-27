@@ -7,7 +7,7 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "applicable_courts": [
-    "AK"
+    "ak"
   ],
   "trigger": {
     "description": "Ask whenever the officer's advisement of the right to an independent test was otherwise proper on its face, but something may have prevented the defendant from actually, knowingly understanding it.",
@@ -51,7 +51,7 @@
             "type": "case",
             "name": "Gundersen v. Municipality of Anchorage",
             "citation": "792 P.2d 673 (Alaska 1990)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -69,7 +69,7 @@
             "type": "case",
             "name": "Ahtuangaruak v. State",
             "citation": "820 P.2d 310 (Alaska App. 1991)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -87,7 +87,7 @@
             "type": "case",
             "name": "Gundersen v. Municipality of Anchorage",
             "citation": "792 P.2d 673 (Alaska 1990)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -105,7 +105,7 @@
             "type": "case",
             "name": "Nelson v. State",
             "citation": "512 P.3d 86 (Alaska App. 2022)",
-            "court": "AK",
+            "court": "ak",
             "pincite": ""
           }
         ]
@@ -123,14 +123,14 @@
             "type": "case",
             "name": "Nelson v. State",
             "citation": "512 P.3d 86 (Alaska App. 2022)",
-            "court": "AK",
+            "court": "ak",
             "pincite": "90-91"
           },
           {
             "type": "case",
             "name": "Snyder v. State",
             "citation": "930 P.2d 1274 (Alaska 1996)",
-            "court": "AK",
+            "court": "ak",
             "pincite": "1278-79"
           }
         ]
