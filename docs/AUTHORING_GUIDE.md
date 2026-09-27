@@ -14,9 +14,7 @@ Not read by the app — this is for whoever (you) is authoring content.
   `review_conditions` or `excluded_explanations` entry checks the same question as
   `match_condition`, verify the triggering answer is actually *compatible* with a match —
   not the literal opposite of what's required. A condition that can never co-occur with
-  inclusion is dead code that will never reach the attorney. (This bug happened twice
-  already — once with `q_independent_suspicion`, once with `q_intent` — before we caught
-  the pattern. `scripts/validate.py` now checks this automatically.)
+  inclusion is dead code that will never reach the attorney.
 - [ ] **Which review/excluded condition is this?**
   - Included, but shaky → `review_conditions` (shown in the attorney memo under that issue)
   - Excluded, but a documented close call → `excluded_explanations` (shown in the memo's
