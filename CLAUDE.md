@@ -71,4 +71,6 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
 ## Open items
 
 - The decision tree (top-level "what kind of encounter was this" branching) is undesigned.
-- Citations don't yet support short forms (*Id.*, short names).
+- Output should be formatted .docx for both the motion and the memo, with each rule
+  statement's citations in a footnote. Likely front-end work; the engine already returns
+  statement text and authorities separately.

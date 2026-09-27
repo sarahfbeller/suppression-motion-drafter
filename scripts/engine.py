@@ -120,20 +120,29 @@ def court_rank(config, code):
     return KIND_RANK[config["courts"][code]["kind"]]
 
 
-def format_authority(a, italic=True):
-    if a["type"] == "case":
-        name = f"*{a['name']}*" if italic else a["name"]
-        cite = a["citation"]
-        if a.get("pincite"):
-            m = CITATION_RE.match(cite)
-            cite = f"{m['base']}, {a['pincite']} {m['paren']}"
-        return f"{name}, {cite}"
-    return a["name"]
+def citation_parts(a):
+    """Split an authority into what a renderer needs, leaving the markup to the renderer.
+
+    Returns { name, italic, rest }: a case is its italicized name, then ', ' and rest (the
+    citation, with any pincite inserted before the parenthetical); anything else is its name alone.
+    """
+    if a["type"] != "case":
+        return {"name": a["name"], "italic": False, "rest": ""}
+    cite = a["citation"]
+    if a.get("pincite"):
+        m = CITATION_RE.match(cite)
+        cite = f"{m['base']}, {a['pincite']} {m['paren']}"
+    return {"name": a["name"], "italic": True, "rest": cite}
 
 
-def render_law_paragraph(issue, answers, courts, config):
-    """Return (paragraph_text, authorities_used, gap_statement_texts)."""
-    parts, used, gaps = [], [], []
+def law_paragraph(issue, answers, courts, config):
+    """Return (statements, gap_statement_texts) for one issue.
+
+    statements is the ordered list of rule statements that survive, each as
+    { id, text, authorities } with authorities filtered to courts and in citation order
+    (SCOTUS, circuit, state). Whether citations go inline or in footnotes is up to the renderer.
+    """
+    statements, gaps = [], []
     for st in issue["law_paragraph"]["rule_statements"]:
         if "when" in st and not eval_condition(st["when"], answers):
             continue
@@ -144,9 +153,8 @@ def render_law_paragraph(issue, answers, courts, config):
         if not auths:
             gaps.append(st["text"])
             continue
-        parts.append(st["text"] + " " + "; ".join(format_authority(a) for a in auths) + ".")
-        used.extend(auths)
-    return " ".join(parts), used, gaps
+        statements.append({"id": st["id"], "text": st["text"], "authorities": auths})
+    return statements, gaps
 
 
 # --------------------------------------------------------------------------- session evaluation
@@ -163,18 +171,19 @@ def evaluate_session(config, issues, session):
             continue
         trig = issue["trigger"]
         if eval_condition(trig["match_condition"], answers):
-            text, used, gaps = render_law_paragraph(issue, answers, courts, config)
+            statements, gaps = law_paragraph(issue, answers, courts, config)
+            cited_courts = {a["court"] for st in statements for a in st["authorities"]}
             entry = {
                 "issue": issue,
-                "paragraph": text,
+                "statements": statements,
                 "review_notes": [rc["display_note"] for rc in trig.get("review_conditions", [])
                                  if eval_condition(rc["when"], answers)],
                 "gaps": gaps,
                 "unreviewed": issue["status"] != "reviewed",
                 "missing_specific_court": (SCOTUS in issue["applicable_courts"]
-                                           and specific not in {a["court"] for a in used}),
+                                           and specific not in cited_courts),
             }
-            (result["included"] if text else result["no_paragraph"]).append(entry)
+            (result["included"] if statements else result["no_paragraph"]).append(entry)
         else:
             for ex in trig.get("excluded_explanations", []):
                 if eval_condition(ex["when"], answers):

@@ -27,21 +27,23 @@ class StatementApplicableCourts(unittest.TestCase):
         self.issue["law_paragraph"]["rule_statements"] = [self.st]
 
     def render(self, answers):
-        return E.render_law_paragraph(self.issue, answers, E.binding_courts(answers), self.config)
+        """(markdown paragraph, statements, gaps)"""
+        statements, gaps = E.law_paragraph(self.issue, answers, E.binding_courts(answers), self.config)
+        return R.paragraph(statements), statements, gaps
 
     def test_without_field_it_is_a_gap_in_federal_court(self):
-        text, _used, gaps = self.render(FEDERAL)
+        text, _statements, gaps = self.render(FEDERAL)
         self.assertEqual(text, "")
         self.assertEqual(gaps, [self.st["text"]])
 
     def test_limited_to_alaska_it_is_skipped_silently_in_federal_court(self):
         self.st["applicable_courts"] = ["ak"]
-        text, _used, gaps = self.render(FEDERAL)
+        text, _statements, gaps = self.render(FEDERAL)
         self.assertEqual((text, gaps), ("", []))
 
     def test_limited_to_alaska_it_renders_in_state_court(self):
         self.st["applicable_courts"] = ["ak"]
-        text, _used, gaps = self.render(STATE)
+        text, _statements, gaps = self.render(STATE)
         self.assertIn("An Alaska-only proposition. Example statute.", text)
         self.assertEqual(gaps, [])
 
@@ -49,6 +51,36 @@ class StatementApplicableCourts(unittest.TestCase):
         self.st["applicable_courts"] = ["9th_cir"]
         self.assertEqual(self.render(FEDERAL)[2], [self.st["text"]])
         self.assertEqual(self.render(STATE)[2], [])
+
+
+class StructuredStatements(unittest.TestCase):
+    """The engine returns each statement's text and authorities separately, so a renderer can put
+    citations inline or in footnotes."""
+
+    def setUp(self):
+        self.config, _questions, issues = E.load_repo(ROOT)
+        self.issue = copy.deepcopy(next(i for i in issues if i["id"] == "prolonged-stop"))
+        self.issue["law_paragraph"]["rule_statements"] = [{
+            "id": "mixed", "text": "A proposition.",
+            "authorities": [
+                {"type": "statute", "name": "Example statute", "citation": "", "court": "ak"},
+                {"type": "case", "name": "Example v. Case", "citation": "1 U.S. 1 (2000)",
+                 "pincite": "5", "court": "scotus"},
+            ]}]
+
+    def test_statement_keeps_text_and_ordered_authorities_apart(self):
+        statements, _gaps = E.law_paragraph(self.issue, STATE, E.binding_courts(STATE), self.config)
+        self.assertEqual([st["text"] for st in statements], ["A proposition."])
+        self.assertEqual([a["court"] for a in statements[0]["authorities"]], ["scotus", "ak"])
+
+    def test_authorities_filtered_to_forum(self):
+        statements, _gaps = E.law_paragraph(self.issue, FEDERAL, E.binding_courts(FEDERAL), self.config)
+        self.assertEqual([a["court"] for a in statements[0]["authorities"]], ["scotus"])
+
+    def test_citation_parts_leave_markup_to_the_renderer(self):
+        case, statute = self.issue["law_paragraph"]["rule_statements"][0]["authorities"][1::-1]
+        self.assertEqual(E.citation_parts(case), {"name": "Example v. Case", "italic": True, "rest": "1 U.S. 1, 5 (2000)"})
+        self.assertEqual(E.citation_parts(statute), {"name": "Example statute", "italic": False, "rest": ""})
 
 
 class MatchedButNoParagraph(unittest.TestCase):

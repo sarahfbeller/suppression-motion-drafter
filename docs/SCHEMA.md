@@ -140,9 +140,14 @@ elsewhere, and is reviewed like the rest of the statement.
 - Everything else: `citation` is `""` (the name is the citation) and there is no `pincite`.
 - `court` is a code from `config.courts`: whose law this is, not which court decided it.
 
-Rendered as `*Name*, <volume reporter page>, <pincite> (<court year>)`, with the pincite left out
-when empty. Several authorities on one statement are joined with `; `, ordered Supreme Court, then
-circuit, then state. Short forms (*Id.*) and signals (*See*) aren't supported yet.
+A case cites as *Name*, `<volume reporter page>, <pincite> (<court year>)`, with the pincite left
+out when empty; anything else cites as its name. A statement's authorities are ordered Supreme
+Court, then circuit, then state. Short forms (*Id.*) and signals (*See*) aren't supported yet.
+
+The engine returns each surviving statement as its text plus its ordered authorities, never a
+finished string, so each renderer decides where citations go. The markdown reference renderer
+puts them inline after the statement, joined with `; `. The planned .docx output will put each
+statement's authorities in a footnote.
 
 ## Review status
 

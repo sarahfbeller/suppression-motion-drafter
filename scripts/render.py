@@ -23,12 +23,23 @@ def roman(n):
     return out
 
 
+def authority(a):
+    c = E.citation_parts(a)
+    return f"*{c['name']}*, {c['rest']}" if c["italic"] else c["name"]
+
+
+def paragraph(statements):
+    """Markdown puts citations inline: each statement's text, then its authorities joined by '; '."""
+    return " ".join(st["text"] + " " + "; ".join(authority(a) for a in st["authorities"]) + "."
+                    for st in statements)
+
+
 def render_motion(result):
     if not result["included"]:
         return "No suppression issues were identified for these facts. See the attorney memo.\n"
     lines = ["## ARGUMENT", ""]
     for i, entry in enumerate(result["included"], 1):
-        lines += [f"### {roman(i)}. {entry['issue']['motion_heading']}", "", entry["paragraph"], ""]
+        lines += [f"### {roman(i)}. {entry['issue']['motion_heading']}", "", paragraph(entry["statements"]), ""]
     return "\n".join(lines)
 
 
