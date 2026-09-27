@@ -103,6 +103,19 @@ def binding_courts(answers):
     return [SCOTUS, answers[FILING_COURT]]
 
 
+def applies_in(applicable_courts, courts):
+    """Whether an issue or rule statement is the law in a case bound by courts.
+
+    ['scotus'] applies everywhere, since SCOTUS is always a binding court.
+    """
+    return bool(set(applicable_courts) & set(courts))
+
+
+def statement_courts(issue, st):
+    """A rule statement's applicable_courts, defaulting to its issue's."""
+    return st.get("applicable_courts", issue["applicable_courts"])
+
+
 def court_rank(config, code):
     return KIND_RANK[config["courts"][code]["kind"]]
 
@@ -124,6 +137,8 @@ def render_law_paragraph(issue, answers, courts, config):
     for st in issue["law_paragraph"]["rule_statements"]:
         if "when" in st and not eval_condition(st["when"], answers):
             continue
+        if not applies_in(statement_courts(issue, st), courts):
+            continue  # not the law in this forum, so not a gap either
         auths = [a for a in st["authorities"] if a["court"] in courts]
         auths.sort(key=lambda a: court_rank(config, a["court"]))  # stable within a court
         if not auths:
@@ -144,7 +159,7 @@ def evaluate_session(config, issues, session):
     result = {"courts": courts, "included": [], "no_paragraph": [], "near_misses": []}
 
     for issue in issues:
-        if not set(issue["applicable_courts"]) & set(courts):
+        if not applies_in(issue["applicable_courts"], courts):
             continue
         trig = issue["trigger"]
         if eval_condition(trig["match_condition"], answers):

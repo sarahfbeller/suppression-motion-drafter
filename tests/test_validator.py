@@ -236,6 +236,30 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             d["applicable_courts"] = ["scotus", "9th_cir", "ak"]
         self.assertWarning(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "alone already covers every forum")
 
+    # ---- statement-level applicable_courts
+
+    def test_statement_courts_broader_than_issue(self):
+        def f(d):
+            stmt(d, "core_communication_right")["applicable_courts"] = ["9th_cir"]
+        self.assertError(self.run_with(f"{ISSUES}/denial-of-contact-before-breath-test.json", f),
+                         "but the issue only applies in")
+
+    def test_statement_courts_same_as_issue(self):
+        def f(d):
+            stmt(d, "dog_sniff_no_added_time")["applicable_courts"] = ["scotus"]
+        self.assertWarning(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "same as the issue's")
+
+    def test_statement_unknown_court(self):
+        def f(d):
+            stmt(d, "dog_sniff_no_added_time")["applicable_courts"] = ["wa"]
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "unknown court 'wa'")
+
+    def test_authority_not_citable_where_statement_applies(self):
+        # core_prolongation_rule cites SCOTUS and Alaska; limiting it to the Ninth Circuit strands the Alaska case.
+        def f(d):
+            stmt(d, "core_prolongation_rule")["applicable_courts"] = ["9th_cir"]
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "this statement only applies in")
+
     # ---- config, file layout, and question bank
 
     def test_issue_id_not_matching_file_name(self):

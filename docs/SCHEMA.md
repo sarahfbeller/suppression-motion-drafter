@@ -26,8 +26,8 @@ Its option ids are the state and circuit court codes. The courts whose authority
 case are `scotus` plus that answer, so circuit authority is never cited in a state-court motion,
 and state authority never in a federal one.
 
-It's the one question the engine reads directly. Conditions can't use it yet; whether they should
-is undecided.
+It's the one question the engine reads directly. Conditions can't use it: where an issue or rule
+statement is the law goes in its `applicable_courts`.
 
 ## Case session
 
@@ -104,17 +104,27 @@ A condition can only be satisfied by answers the attorney actually gave.
 
 ## Rule statements
 
-`law_paragraph.rule_statements` is an ordered list of `{ id, text, when?, authorities }`.
+`law_paragraph.rule_statements` is an ordered list of `{ id, text, when?, applicable_courts?, authorities }`.
 
 - `text`: one proposition (a sentence, two at most). Never a case name or citation, even
   mid-sentence. May be a direct quotation. Ends with sentence punctuation.
 - `when`: optional condition. Use it for facts that change which propositions belong in the
   motion, and to keep propositions that help the prosecution out unless the facts make them relevant.
+- `applicable_courts`: optional; where this proposition is the law. Same meaning as the issue's
+  field, and defaults to it. Use it only to narrow: an Alaska-only proposition inside a
+  `["scotus"]` issue gets `["ak"]`. It can't list a court the issue doesn't apply in, and every
+  authority must be citable there (SCOTUS authority always is).
 - `authorities`: each one supports exactly this statement's text.
 
-A statement renders if its `when` is absent or true **and** at least one authority is for one of
-the case's courts. If the `when` holds but no authority does, the statement is dropped from the
-motion and listed in the memo as a gap.
+For each statement whose `when` is absent or true:
+
+- It doesn't apply in this forum: skipped silently.
+- It applies, and at least one authority is for one of the case's courts: rendered.
+- It applies, but no authority is for the case's courts: dropped from the motion and listed in the
+  memo as a gap, because research is missing.
+
+Marking a proposition as applying only in some courts is a legal judgment that it isn't the law
+elsewhere, and is reviewed like the rest of the statement.
 
 ## Authorities
 

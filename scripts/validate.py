@@ -27,7 +27,7 @@ ISSUE_KEYS = {"id", "phase", "label", "motion_heading", "status", "last_reviewed
 TRIGGER_KEYS = {"description", "match_condition", "review_conditions",
                 "excluded_explanations", "non_gating_questions"}
 NOTE_KEYS = {"when", "flag", "display_note"}
-STATEMENT_KEYS = {"id", "text", "when", "authorities"}
+STATEMENT_KEYS = {"id", "text", "when", "applicable_courts", "authorities"}
 CASE_KEYS = {"type", "name", "citation", "pincite", "court"}
 OTHER_AUTHORITY_KEYS = {"type", "name", "citation", "court"}
 AUTHORITY_TYPES = {"case", "statute", "constitution", "rule"}
@@ -279,7 +279,8 @@ def check_condition(r, where, cond, questions):
     if qid in getattr(questions, "broken", ()):
         return False  # already reported where the question is defined
     if qid == E.FILING_COURT:
-        r.err(where, f"conditions can't use {qid} (undecided — use applicable_courts for where an issue applies)")
+        r.err(where, f"conditions can't use {qid} — where an issue or rule statement is the law "
+                     f"goes in its applicable_courts")
         return False
     q = questions.get(qid)
     if q is None:
@@ -334,6 +335,28 @@ def space_size(qids, questions):
 
 # --------------------------------------------------------------------------- issues
 
+def check_applicable_courts(r, where, ac, courts):
+    """Shared by issues and rule statements. Returns the valid codes (empty if the list is unusable)."""
+    if not isinstance(ac, list) or not ac:
+        r.err(where, "applicable_courts must be a non-empty list")
+        return []
+    for c in ac:
+        if c not in courts:
+            r.err(where, f"applicable_courts has unknown court {c!r}")
+    if len(ac) != len(set(ac)):
+        r.err(where, "applicable_courts has duplicates")
+    if E.SCOTUS in ac and len(ac) > 1:
+        r.warn(where, f"applicable_courts lists {E.SCOTUS!r} plus other courts — it alone already covers every forum")
+    return [c for c in ac if c in courts]
+
+
+def citable_courts(ac, courts):
+    """Courts whose authority can ever be cited where applicable_courts ac is the law."""
+    if E.SCOTUS in ac:
+        return set(courts)
+    return {E.SCOTUS} | set(ac)
+
+
 def check_issue(r, where, issue, config, questions, used_questions):
     if not check_keys(r, where, issue, ISSUE_KEYS, sorted(ISSUE_KEYS)):
         if not all(k in issue for k in ("trigger", "law_paragraph", "applicable_courts")):
@@ -363,21 +386,7 @@ def check_issue(r, where, issue, config, questions, used_questions):
     elif issue.get("last_reviewed") or issue.get("reviewed_by"):
         r.err(where, "unreviewed issues must have empty last_reviewed and reviewed_by")
 
-    ac = issue.get("applicable_courts", [])
-    if not isinstance(ac, list) or not ac:
-        r.err(where, "applicable_courts must be a non-empty list")
-        ac = []
-    for c in ac:
-        if c not in courts:
-            r.err(where, f"applicable_courts has unknown court {c!r}")
-    if len(ac) != len(set(ac)):
-        r.err(where, "applicable_courts has duplicates")
-    if E.SCOTUS in ac and len(ac) > 1:
-        r.warn(where, f"applicable_courts lists {E.SCOTUS!r} plus other courts — it alone already covers every forum")
-    if E.SCOTUS in ac:
-        reachable_courts = set(courts)
-    else:
-        reachable_courts = {E.SCOTUS} | {c for c in ac if c in courts}
+    ac = check_applicable_courts(r, where, issue.get("applicable_courts", []), courts)
 
     for s in iter_public_strings(issue):
         if PLACEHOLDER_RE.search(s):
@@ -451,6 +460,15 @@ def check_issue(r, where, issue, config, questions, used_questions):
             conds_ok &= ok
             if ok:
                 used_questions |= E.condition_questions(st["when"])
+        st_ac = ac
+        if "applicable_courts" in st:
+            st_ac = check_applicable_courts(r, sw, st["applicable_courts"], courts)
+            if E.SCOTUS not in ac:
+                broader = [c for c in st_ac if c not in ac]
+                if broader:
+                    r.err(sw, f"applicable_courts has {broader}, but the issue only applies in {sorted(ac)}")
+            if st_ac and set(st_ac) == set(ac):
+                r.warn(sw, "applicable_courts is the same as the issue's — remove it; statements inherit it")
         auths = st["authorities"]
         if not isinstance(auths, list):
             r.err(sw, "authorities must be a list")
@@ -471,9 +489,10 @@ def check_issue(r, where, issue, config, questions, used_questions):
             court = a.get("court")
             if court not in courts:
                 r.err(aw, f"unknown court {court!r}")
-            elif court not in reachable_courts:
-                r.err(aw, f"court {court!r} can never be cited: this issue only applies in "
-                          f"{sorted(ac)}, so {court!r} is never a desired court")
+            elif st_ac and court not in citable_courts(st_ac, courts):
+                scope = "this statement" if "applicable_courts" in st else "this issue"
+                r.err(aw, f"court {court!r} can never be cited: {scope} only applies in "
+                          f"{sorted(st_ac)}, so {court!r} is never a binding court")
             key = (a.get("name"), court)
             if key in seen:
                 r.err(aw, "cited twice in the same statement")
