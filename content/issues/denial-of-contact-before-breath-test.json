@@ -6,49 +6,90 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "circuits_reviewed": [],
-  "applicable_courts": ["AK"],
-
+  "applicable_courts": [
+    "AK"
+  ],
   "trigger": {
     "description": "Ask whenever the defendant submitted to (or refused) a breath test following a DUI arrest, to determine whether they were denied a reasonable opportunity to contact an attorney or a relative/friend before deciding.",
-
     "match_condition": {
       "all": [
-        { "question": "q_contact_requested", "op": "not_empty" },
-        { "question": "q_contact_outcome", "op": "in", "value": [
-          "Request was denied outright — no opportunity to contact anyone was given",
-          "An opportunity was given, but the defendant was not able to communicate privately",
-          "An opportunity was given, but not within a reasonable time given the circumstances (e.g. the person could have arrived or advised further, but wasn't given the time to)"
-        ] },
-        { "any": [
-          { "question": "q_contact_requested", "op": "includes", "value": "An attorney" },
-          { "all": [
-            { "question": "q_contact_requested", "op": "includes", "value": "A relative or friend (not an attorney)" },
-            { "question": "q_contact_purpose", "op": "equals", "value": "To get advice on whether to take the test, or what to do (defense-related)" }
-          ] }
-        ] }
+        {
+          "question": "q_contact_requested",
+          "op": "not_empty"
+        },
+        {
+          "question": "q_contact_outcome",
+          "op": "in",
+          "value": [
+            "denied_outright",
+            "no_privacy",
+            "unreasonable_time"
+          ]
+        },
+        {
+          "any": [
+            {
+              "question": "q_contact_requested",
+              "op": "includes",
+              "value": "attorney"
+            },
+            {
+              "all": [
+                {
+                  "question": "q_contact_requested",
+                  "op": "includes",
+                  "value": "relative_or_friend"
+                },
+                {
+                  "question": "q_contact_purpose",
+                  "op": "equals",
+                  "value": "defense_related"
+                }
+              ]
+            }
+          ]
+        }
       ]
     },
-
     "review_conditions": [
       {
-        "when": { "question": "q_contact_outcome", "op": "equals", "value": "An opportunity was given, but the defendant was not able to communicate privately" },
+        "when": {
+          "question": "q_contact_outcome",
+          "op": "equals",
+          "value": "no_privacy"
+        },
         "flag": "privacy_reasonableness_factual",
         "display_note": "Whether a lack of privacy violates AS 12.25.150(b) is a reasonableness balancing test, not a bright-line rule — gather the specific circumstances (what could be overheard, whether it actually inhibited communication) before relying on this issue as written."
       },
       {
-        "when": { "question": "q_contact_outcome", "op": "equals", "value": "An opportunity was given, but not within a reasonable time given the circumstances (e.g. the person could have arrived or advised further, but wasn't given the time to)" },
+        "when": {
+          "question": "q_contact_outcome",
+          "op": "equals",
+          "value": "unreasonable_time"
+        },
         "flag": "timing_reasonableness_factual",
         "display_note": "Whether the time allowed was 'reasonable' is fact-specific. Document exactly how much time was requested and needed versus actually given."
       }
     ],
-
     "excluded_explanations": [
       {
         "when": {
           "all": [
-            { "question": "q_contact_requested", "op": "includes", "value": "A relative or friend (not an attorney)" },
-            { "question": "q_contact_requested", "op": "not_includes", "value": "An attorney" },
-            { "question": "q_contact_purpose", "op": "equals", "value": "Purely personal — e.g. arranging bail, notifying family, emotional support — no defense-related purpose apparent" }
+            {
+              "question": "q_contact_requested",
+              "op": "includes",
+              "value": "relative_or_friend"
+            },
+            {
+              "question": "q_contact_requested",
+              "op": "not_includes",
+              "value": "attorney"
+            },
+            {
+              "question": "q_contact_purpose",
+              "op": "equals",
+              "value": "purely_personal"
+            }
           ]
         },
         "flag": "non_defense_purpose_remedy_undecided",
@@ -57,9 +98,21 @@
       {
         "when": {
           "all": [
-            { "question": "q_contact_requested", "op": "includes", "value": "A relative or friend (not an attorney)" },
-            { "question": "q_contact_requested", "op": "not_includes", "value": "An attorney" },
-            { "question": "q_contact_purpose", "op": "equals", "value": "Unclear or not established" }
+            {
+              "question": "q_contact_requested",
+              "op": "includes",
+              "value": "relative_or_friend"
+            },
+            {
+              "question": "q_contact_requested",
+              "op": "not_includes",
+              "value": "attorney"
+            },
+            {
+              "question": "q_contact_purpose",
+              "op": "equals",
+              "value": "unclear"
+            }
           ]
         },
         "flag": "purpose_unclear_needs_development",
@@ -67,50 +120,88 @@
       }
     ]
   },
-
   "law_paragraph": {
     "rule_statements": [
       {
         "id": "core_communication_right",
         "text": "A person arrested has the right to telephone or otherwise communicate with an attorney and any relative or friend immediately after arrest.",
         "authorities": [
-          { "type": "statute", "name": "AS 12.25.150(b)", "citation": "", "court": "AK" },
-          { "type": "rule", "name": "Alaska Criminal Rule 5(b)", "citation": "", "court": "AK" }
+          {
+            "type": "statute",
+            "name": "AS 12.25.150(b)",
+            "citation": "",
+            "court": "AK"
+          },
+          {
+            "type": "rule",
+            "name": "Alaska Criminal Rule 5(b)",
+            "citation": "",
+            "court": "AK"
+          }
         ]
       },
       {
         "id": "attorney_contact_before_test_decision",
         "text": "This right requires police to give a person arrested for driving under the influence a reasonable opportunity to contact an attorney by phone before being required to decide whether to submit to a breath test, and violation of this right requires suppression of the test results.",
         "authorities": [
-          { "type": "case", "name": "Copelin v. State", "citation": "659 P.2d 1206 (Alaska 1983)", "court": "AK" }
+          {
+            "type": "case",
+            "name": "Copelin v. State",
+            "citation": "659 P.2d 1206 (Alaska 1983)",
+            "court": "AK"
+          }
         ]
       },
       {
         "id": "extends_to_relative_or_friend",
         "text": "This right extends to requests to contact a relative or friend, not just an attorney — the statute draws no distinction between the two on its face.",
         "authorities": [
-          { "type": "case", "name": "Zsupnik v. State", "citation": "789 P.2d 357 (Alaska 1990)", "court": "AK" }
+          {
+            "type": "case",
+            "name": "Zsupnik v. State",
+            "citation": "789 P.2d 357 (Alaska 1990)",
+            "court": "AK"
+          }
         ]
       },
       {
         "id": "remedy_limited_to_defense_purpose",
         "text": "The remedy for denying a request to contact a relative or friend is exclusion of evidence only where the request served a purpose related to the defense process, such as obtaining advice on whether to take the test.",
         "authorities": [
-          { "type": "case", "name": "Zsupnik v. State", "citation": "789 P.2d 357 (Alaska 1990)", "court": "AK" },
-          { "type": "case", "name": "Winfrey v. State", "citation": "78 P.3d 725 (Alaska App. 2003)", "court": "AK" }
+          {
+            "type": "case",
+            "name": "Zsupnik v. State",
+            "citation": "789 P.2d 357 (Alaska 1990)",
+            "court": "AK"
+          },
+          {
+            "type": "case",
+            "name": "Winfrey v. State",
+            "citation": "78 P.3d 725 (Alaska App. 2003)",
+            "court": "AK"
+          }
         ]
       },
       {
         "id": "reasonableness_balancing",
         "text": "The right is not absolute and does not permit indefinite delay; what counts as a reasonable opportunity is balanced against the state's need to administer the test in a timely manner.",
         "authorities": [
-          { "type": "case", "name": "Municipality of Anchorage v. Marrs", "citation": "694 P.2d 1163 (Alaska App. 1985)", "court": "AK" },
-          { "type": "case", "name": "Farrell v. Municipality of Anchorage", "citation": "682 P.2d 1128 (Alaska App. 1984)", "court": "AK" }
+          {
+            "type": "case",
+            "name": "Municipality of Anchorage v. Marrs",
+            "citation": "694 P.2d 1163 (Alaska App. 1985)",
+            "court": "AK"
+          },
+          {
+            "type": "case",
+            "name": "Farrell v. Municipality of Anchorage",
+            "citation": "682 P.2d 1128 (Alaska App. 1984)",
+            "court": "AK"
+          }
         ]
       }
     ]
   },
-
   "practice_notes": [
     "This is an Alaska statutory/due-process right (AS 12.25.150(b)), not a Fourth Amendment claim, and not the same as federal Miranda right-to-counsel doctrine — Miranda governs counsel during interrogation; this governs contact before a testing decision. Don't conflate the two in briefing.",
     "If the request was to contact a relative or friend rather than an attorney, pin down and document the stated purpose of that request as early as possible — under Zsupnik, whether the purpose was defense-related is what determines whether suppression is even available.",

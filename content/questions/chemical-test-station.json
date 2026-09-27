@@ -3,16 +3,34 @@
     "id": "q_contact_requested",
     "type": "multi_select",
     "prompt": "Before deciding whether to take the breath test, did the defendant ask to contact anyone? Select all that apply.",
-    "options": ["An attorney", "A relative or friend (not an attorney)"]
+    "options": [
+      {
+        "id": "attorney",
+        "label": "An attorney"
+      },
+      {
+        "id": "relative_or_friend",
+        "label": "A relative or friend (not an attorney)"
+      }
+    ]
   },
   {
     "id": "q_contact_purpose",
     "type": "multiple_choice",
     "prompt": "If a relative or friend was requested, what was the stated or apparent purpose of that request?",
     "options": [
-      "To get advice on whether to take the test, or what to do (defense-related)",
-      "Purely personal — e.g. arranging bail, notifying family, emotional support — no defense-related purpose apparent",
-      "Unclear or not established"
+      {
+        "id": "defense_related",
+        "label": "To get advice on whether to take the test, or what to do (defense-related)"
+      },
+      {
+        "id": "purely_personal",
+        "label": "Purely personal — e.g. arranging bail, notifying family, emotional support — no defense-related purpose apparent"
+      },
+      {
+        "id": "unclear",
+        "label": "Unclear or not established"
+      }
     ]
   },
   {
@@ -20,10 +38,22 @@
     "type": "multiple_choice",
     "prompt": "What happened after the request?",
     "options": [
-      "Request was denied outright — no opportunity to contact anyone was given",
-      "An opportunity was given, but the defendant was not able to communicate privately",
-      "An opportunity was given, but not within a reasonable time given the circumstances (e.g. the person could have arrived or advised further, but wasn't given the time to)",
-      "A reasonable opportunity to contact and consult was given"
+      {
+        "id": "denied_outright",
+        "label": "Request was denied outright — no opportunity to contact anyone was given"
+      },
+      {
+        "id": "no_privacy",
+        "label": "An opportunity was given, but the defendant was not able to communicate privately"
+      },
+      {
+        "id": "unreasonable_time",
+        "label": "An opportunity was given, but not within a reasonable time given the circumstances (e.g. the person could have arrived or advised further, but wasn't given the time to)"
+      },
+      {
+        "id": "reasonable_opportunity",
+        "label": "A reasonable opportunity to contact and consult was given"
+      }
     ]
   },
   {
@@ -41,9 +71,18 @@
     "type": "multiple_choice",
     "prompt": "Did the officer clearly and expressly advise the defendant of the right to an independent chemical test?",
     "options": [
-      "No advisement of the right to an independent test was given at all",
-      "An advisement was given, but it did not clearly and expressly explain the right or how to exercise it",
-      "A clear and express advisement was given"
+      {
+        "id": "no_advisement",
+        "label": "No advisement of the right to an independent test was given at all"
+      },
+      {
+        "id": "unclear_advisement",
+        "label": "An advisement was given, but it did not clearly and expressly explain the right or how to exercise it"
+      },
+      {
+        "id": "clear_advisement",
+        "label": "A clear and express advisement was given"
+      }
     ]
   },
   {
@@ -56,10 +95,22 @@
     "type": "multiple_choice",
     "prompt": "Was there anything that may have prevented the defendant from actually understanding the advisement, even if it was properly given?",
     "options": [
-      "Language barrier — advisement was given only in a language the defendant did not adequately understand",
-      "Intoxication level so severe the defendant could not knowingly and intelligently understand the advisement",
-      "Other comprehension barrier (e.g. cognitive impairment, disability)",
-      "No comprehension barrier apparent"
+      {
+        "id": "language",
+        "label": "Language barrier — advisement was given only in a language the defendant did not adequately understand"
+      },
+      {
+        "id": "intoxication",
+        "label": "Intoxication level so severe the defendant could not knowingly and intelligently understand the advisement"
+      },
+      {
+        "id": "other_barrier",
+        "label": "Other comprehension barrier (e.g. cognitive impairment, disability)"
+      },
+      {
+        "id": "none",
+        "label": "No comprehension barrier apparent"
+      }
     ]
   }
 ]

@@ -6,66 +6,105 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "circuits_reviewed": [],
-  "applicable_courts": ["SCOTUS"],
-
+  "applicable_courts": [
+    "SCOTUS"
+  ],
   "trigger": {
     "description": "Ask whenever there was a traffic or investigative stop, to determine whether it was extended beyond the time reasonably required for its original purpose.",
-
     "match_condition": {
       "all": [
-        { "question": "q_original_purpose_completed", "op": "equals", "value": "yes" },
-        { "question": "q_extension_event", "op": "not_empty" },
-        { "question": "q_independent_suspicion", "op": "in", "value": ["No", "Not sure"] }
+        {
+          "question": "q_original_purpose_completed",
+          "op": "equals",
+          "value": "yes"
+        },
+        {
+          "question": "q_extension_event",
+          "op": "not_empty"
+        },
+        {
+          "question": "q_independent_suspicion",
+          "op": "in",
+          "value": [
+            "no",
+            "not_sure"
+          ]
+        }
       ]
     },
-
     "non_gating_questions": {
       "q_stop_type": "Used only to route which vehicle-stop-timeline questions get asked at all (decision-tree concern) — not part of this issue's match condition."
     },
-
     "review_conditions": [
       {
-        "when": { "question": "q_independent_suspicion", "op": "equals", "value": "Not sure" },
+        "when": {
+          "question": "q_independent_suspicion",
+          "op": "equals",
+          "value": "not_sure"
+        },
         "flag": "independent_suspicion_uncertain",
         "display_note": "It's unclear whether the officer developed independent reasonable suspicion during the original-purpose tasks. If it turns out suspicion did arise then, the extension may be independently justified and this issue could be weaker than presented — confirm the timeline (dispatch log, body-cam) before relying on this issue as written."
       }
     ]
   },
-
   "law_paragraph": {
     "rule_statements": [
       {
         "id": "core_prolongation_rule",
         "text": "A traffic stop becomes unlawful if it is prolonged beyond the time reasonably required to complete the mission of the stop.",
         "authorities": [
-          { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS" },
-          { "type": "case", "name": "Simmons v. State", "citation": "435 P.3d 975 (Alaska App. 2018)", "court": "AK" }
+          {
+            "type": "case",
+            "name": "Rodriguez v. United States",
+            "citation": "575 U.S. 348 (2015)",
+            "court": "SCOTUS"
+          },
+          {
+            "type": "case",
+            "name": "Simmons v. State",
+            "citation": "435 P.3d 975 (Alaska App. 2018)",
+            "court": "AK"
+          }
         ]
       },
       {
         "id": "authority_ends_at_mission_completion",
         "text": "Authority for the seizure ends when tasks tied to the traffic infraction are, or reasonably should have been, completed, and an officer may not extend an otherwise-completed stop, even briefly, to conduct a dog sniff or other unrelated investigation absent independent reasonable suspicion.",
         "authorities": [
-          { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS" }
+          {
+            "type": "case",
+            "name": "Rodriguez v. United States",
+            "citation": "575 U.S. 348 (2015)",
+            "court": "SCOTUS"
+          }
         ]
       },
       {
         "id": "dog_sniff_no_added_time",
         "text": "A dog sniff is permissible only if it does not add time to the stop.",
         "authorities": [
-          { "type": "case", "name": "Illinois v. Caballes", "citation": "543 U.S. 405 (2005)", "court": "SCOTUS" }
+          {
+            "type": "case",
+            "name": "Illinois v. Caballes",
+            "citation": "543 U.S. 405 (2005)",
+            "court": "SCOTUS"
+          }
         ]
       },
       {
         "id": "independent_suspicion_exception",
         "text": "Where an officer develops reasonable, articulable suspicion of additional criminal activity during the stop's original mission, a brief extension to investigate that suspicion may be justified; the burden is on the government to establish that suspicion arose before, not after, the original mission concluded.",
         "authorities": [
-          { "type": "case", "name": "Rodriguez v. United States", "citation": "575 U.S. 348 (2015)", "court": "SCOTUS" }
+          {
+            "type": "case",
+            "name": "Rodriguez v. United States",
+            "citation": "575 U.S. 348 (2015)",
+            "court": "SCOTUS"
+          }
         ]
       }
     ]
   },
-
   "practice_notes": [
     "Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.",
     "Get the dispatch log and any body-cam/dash-cam timestamps in discovery early — this issue lives and dies on minute-by-minute sequencing.",

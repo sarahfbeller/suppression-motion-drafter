@@ -3,7 +3,24 @@
     "id": "q_stop_type",
     "type": "multiple_choice",
     "prompt": "What was the original basis for the stop?",
-    "options": ["Traffic violation", "Terry stop (reasonable suspicion of a crime)", "DUI checkpoint", "Other"]
+    "options": [
+      {
+        "id": "traffic_violation",
+        "label": "Traffic violation"
+      },
+      {
+        "id": "terry_stop",
+        "label": "Terry stop (reasonable suspicion of a crime)"
+      },
+      {
+        "id": "dui_checkpoint",
+        "label": "DUI checkpoint"
+      },
+      {
+        "id": "other",
+        "label": "Other"
+      }
+    ]
   },
   {
     "id": "q_original_purpose_completed",
@@ -15,18 +32,46 @@
     "type": "multi_select",
     "prompt": "What happened after the original-purpose tasks were done (or should have been done)? Select all that apply.",
     "options": [
-      "Canine sniff conducted",
-      "Questioning unrelated to the stop (travel plans, contents of vehicle, etc.)",
-      "Request to search the vehicle",
-      "Wait for a second officer or K-9 unit to arrive",
-      "Other unrelated investigation"
+      {
+        "id": "canine_sniff",
+        "label": "Canine sniff conducted"
+      },
+      {
+        "id": "unrelated_questioning",
+        "label": "Questioning unrelated to the stop (travel plans, contents of vehicle, etc.)"
+      },
+      {
+        "id": "search_request",
+        "label": "Request to search the vehicle"
+      },
+      {
+        "id": "wait_for_backup_or_k9",
+        "label": "Wait for a second officer or K-9 unit to arrive"
+      },
+      {
+        "id": "other_investigation",
+        "label": "Other unrelated investigation"
+      }
     ]
   },
   {
     "id": "q_independent_suspicion",
     "type": "multiple_choice",
     "prompt": "Did the officer develop independent, articulable reasonable suspicion of additional criminal activity DURING the original-purpose tasks (not after)?",
-    "options": ["Yes", "No", "Not sure"]
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure"
+      }
+    ]
   },
   {
     "id": "q_duration",

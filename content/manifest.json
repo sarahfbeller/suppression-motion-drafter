@@ -142,23 +142,25 @@
   },
 
   "question_types": {
-    "yes_no": "answer is the string 'yes' or 'no'",
-    "multiple_choice": "answer is a single string, one of the question's options — pick exactly one",
-    "multi_select": "answer is an array of strings, a subset of the question's options — pick any number, including zero or all",
-    "short_text": "answer is a free-text string, not matched against a fixed option list — used for fact-gathering (e.g. q_duration), not for gating match_condition"
+    "option_shape": "Every multiple_choice and multi_select option is an object { id, label }. 'id' is a short snake_case slug, unique within its question, and is what gets stored in case_session.answers and referenced by conditions. 'label' is display text only — it can be reworded freely without breaking anything, because nothing matches on it.",
+    "id_stability_rule": "Never change an option's id once conditions reference it — change only the label. If an option's MEANING changes (not just its wording), give it a new id and update the conditions that referenced the old one, since those conditions were written against the old meaning.",
+    "yes_no": "No options array. Answer is the id 'yes' or 'no'.",
+    "multiple_choice": "Answer is a single option id — pick exactly one.",
+    "multi_select": "Answer is an array of option ids — pick any number, including zero or all.",
+    "short_text": "Answer is a free-text string, not matched against any option list — used for fact-gathering (e.g. q_duration), never referenced in a condition."
   },
 
   "condition_shape": {
-    "description": "The shape used by match_condition, and by 'when' inside review_conditions/excluded_explanations, is the same: either a single leaf { question, op, value } or a compound { all: [...] } / { any: [...] } of leaves (and compounds can nest).",
+    "description": "The shape used by match_condition, and by 'when' inside review_conditions/excluded_explanations, is the same: either a single leaf { question, op, value } or a compound { all: [...] } / { any: [...] } of leaves (and compounds can nest). Every 'value' is an option id (or 'yes'/'no' for yes_no questions) — never display label text.",
     "ops_for_scalar_answers": {
-      "description": "For yes_no and multiple_choice questions (answer is a single string).",
+      "description": "For yes_no and multiple_choice questions (answer is a single id).",
       "ops": ["equals", "not_equals", "in", "not_in"]
     },
     "ops_for_array_answers": {
-      "description": "For multi_select questions (answer is an array of strings). Do NOT use equals/in against a multi_select answer — those compare a single value and give unreliable results against an array.",
+      "description": "For multi_select questions (answer is an array of ids). Do NOT use equals/in against a multi_select answer — those compare a single value and give unreliable results against an array.",
       "ops": {
-        "includes": "true if the given value (a single option string) is present anywhere in the answer array",
-        "not_includes": "true if the given value is absent from the answer array",
+        "includes": "true if the given option id is present in the answer array",
+        "not_includes": "true if the given option id is absent from the answer array",
         "not_empty": "true if at least one option was selected, regardless of which — value is omitted for this op",
         "empty": "true if no options were selected — value is omitted for this op"
       }

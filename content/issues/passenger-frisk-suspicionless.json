@@ -6,58 +6,91 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "circuits_reviewed": [],
-  "applicable_courts": ["SCOTUS"],
-
+  "applicable_courts": [
+    "SCOTUS"
+  ],
   "trigger": {
     "description": "Ask whenever the defendant was a passenger, to determine whether a frisk of that passenger was supported by suspicion specific to them, rather than general concerns tied to the stop itself.",
-
     "match_condition": {
       "all": [
-        { "question": "q_occupant_role", "op": "equals", "value": "Passenger" },
-        { "question": "q_passenger_frisked", "op": "equals", "value": "yes" },
-        { "question": "q_frisk_suspicion_basis", "op": "in", "value": [
-          "General nervousness or presence in a high-crime area only",
-          "No suspicion articulated — officer cited only proximity to the driver or the stop itself"
-        ] }
+        {
+          "question": "q_occupant_role",
+          "op": "equals",
+          "value": "passenger"
+        },
+        {
+          "question": "q_passenger_frisked",
+          "op": "equals",
+          "value": "yes"
+        },
+        {
+          "question": "q_frisk_suspicion_basis",
+          "op": "in",
+          "value": [
+            "generalized_only",
+            "none_articulated"
+          ]
+        }
       ]
     },
-
     "review_conditions": [
       {
-        "when": { "question": "q_frisk_suspicion_basis", "op": "equals", "value": "General nervousness or presence in a high-crime area only" },
+        "when": {
+          "question": "q_frisk_suspicion_basis",
+          "op": "equals",
+          "value": "generalized_only"
+        },
         "flag": "frisk_basis_borderline",
         "display_note": "Courts are split on whether generalized nervousness or a high-crime-area location, without more, can support a passenger frisk. This is a weaker record than 'no suspicion articulated' — confirm the full context of what the officer said before relying on this issue as written."
       }
     ]
   },
-
   "law_paragraph": {
     "rule_statements": [
       {
         "id": "mere_presence_insufficient",
         "text": "A passenger frisk during a traffic stop requires more than the passenger's mere presence in the vehicle.",
         "authorities": [
-          { "type": "case", "name": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "court": "SCOTUS" }
+          {
+            "type": "case",
+            "name": "Arizona v. Johnson",
+            "citation": "555 U.S. 323 (2009)",
+            "court": "SCOTUS"
+          }
         ]
       },
       {
         "id": "individualized_suspicion_required",
         "text": "An officer may frisk a passenger only where there is reasonable, articulable suspicion that the particular passenger is armed and dangerous.",
         "authorities": [
-          { "type": "case", "name": "Terry v. Ohio", "citation": "392 U.S. 1 (1968)", "court": "SCOTUS" },
-          { "type": "case", "name": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "court": "SCOTUS" }
+          {
+            "type": "case",
+            "name": "Terry v. Ohio",
+            "citation": "392 U.S. 1 (1968)",
+            "court": "SCOTUS"
+          },
+          {
+            "type": "case",
+            "name": "Arizona v. Johnson",
+            "citation": "555 U.S. 323 (2009)",
+            "court": "SCOTUS"
+          }
         ]
       },
       {
         "id": "general_officer_safety_insufficient",
         "text": "General officer-safety concerns tied to the stop itself, without something specific to the passenger being frisked, do not satisfy this standard.",
         "authorities": [
-          { "type": "case", "name": "Arizona v. Johnson", "citation": "555 U.S. 323 (2009)", "court": "SCOTUS" }
+          {
+            "type": "case",
+            "name": "Arizona v. Johnson",
+            "citation": "555 U.S. 323 (2009)",
+            "court": "SCOTUS"
+          }
         ]
       }
     ]
   },
-
   "practice_notes": [
     "Pin down exactly what the officer said or wrote to justify the frisk — vague references to 'officer safety' or the neighborhood, without anything tied to this specific passenger, are the weakest part of the government's position.",
     "If the passenger was also asked for ID and that added time to the stop, that may raise a separate timing issue independent of the frisk itself.",

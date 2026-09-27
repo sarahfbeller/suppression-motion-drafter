@@ -6,36 +6,66 @@
   "last_reviewed": "",
   "reviewed_by": "",
   "circuits_reviewed": [],
-  "applicable_courts": ["SCOTUS"],
-
+  "applicable_courts": [
+    "SCOTUS"
+  ],
   "trigger": {
     "description": "Ask when a search was conducted pursuant to a warrant and there is reason to believe the supporting affidavit contained inaccuracies or omissions.",
-
     "match_condition": {
       "all": [
-        { "question": "q_warrant_used", "op": "equals", "value": "yes" },
-        { "question": "q_affidavit_accuracy", "op": "in", "value": ["Possible false statement by affiant", "Possible material omission by affiant", "Both"] },
-        { "question": "q_intent", "op": "in", "value": ["Deliberate falsehood", "Reckless disregard for the truth"] },
-        { "question": "q_materiality", "op": "equals", "value": "no" }
+        {
+          "question": "q_warrant_used",
+          "op": "equals",
+          "value": "yes"
+        },
+        {
+          "question": "q_affidavit_accuracy",
+          "op": "in",
+          "value": [
+            "false_statement",
+            "material_omission",
+            "both"
+          ]
+        },
+        {
+          "question": "q_intent",
+          "op": "in",
+          "value": [
+            "deliberate",
+            "reckless"
+          ]
+        },
+        {
+          "question": "q_materiality",
+          "op": "equals",
+          "value": "no"
+        }
       ]
     },
-
     "excluded_explanations": [
       {
-        "when": { "question": "q_intent", "op": "equals", "value": "Simple negligence/mistake" },
+        "when": {
+          "question": "q_intent",
+          "op": "equals",
+          "value": "negligent"
+        },
         "flag": "franks_intent_insufficient",
         "display_note": "Franks Violation was considered but not included: the available evidence suggests simple negligence or mistake by the affiant, which does not meet the Franks standard (requires deliberate falsehood or reckless disregard for the truth). If discovery reveals greater culpability, this issue may become viable."
       }
     ]
   },
-
   "law_paragraph": {
     "rule_statements": [
       {
         "id": "franks_hearing_standard",
         "text": "A defendant is entitled to an evidentiary hearing on the validity of a search warrant affidavit upon a substantial preliminary showing that the affiant knowingly and intentionally, or with reckless disregard for the truth, included a false statement in the affidavit that was necessary to the finding of probable cause.",
         "authorities": [
-          { "type": "case", "name": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "court": "SCOTUS" }
+          {
+            "type": "case",
+            "name": "Franks v. Delaware",
+            "citation": "438 U.S. 154 (1978)",
+            "court": "SCOTUS"
+          }
         ]
       },
       {
@@ -47,12 +77,16 @@
         "id": "materiality_remedy",
         "text": "If, after excising the false material or including the omitted information, the affidavit's remaining content is insufficient to establish probable cause, the warrant must be voided and the fruits of the search excluded.",
         "authorities": [
-          { "type": "case", "name": "Franks v. Delaware", "citation": "438 U.S. 154 (1978)", "court": "SCOTUS" }
+          {
+            "type": "case",
+            "name": "Franks v. Delaware",
+            "citation": "438 U.S. 154 (1978)",
+            "court": "SCOTUS"
+          }
         ]
       }
     ]
   },
-
   "practice_notes": [
     "A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.",
     "Request the officer's underlying notes, dispatch recordings, or informant file in discovery before filing — they're often the source of the contradiction.",

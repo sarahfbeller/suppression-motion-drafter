@@ -3,7 +3,16 @@
     "id": "q_occupant_role",
     "type": "multiple_choice",
     "prompt": "Was the defendant the driver or a passenger in the stopped vehicle?",
-    "options": ["Driver", "Passenger"]
+    "options": [
+      {
+        "id": "driver",
+        "label": "Driver"
+      },
+      {
+        "id": "passenger",
+        "label": "Passenger"
+      }
+    ]
   },
   {
     "id": "q_passenger_ordered_out",
@@ -20,9 +29,18 @@
     "type": "multiple_choice",
     "prompt": "What did the officer articulate as the basis for frisking the passenger specifically?",
     "options": [
-      "Something specific to this passenger (e.g. visible bulge, furtive movement, matched a description)",
-      "General nervousness or presence in a high-crime area only",
-      "No suspicion articulated — officer cited only proximity to the driver or the stop itself"
+      {
+        "id": "passenger_specific",
+        "label": "Something specific to this passenger (e.g. visible bulge, furtive movement, matched a description)"
+      },
+      {
+        "id": "generalized_only",
+        "label": "General nervousness or presence in a high-crime area only"
+      },
+      {
+        "id": "none_articulated",
+        "label": "No suspicion articulated — officer cited only proximity to the driver or the stop itself"
+      }
     ]
   }
 ]

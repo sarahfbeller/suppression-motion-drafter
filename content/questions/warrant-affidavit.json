@@ -8,13 +8,47 @@
     "id": "q_affidavit_accuracy",
     "type": "multiple_choice",
     "prompt": "Is there any indication the affidavit contained a false statement, or omitted material information?",
-    "options": ["No known issues", "Possible false statement by affiant", "Possible material omission by affiant", "Both"]
+    "options": [
+      {
+        "id": "no_known_issues",
+        "label": "No known issues"
+      },
+      {
+        "id": "false_statement",
+        "label": "Possible false statement by affiant"
+      },
+      {
+        "id": "material_omission",
+        "label": "Possible material omission by affiant"
+      },
+      {
+        "id": "both",
+        "label": "Both"
+      }
+    ]
   },
   {
     "id": "q_intent",
     "type": "multiple_choice",
     "prompt": "Does the available evidence suggest the affiant acted with...",
-    "options": ["Deliberate falsehood", "Reckless disregard for the truth", "Simple negligence/mistake", "Unknown"]
+    "options": [
+      {
+        "id": "deliberate",
+        "label": "Deliberate falsehood"
+      },
+      {
+        "id": "reckless",
+        "label": "Reckless disregard for the truth"
+      },
+      {
+        "id": "negligent",
+        "label": "Simple negligence/mistake"
+      },
+      {
+        "id": "unknown",
+        "label": "Unknown"
+      }
+    ]
   },
   {
     "id": "q_materiality",
