@@ -66,9 +66,14 @@ def render_memo(result, config):
             lines += ["**Practice notes:**", ""] + [f"- {n}" for n in issue["practice_notes"]] + [""]
 
     for e in result["no_paragraph"]:
-        lines += [f"### {e['issue']['label']} (not in motion)", "",
-                  "The facts match this issue, but no rule statement has authority available for this "
-                  "forum, so no paragraph could be generated. Research needed before this can be argued.", ""]
+        lines += [f"### {e['issue']['label']} (not in motion)", ""]
+        if e["gaps"]:
+            lines += ["The facts match this issue, but no rule statement has authority available for this "
+                      "forum, so no paragraph could be generated. Research needed before this can be argued.", ""]
+        else:
+            lines += ["The facts match this issue, but none of its rule statements apply to these facts, so "
+                      "no paragraph could be generated. This is a problem with the issue's content, not "
+                      "missing research — tell the maintainer.", ""]
 
     if result["near_misses"]:
         lines += ["## Issues considered but not included", ""]

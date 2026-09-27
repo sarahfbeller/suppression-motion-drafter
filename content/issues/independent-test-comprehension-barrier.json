@@ -10,7 +10,6 @@
     "ak"
   ],
   "trigger": {
-    "description": "Ask whenever the officer's advisement of the right to an independent test was otherwise proper on its face, but something may have prevented the defendant from actually, knowingly understanding it.",
     "match_condition": {
       "all": [
         {

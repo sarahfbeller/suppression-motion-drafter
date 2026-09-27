@@ -10,6 +10,7 @@ import unittest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 import engine as E  # noqa: E402
+import render as R  # noqa: E402
 
 STATE = {"q_filing_court": "ak"}
 FEDERAL = {"q_filing_court": "9th_cir"}
@@ -48,6 +49,34 @@ class StatementApplicableCourts(unittest.TestCase):
         self.st["applicable_courts"] = ["9th_cir"]
         self.assertEqual(self.render(FEDERAL)[2], [self.st["text"]])
         self.assertEqual(self.render(STATE)[2], [])
+
+
+class MatchedButNoParagraph(unittest.TestCase):
+    """The memo must say whether an empty issue needs research or has a content problem."""
+
+    def setUp(self):
+        self.config, _questions, issues = E.load_repo(ROOT)
+        self.issue = copy.deepcopy(next(i for i in issues if i["id"] == "passenger-frisk-suspicionless"))
+        self.answers = {**FEDERAL, "q_occupant_role": "passenger", "q_passenger_frisked": "yes",
+                        "q_frisk_suspicion_basis": "none_articulated"}
+
+    def memo(self):
+        result = E.evaluate_session(self.config, [self.issue], {"answers": self.answers})
+        self.assertEqual(result["included"], [])
+        self.assertEqual(len(result["no_paragraph"]), 1)
+        return R.render_memo(result, self.config)
+
+    def test_every_statement_a_gap_says_research_needed(self):
+        for st in self.issue["law_paragraph"]["rule_statements"]:
+            st["authorities"] = []
+        self.assertIn("Research needed", self.memo())
+
+    def test_every_statement_filtered_says_content_problem(self):
+        for st in self.issue["law_paragraph"]["rule_statements"]:
+            st["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
+        memo = self.memo()
+        self.assertIn("problem with the issue's content", memo)
+        self.assertNotIn("Research needed", memo)
 
 
 if __name__ == "__main__":

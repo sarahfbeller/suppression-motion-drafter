@@ -24,8 +24,8 @@ UNCERTAIN_OPTION_IDS = {"unknown", "not_sure", "unclear"}
 QUESTION_TYPES = {"yes_no", "multiple_choice", "multi_select", "short_text"}
 ISSUE_KEYS = {"id", "phase", "label", "motion_heading", "status", "last_reviewed",
               "reviewed_by", "applicable_courts", "trigger", "law_paragraph", "practice_notes"}
-TRIGGER_KEYS = {"description", "match_condition", "review_conditions",
-                "excluded_explanations", "non_gating_questions"}
+TRIGGER_KEYS = {"match_condition", "review_conditions",
+                "excluded_explanations"}
 NOTE_KEYS = {"when", "flag", "display_note"}
 STATEMENT_KEYS = {"id", "text", "when", "applicable_courts", "authorities"}
 CASE_KEYS = {"type", "name", "citation", "pincite", "court"}
@@ -394,7 +394,7 @@ def check_issue(r, where, issue, config, questions, used_questions):
 
     # ---- trigger
     trig = issue.get("trigger", {})
-    check_keys(r, f"{where} trigger", trig, TRIGGER_KEYS, ["description", "match_condition"])
+    check_keys(r, f"{where} trigger", trig, TRIGGER_KEYS, ["match_condition"])
     conds_ok = True
     match = trig.get("match_condition")
     if match is not None:
@@ -423,12 +423,6 @@ def check_issue(r, where, issue, config, questions, used_questions):
             elif AUTHOR_NOTE_RE.search(note["display_note"]):
                 r.warn(nw, "display_note reads like a note to the author, but it's shown to the "
                            "attorney — move it to an '_'-prefixed field?")
-
-    for qid in trig.get("non_gating_questions", {}):
-        if qid not in questions:
-            r.err(f"{where} non_gating_questions", f"unknown question {qid!r}")
-        else:
-            used_questions.add(qid)
 
     # ---- law paragraph
     lp = issue.get("law_paragraph", {})
@@ -525,6 +519,32 @@ def check_issue(r, where, issue, config, questions, used_questions):
 
     if conds_ok and match is not None:
         check_reachability(r, where, trig, statements, questions)
+        check_every_match_has_a_statement(r, where, issue, statements, questions, courts)
+
+
+def check_every_match_has_a_statement(r, where, issue, statements, questions, courts):
+    """In every forum the issue applies in, every matching set of answers must leave at least one
+    statement standing after its 'when' and applicable_courts — otherwise the issue matches but
+    produces nothing, and it isn't a research gap."""
+    match = issue["trigger"]["match_condition"]
+    qids = E.condition_questions(match)
+    for st in statements:
+        if "when" in st:
+            qids |= E.condition_questions(st["when"])
+    if space_size(qids, questions) > ENUMERATION_LIMIT:
+        return
+    for code in sorted(courts):
+        binding = [E.SCOTUS, code]
+        if courts[code]["kind"] == "scotus" or not E.applies_in(issue["applicable_courts"], binding):
+            continue
+        live = [st for st in statements if E.applies_in(E.statement_courts(issue, st), binding)]
+        for a in assignments(qids, questions):
+            if E.eval_condition(match, a) and not any("when" not in st or E.eval_condition(st["when"], a)
+                                                      for st in live):
+                r.err(where, f"in {courts[code]['display_name']}, the issue can match with no rule statement "
+                             f"left after 'when' and applicable_courts, so it would produce nothing — "
+                             f"e.g. answers {a}")
+                break
 
 
 def check_reachability(r, where, trig, statements, questions):

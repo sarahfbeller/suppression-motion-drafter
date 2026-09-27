@@ -61,7 +61,7 @@ Questions hold content only. Ordering, branching, and skip logic belong to the d
 | `motion_heading` | Court-facing argument heading. Advocacy, no citations. |
 | `status`, `last_reviewed`, `reviewed_by` | See review status. |
 | `applicable_courts` | Where the issue exists at all (see below). |
-| `trigger` | `{ description, match_condition, review_conditions?, excluded_explanations?, non_gating_questions? }` |
+| `trigger` | `{ match_condition, review_conditions?, excluded_explanations? }` |
 | `law_paragraph` | `{ rule_statements: [...] }` |
 | `practice_notes` | Tips for the attorney. Memo only. |
 
@@ -76,15 +76,12 @@ issue is skipped entirely: nothing about it is rendered.
 
 **`trigger`.**
 
-- `description`: free-text summary of when the issue applies. Not rendered.
 - `match_condition`: the issue is included when this is true.
 - `review_conditions`: `[{ when, flag, display_note }]`. For an included issue, each note whose
   `when` is true goes in the memo under that issue.
 - `excluded_explanations`: same shape. For an issue that didn't match, each note whose `when` is
   true goes in the memo's "considered but not included" section. These are checked for every
   unmatched issue.
-- `non_gating_questions`: question id → why that question bears on the issue but isn't part of
-  `match_condition`. Not rendered. Listing a question here counts as using it.
 
 `flag` is a short snake_case id, unique within the issue. It is never rendered.
 
@@ -153,7 +150,7 @@ Any change to `motion_heading`, `applicable_courts`, `trigger`, `law_paragraph`,
 - **The court (motion):** `motion_heading`, rule statement `text`, authorities.
 - **The attorney (memo):** `practice_notes`, and the `display_note` of review conditions and
   excluded explanations.
-- **The maintainer:** `_`-prefixed fields, `trigger.description`, `non_gating_questions`, `flag`.
+- **The maintainer:** `_`-prefixed fields, `flag`.
 
 The test: would an attorney want this sentence in front of the court? Motion. In front of
 themselves while deciding what to file? Memo. Is it about the state of the file? Author note.
@@ -170,5 +167,7 @@ line says so.
 2. Included issues, numbered to match the motion: label; an unreviewed-content flag; a coverage
    note when a SCOTUS-grounded section cites no circuit or state authority; gaps; review notes that
    fired; practice notes. An issue that matched but had every statement dropped is listed here as
-   "not in motion."
+   "not in motion," with a note saying whether research is needed (its statements were gaps) or its
+   content is broken (no statement applied). The validator rejects content that can produce the
+   second case, when the answer space is small enough to check.
 3. Issues considered but not included: excluded explanations that fired.

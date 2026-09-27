@@ -132,6 +132,11 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     # ---- stale fields left behind by redesigns
 
+    def test_stale_trigger_fields(self):
+        r = self.run_with(f"{ISSUES}/prolonged-stop.json",
+                          lambda d: d["trigger"].update({"non_gating_questions": {"q_stop_type": "x"}}))
+        self.assertError(r, "unknown field")
+
     def test_stale_issue_fields(self):
         for field in ("uses_questions", "question_bank_file", "related_issues",
                       "jurisdiction", "circuits_reviewed", "applicable_forums", "category"):
@@ -259,6 +264,23 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         def f(d):
             stmt(d, "core_prolongation_rule")["applicable_courts"] = ["9th_cir"]
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "this statement only applies in")
+
+    # ---- an issue that matches but produces nothing
+
+    def test_match_with_every_statement_filtered_by_when(self):
+        # Matches on none_articulated too, but every statement now needs generalized_only.
+        def f(d):
+            for st in d["law_paragraph"]["rule_statements"]:
+                st["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
+        self.assertError(self.run_with(f"{ISSUES}/passenger-frisk-suspicionless.json", f),
+                         "no rule statement left")
+
+    def test_match_with_every_statement_limited_to_another_forum(self):
+        def f(d):
+            for st in d["law_paragraph"]["rule_statements"]:
+                st["applicable_courts"] = ["ak"]
+        self.assertError(self.run_with(f"{ISSUES}/passenger-frisk-suspicionless.json", f),
+                         "in Ninth Circuit, the issue can match with no rule statement left")
 
     # ---- config, file layout, and question bank
 

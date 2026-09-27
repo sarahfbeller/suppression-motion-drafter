@@ -73,7 +73,7 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
 - The decision tree (top-level "what kind of encounter was this" branching) is undesigned.
 - Franks: answering "unknown" for intent silently excludes the issue; the policy for
   uncertain answers isn't settled.
-- Unused questions: `q_duration`, `q_contact_timeline`, `q_passenger_ordered_out`.
+- Unused questions: `q_duration`, `q_contact_timeline`, `q_passenger_ordered_out`, `q_stop_type`.
 - Citations don't yet support short forms (*Id.*, short names) or signals (*See*).
 - Most pincites are empty.
 - Candidate authoring-guide additions awaiting the maintainer's decision: "use `when` to

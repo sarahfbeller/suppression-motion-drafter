@@ -53,8 +53,8 @@ Not read by the app — this is for whoever (you) is authoring content.
 - If the machine can compute it from structure, don't hand-maintain it as a separate field —
   it'll drift out of sync. (We removed `uses_questions`, `question_bank_file`, and
   `related_issues` for this reason.)
-- If it's information that exists *only* because you know it (schema rationale, "why this
-  question isn't gating," what's still unverified) — that's fine to keep, in an `_`-prefixed
+- If it's information that exists *only* because you know it (schema rationale, what's still
+  unverified) — that's fine to keep, in an `_`-prefixed
   field, even though no end user ever sees it. The test is "is this the only place this fact lives," not
   "will a human ever read this."
 - `flag` (short, machine-readable) and `display_note` (attorney-facing sentence) are different
@@ -72,5 +72,3 @@ Not read by the app — this is for whoever (you) is authoring content.
 
 - Decision tree's top-level branching (the "what kind of encounter was this" root
   categories) — not yet designed.
-- Whether `non_gating_questions`-style explanatory fields should follow a consistent naming
-  convention across issue files, or are fine being one-off per issue.

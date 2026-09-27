@@ -10,7 +10,6 @@
     "ak"
   ],
   "trigger": {
-    "description": "Ask whenever the defendant submitted to (or refused) a breath test following a DUI arrest, to determine whether they were denied a reasonable opportunity to contact an attorney or a relative/friend before deciding.",
     "match_condition": {
       "all": [
         {

@@ -10,7 +10,6 @@
     "scotus"
   ],
   "trigger": {
-    "description": "Ask whenever there was a traffic or investigative stop, to determine whether it was extended beyond the time reasonably required for its original purpose.",
     "match_condition": {
       "all": [
         {
@@ -31,9 +30,6 @@
           ]
         }
       ]
-    },
-    "non_gating_questions": {
-      "q_stop_type": "Used only to route which vehicle-stop-timeline questions get asked at all (decision-tree concern) — not part of this issue's match condition."
     },
     "review_conditions": [
       {

@@ -10,7 +10,6 @@
     "ak"
   ],
   "trigger": {
-    "description": "Ask whenever the defendant was arrested for DUI and asked to submit to a breath test, to determine whether police clearly and expressly advised them of the right to an independent chemical test.",
     "match_condition": {
       "all": [
         {
