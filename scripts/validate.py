@@ -614,9 +614,9 @@ def check_reachability(r, where, trig, statements, questions):
                 if any(E.eval_condition(e["when"], a) for e in excluded):
                     continue
                 if any(E.eval_condition(match, {**a, qid: alt}) for alt in alternatives):
-                    r.warn(where, f"answering {qid} = {uid!r} silently excludes this issue (a different "
-                                  f"answer would have included it, and no excluded_explanation fires). "
-                                  f"Include-with-review-note, or add a near-miss explanation?")
+                    r.err(where, f"answering {qid} = {uid!r} silently excludes this issue (a different "
+                                 f"answer would have included it, and no excluded_explanation fires). "
+                                 f"Include it with a review note (the default), or add an excluded_explanation.")
                     break
 
 

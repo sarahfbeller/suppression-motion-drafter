@@ -19,6 +19,12 @@ Not read by the app — this is for whoever (you) is authoring content.
   - Included, but shaky → `review_conditions` (shown in the attorney memo under that issue)
   - Excluded, but a documented close call → `excluded_explanations` (shown in the memo's
     "Issues considered but not included" section)
+- [ ] **What happens on an uncertain answer?** For every `unknown` / `not_sure` / `unclear`
+  option on a question in `match_condition`, decide explicitly — never let it exclude the issue
+  silently (the validator rejects that). Default: include the issue on that answer and add a
+  `review_conditions` note explaining what to develop; a drafted section is easy to delete, a
+  missing one is easy to miss. Exclude with an `excluded_explanations` note only when the
+  uncertainty means the argument shouldn't be drafted at all.
 - [ ] **Is a cross-cutting concept trying to sneak in as a per-issue link?** Standing and
   fruit-of-the-poisonous-tree apply to every issue — don't reference them per issue. There is
   currently no place for concepts like these (`cross_cutting_reminders` was removed); raise it

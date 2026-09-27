@@ -31,7 +31,8 @@
           "op": "in",
           "value": [
             "deliberate",
-            "reckless"
+            "reckless",
+            "unknown"
           ]
         },
         {
@@ -41,6 +42,17 @@
         }
       ]
     },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_intent",
+          "op": "equals",
+          "value": "unknown"
+        },
+        "flag": "franks_intent_unknown",
+        "display_note": "The affiant's intent is unknown. This section was drafted anyway, but a Franks hearing requires a substantial preliminary showing that the false statement or omission was deliberate or made with reckless disregard for the truth; negligence or innocent mistake isn't enough. Develop evidence of intent before filing, or cut this section."
+      }
+    ],
     "excluded_explanations": [
       {
         "when": {
@@ -102,6 +114,7 @@
     "Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant."
   ],
   "_author_notes": [
-    "omissions_extension has no authority yet, so it never renders. Franks itself addresses false statements; the omissions extension is circuit-level doctrine. A possible 9th Circuit source is United States v. Stanert, 762 F.2d 775 (9th Cir. 1985) — unverified. Alaska authority not yet researched."
+    "omissions_extension has no authority yet, so it never renders. Franks itself addresses false statements; the omissions extension is circuit-level doctrine. A possible 9th Circuit source is United States v. Stanert, 762 F.2d 775 (9th Cir. 1985) — unverified. Alaska authority not yet researched.",
+    "The franks_intent_unknown review note states the Franks intent standard from general knowledge; it hasn't been checked against the opinion. Unverified."
   ]
 }

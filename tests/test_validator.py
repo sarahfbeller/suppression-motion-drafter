@@ -346,16 +346,24 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     # ---- unknown-answer policy
 
-    def test_silent_exclusion_on_unknown_is_flagged_and_can_be_resolved(self):
-        self.assertWarning(V.validate(self.tmp), "silently excludes")
-
+    def test_silent_exclusion_on_unknown_is_an_error(self):
+        # Original bug: Franks excluded on q_intent = unknown with nothing in the memo.
         def f(d):
+            intent = next(c for c in d["trigger"]["match_condition"]["all"] if c["question"] == "q_intent")
+            intent["value"] = ["deliberate", "reckless"]
+            del d["trigger"]["review_conditions"]
+        self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "silently excludes")
+
+    def test_silent_exclusion_resolved_by_excluded_explanation(self):
+        def f(d):
+            intent = next(c for c in d["trigger"]["match_condition"]["all"] if c["question"] == "q_intent")
+            intent["value"] = ["deliberate", "reckless"]
+            del d["trigger"]["review_conditions"]
             d["trigger"]["excluded_explanations"].append(
                 {"when": {"question": "q_intent", "op": "equals", "value": "unknown"},
                  "flag": "intent_unknown", "display_note": "Intent is unknown; develop it in discovery."})
         r = self.run_with(f"{ISSUES}/franks-violation.json", f)
-        self.assertFalse(any("silently excludes" in w for w in r.warnings))
-
+        self.assertFalse(any("silently excludes" in e for e in r.errors), "\n".join(r.errors))
 
 if __name__ == "__main__":
     unittest.main()
