@@ -314,6 +314,11 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         r = V.validate(self.tmp)
         self.assertFalse(any("reachability — skipped" in w for w in r.warnings), "\n".join(r.warnings))
 
+    def test_warrant_not_a_search_justification(self):
+        def f(qs):
+            qs[0]["options"].insert(0, {"id": "warrant", "label": "A search warrant"})
+        self.assertError(self.run_with("content/questions/search-justification.json", f), "warrantless searches only")
+
     def test_unknown_event_group(self):
         def f(d):
             d["trigger"]["match_condition"]["all"][0] = {"event_group": "any_serch"}

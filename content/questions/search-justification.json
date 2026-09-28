@@ -2,7 +2,7 @@
   {
     "id": "q_search_justification",
     "type": "multi_select",
-    "prompt": "How did police justify the search? Select all they relied on.",
+    "prompt": "How did police justify any warrantless search? Select all they relied on.",
     "options": [
       {
         "id": "consent",
@@ -11,10 +11,6 @@
       {
         "id": "incident_to_arrest",
         "label": "Search incident to arrest"
-      },
-      {
-        "id": "warrant",
-        "label": "A search warrant"
       },
       {
         "id": "vehicle_probable_cause",

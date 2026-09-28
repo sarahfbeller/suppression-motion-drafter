@@ -184,6 +184,11 @@ def check_encounter_events(r, questions):
             r.err(where, "missing — every issue's match_condition starts from an encounter event")
     elif q["type"] != "multi_select":
         r.err(where, "must be multi_select")
+    sj = questions.get("q_search_justification")
+    if sj and any(o["id"] == "warrant" for o in sj.get("options", [])):
+        r.err("question q_search_justification", "has a 'warrant' option — warrants are recorded by the "
+                                                 f"'warrant' option of {E.ENCOUNTER_EVENTS}, and this question "
+                                                 "covers warrantless searches only")
 
 
 def check_event_groups(r, questions, config):
