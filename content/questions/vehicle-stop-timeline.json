@@ -1,24 +1,5 @@
 [
   {
-    "id": "q_stop_type",
-    "type": "multiple_choice",
-    "prompt": "What was the original basis for the stop?",
-    "options": [
-      {
-        "id": "traffic_violation",
-        "label": "Traffic violation"
-      },
-      {
-        "id": "terry_stop",
-        "label": "Terry stop (reasonable suspicion of a crime)"
-      },
-      {
-        "id": "other",
-        "label": "Other"
-      }
-    ]
-  },
-  {
     "id": "q_original_purpose_completed",
     "type": "yes_no",
     "prompt": "Had the officer finished (or reasonably should have finished) the tasks tied to the original purpose — e.g. writing the citation, running the license/registration/warrant checks — before anything else happened?"

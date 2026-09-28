@@ -13,10 +13,59 @@
       "display_name": "Alaska"
     }
   },
-  "phase_order": [
-    "stop-initiation",
-    "stop-conduct",
-    "warrant-issuance",
-    "post-arrest-testing"
-  ]
+  "motion_order": {
+    "stop-initiation": [
+      "no-reasonable-suspicion-for-stop"
+    ],
+    "stop-conduct": [
+      "prolonged-stop",
+      "frisk-without-reasonable-suspicion",
+      "frisk-exceeded-weapons-search",
+      "plain-feel-manipulation"
+    ],
+    "arrest": [
+      "dui-arrest-without-probable-cause"
+    ],
+    "warrant-issuance": [
+      "franks-violation"
+    ],
+    "search": [
+      "consent-not-voluntary",
+      "consent-search-exceeded-scope",
+      "search-incident-to-arrest-exceeded-scope",
+      "plain-view-not-lawfully-present",
+      "plain-view-not-immediately-apparent",
+      "plain-view-object-moved"
+    ],
+    "interrogation": [
+      "miranda-warnings-inadequate",
+      "miranda-waiver-invalid",
+      "miranda-invocation-not-honored",
+      "confession-involuntary",
+      "unrecorded-custodial-interrogation"
+    ],
+    "post-arrest-testing": [
+      "denial-of-contact-before-breath-test",
+      "independent-test-advisement-failure",
+      "independent-test-comprehension-barrier"
+    ]
+  },
+  "event_groups": {
+    "any_search": [
+      "search_person",
+      "search_vehicle",
+      "entry_home",
+      "search_other_place",
+      "search_container",
+      "digital_device"
+    ],
+    "any_stop_or_contact": [
+      "vehicle_stop",
+      "pedestrian_stop",
+      "welfare_check",
+      "field_sobriety_tests",
+      "frisk",
+      "arrest"
+    ]
+  }
 }

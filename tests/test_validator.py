@@ -88,8 +88,8 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_match_condition_that_is_never_true(self):
         def f(d):
             d["trigger"]["match_condition"]["all"].append(
-                {"question": "q_occupant_role", "op": "equals", "value": "driver"})
-        self.assertError(self.run_with(f"{ISSUES}/passenger-frisk-suspicionless.json", f), "can never be true")
+                {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "specific_to_client"})
+        self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f), "can never be true")
 
     # ---- op / type mismatches (not_equals null on a multi_select)
 
@@ -117,7 +117,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_label_text_instead_of_option_id(self):
         def f(d):
             d["trigger"]["match_condition"]["all"][0]["value"] = "Passenger"
-        self.assertError(self.run_with(f"{ISSUES}/passenger-frisk-suspicionless.json", f), "not valid option ids")
+        self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f), "not valid option ids")
 
     def test_capitalized_yes_no(self):
         def f(d):
@@ -139,7 +139,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_stale_issue_fields(self):
         for field in ("uses_questions", "question_bank_file", "related_issues",
-                      "jurisdiction", "circuits_reviewed", "applicable_forums", "category"):
+                      "jurisdiction", "circuits_reviewed", "applicable_forums", "category", "phase"):
             with self.subTest(field=field):
                 self.setUp()
                 r = self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d.update({field: []}))
@@ -159,7 +159,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_stale_config_fields(self):
         for field in ("category_order", "issues", "question_bank_topics", "cross_cutting_reminders",
-                      "case_session_schema", "desired_courts", "session"):
+                      "case_session_schema", "desired_courts", "session", "phase_order"):
             with self.subTest(field=field):
                 self.setUp()
                 r = self.run_with("content/config.json", lambda c: c.update({field: []}))
@@ -314,6 +314,40 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         r = V.validate(self.tmp)
         self.assertFalse(any("reachability — skipped" in w for w in r.warnings), "\n".join(r.warnings))
 
+    def test_unknown_event_group(self):
+        def f(d):
+            d["trigger"]["match_condition"]["all"][0] = {"event_group": "any_serch"}
+        self.assertError(self.run_with(f"{ISSUES}/consent-not-voluntary.json", f), "unknown event_group 'any_serch'")
+
+    def test_event_group_member_not_an_event(self):
+        self.assertError(self.run_with("content/config.json", lambda c: c["event_groups"]["any_search"].append("search_boat")),
+                         "'search_boat' isn't an option of q_encounter_events")
+
+    def test_unused_event_group(self):
+        self.assertWarning(self.run_with("content/config.json", lambda c: c["event_groups"].update({"any_test": ["breath_test"]})),
+                           "group 'any_test' isn't used by any issue")
+
+    def test_contradiction_still_caught_with_grouped_events(self):
+        # Plain view starts from any of ten events; the validator enumerates them as one group.
+        # A review note that needs none of those events must still be caught as dead.
+        def f(d):
+            d["trigger"]["review_conditions"].append(
+                {"when": {"question": "q_encounter_events", "op": "empty"},
+                 "flag": "impossible", "display_note": "x"})
+        self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f),
+                         "can never fire on an included issue")
+
+    def test_event_outside_the_group_still_enumerated_separately(self):
+        # frisk is in plain view's event group but also used on its own here, so it can't be
+        # collapsed with the others: requiring frisk AND not frisk must be caught.
+        def f(d):
+            d["law_paragraph"]["rule_statements"][0]["when"] = {"all": [
+                {"question": "q_encounter_events", "op": "includes", "value": "frisk"},
+                {"question": "q_encounter_events", "op": "not_includes", "value": "frisk"}]}
+            for st in d["law_paragraph"]["rule_statements"][1:]:
+                st["when"] = d["law_paragraph"]["rule_statements"][0]["when"]
+        self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f), "never renders")
+
     # ---- an issue that matches but produces nothing
 
     def test_match_with_every_statement_filtered_by_when(self):
@@ -321,14 +355,14 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         def f(d):
             for st in d["law_paragraph"]["rule_statements"]:
                 st["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
-        self.assertError(self.run_with(f"{ISSUES}/passenger-frisk-suspicionless.json", f),
+        self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f),
                          "no rule statement left")
 
     def test_match_with_every_statement_limited_to_another_forum(self):
         def f(d):
             for st in d["law_paragraph"]["rule_statements"]:
                 st["applicable_courts"] = ["ak"]
-        self.assertError(self.run_with(f"{ISSUES}/passenger-frisk-suspicionless.json", f),
+        self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f),
                          "in Ninth Circuit, the issue can match with no rule statement left")
 
     # ---- config, file layout, and question bank
@@ -337,9 +371,18 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d.update({"id": "prolonged"})),
                          "doesn't match the file name")
 
-    def test_phase_not_in_phase_order(self):
-        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d.update({"phase": "stop"})),
-                         "not in config phase_order")
+    def test_issue_missing_from_motion_order(self):
+        def f(c):
+            c["motion_order"]["stop-conduct"].remove("prolonged-stop")
+        self.assertError(self.run_with("content/config.json", f), "prolonged-stop.json isn't in motion_order")
+
+    def test_motion_order_lists_unknown_issue(self):
+        self.assertError(self.run_with("content/config.json", lambda c: c["motion_order"]["arrest"].append("no-such-issue")),
+                         "there's no content/issues/no-such-issue.json")
+
+    def test_issue_listed_twice_in_motion_order(self):
+        self.assertError(self.run_with("content/config.json", lambda c: c["motion_order"]["arrest"].append("prolonged-stop")),
+                         "more than once")
 
     # ---- filing court
 

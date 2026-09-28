@@ -1,0 +1,170 @@
+{
+  "id": "search-incident-to-arrest-exceeded-scope",
+  "label": "Search Exceeded the Scope of a Search Incident to Arrest",
+  "motion_heading": "The Search Exceeded the Limited Scope of a Search Incident to Arrest",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "arrest"
+        },
+        {
+          "event_group": "any_search"
+        },
+        {
+          "any": [
+            {
+              "question": "q_search_justification",
+              "op": "includes",
+              "value": "incident_to_arrest"
+            },
+            {
+              "question": "q_search_justification",
+              "op": "includes",
+              "value": "not_sure"
+            }
+          ]
+        },
+        {
+          "question": "q_sita_problems",
+          "op": "not_empty"
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_search_justification",
+          "op": "includes",
+          "value": "not_sure"
+        },
+        "flag": "justification_unknown",
+        "display_note": "You aren't sure yet how police justified the search. This section was drafted anyway; find out from the reports and the prosecution's response what justification they claim before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_sita_problems",
+          "op": "includes",
+          "value": "not_sure"
+        },
+        "flag": "sita_scope_unknown",
+        "display_note": "You aren't sure yet whether the search went beyond what a search incident to arrest allows. This section was drafted anyway; establish where your client was, whether they were secured, and exactly what was searched before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_sita_problems",
+          "op": "includes",
+          "value": "vehicle_after_secured"
+        },
+        "flag": "vehicle_evidence_prong",
+        "display_note": "Even when the arrestee is secured, a vehicle search incident to arrest is allowed if it was reasonable to believe evidence of the offense of arrest was in the vehicle. Expect the prosecution to argue this, especially for drug or DUI arrests (open containers); be ready to explain why no such evidence could be expected."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "limited_scope",
+        "text": "A search incident to a lawful arrest may extend only to the arrestee's person and the area within the arrestee's immediate control — the area from which the arrestee might gain possession of a weapon or destructible evidence.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Chimel v. California",
+            "citation": "395 U.S. 752 (1969)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "other_rooms_and_closed_areas",
+        "text": "That justification does not extend to searching rooms other than the one in which the arrest occurs, or closed or concealed areas in that room.",
+        "when": {
+          "question": "q_sita_problems",
+          "op": "includes",
+          "value": "beyond_immediate_control"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Chimel v. California",
+            "citation": "395 U.S. 752 (1969)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "vehicle",
+        "text": "Police may search a vehicle incident to a recent occupant's arrest only if the arrestee is unsecured and within reaching distance of the passenger compartment at the time of the search, or it is reasonable to believe the vehicle contains evidence of the offense of arrest.",
+        "when": {
+          "question": "q_sita_problems",
+          "op": "includes",
+          "value": "vehicle_after_secured"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Arizona v. Gant",
+            "citation": "556 U.S. 332 (2009)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "cell_phone",
+        "text": "Police generally must obtain a warrant before searching the data on a cell phone seized incident to arrest.",
+        "when": {
+          "question": "q_sita_problems",
+          "op": "includes",
+          "value": "cell_phone_data"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Riley v. California",
+            "citation": "573 U.S. 373 (2014)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "remote_in_time_or_place",
+        "text": "A search that is remote in time or place from the arrest is not incident to the arrest.",
+        "when": {
+          "question": "q_sita_problems",
+          "op": "includes",
+          "value": "remote_in_time_or_place"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Preston v. United States",
+            "citation": "376 U.S. 364 (1964)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      }
+    ]
+  },
+  "practice_notes": [
+    "Reconstruct the scene: where your client was when the search happened, whether they were handcuffed or in a patrol car, and exactly what was opened or searched and in what order. Body-cam footage is usually the best source.",
+    "A search incident to arrest requires a lawful arrest — if the arrest itself lacked probable cause, argue that too; this issue assumes the arrest was lawful.",
+    "Expect the prosecution to fall back on other justifications (automobile exception, inventory, inevitable discovery) if this one fails; check which of those the facts could support."
+  ],
+  "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Chimel v. California, Arizona v. Gant, Riley v. California, Preston v. United States. Unverified; pincites empty.",
+    "Added 2026-09-27 at the maintainer's request, along with q_search_justification (search-justification.json), which replaced q_consent_relied_on."
+  ]
+}

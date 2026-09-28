@@ -1,0 +1,149 @@
+{
+  "id": "miranda-invocation-not-honored",
+  "label": "Invocation of the Right to Silence or Counsel Was Not Honored",
+  "motion_heading": "Police Failed to Honor the Defendant's Invocation of Miranda Rights",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "statements"
+        },
+        {
+          "question": "q_custody",
+          "op": "in",
+          "value": [
+            "yes",
+            "not_sure"
+          ]
+        },
+        {
+          "question": "q_invocation",
+          "op": "not_empty"
+        },
+        {
+          "question": "q_after_invocation",
+          "op": "in",
+          "value": [
+            "continued",
+            "resumed",
+            "not_sure"
+          ]
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_custody",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "custody_unknown",
+        "display_note": "You aren't sure yet whether your client was in custody. This section was drafted anyway; pin down whether your client was under arrest or restrained like an arrest (handcuffs, locked car, told not free to leave) before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_invocation",
+          "op": "includes",
+          "value": "ambiguous"
+        },
+        "flag": "ambiguous_invocation",
+        "display_note": "If your client's words were arguably ambiguous, expect the prosecution to argue they didn't invoke at all: an invocation of counsel must be unambiguous (Davis v. United States, 512 U.S. 452 (1994)), and the same applies to silence (Berghuis v. Thompkins, 560 U.S. 370 (2010)). Get the exact words."
+      },
+      {
+        "when": {
+          "question": "q_after_invocation",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "after_invocation_unknown",
+        "display_note": "You aren't sure yet what police did after your client invoked. This section was drafted anyway; review the recording from the invocation onward before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "must_cease",
+        "text": "If a person in custody indicates in any manner, at any time before or during questioning, that they wish to remain silent or want an attorney, the interrogation must cease.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Miranda v. Arizona",
+            "citation": "384 U.S. 436 (1966)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "scrupulously_honored",
+        "text": "The right to cut off questioning must be scrupulously honored.",
+        "when": {
+          "question": "q_invocation",
+          "op": "includes",
+          "value": "said_wanted_silence"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Michigan v. Mosley",
+            "citation": "423 U.S. 96 (1975)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "no_further_interrogation_counsel",
+        "text": "Once a person in custody has asked for counsel, police may not interrogate further until counsel has been made available, unless the person initiates further communication.",
+        "when": {
+          "question": "q_invocation",
+          "op": "includes",
+          "value": "asked_for_lawyer"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Edwards v. Arizona",
+            "citation": "451 U.S. 477 (1981)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "counsel_present",
+        "text": "After a request for counsel, questioning may not resume without counsel present, even if the person has since consulted with an attorney.",
+        "when": {
+          "question": "q_invocation",
+          "op": "includes",
+          "value": "asked_for_lawyer"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Minnick v. Mississippi",
+            "citation": "498 U.S. 146 (1990)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      }
+    ]
+  },
+  "practice_notes": [
+    "Get the recording and mark the exact moment of the invocation, what was said, and everything police said or did afterward — including anything that could be spun as your client 're-initiating'."
+  ],
+  "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Michigan v. Mosley, Edwards v. Arizona, Minnick v. Mississippi, and Davis v. United States and Berghuis v. Thompkins (review note). Unverified; pincites empty."
+  ]
+}

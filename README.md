@@ -6,7 +6,7 @@ a **motion** (court-facing argument sections with rule paragraphs and citations)
 
 ## Layout
 
-- `content/config.json` — courts, and the phase order that sets the default order of the motion
+- `content/config.json` — courts, and `motion_order`: the order of issues in the motion, grouped by phase
 - `content/questions/` — the question bank, grouped by fact-pattern topic
 - `content/issues/` — one file per suppression issue
 - `scripts/validate.py` — checks all content; run before every commit

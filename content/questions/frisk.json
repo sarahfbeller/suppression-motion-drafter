@@ -1,0 +1,52 @@
+[
+  {
+    "id": "q_frisk_suspicion_basis",
+    "type": "multiple_choice",
+    "prompt": "What did the officer articulate as the basis for frisking your client specifically?",
+    "options": [
+      {
+        "id": "specific_to_client",
+        "label": "Something specific to your client (e.g. visible bulge, furtive movement, matched a description)"
+      },
+      {
+        "id": "generalized_only",
+        "label": "General nervousness or presence in a high-crime area only"
+      },
+      {
+        "id": "none_articulated",
+        "label": "No suspicion articulated — the officer cited only the stop itself, officer safety in general, or your client's proximity to someone else"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_frisk_conduct",
+    "type": "multi_select",
+    "prompt": "What did the officer do during the pat-down? Select all that apply.",
+    "options": [
+      {
+        "id": "outer_clothing_only",
+        "label": "Patted the outer clothing only"
+      },
+      {
+        "id": "reached_in_without_weapon_feel",
+        "label": "Reached into pockets or clothing without first feeling something that could be a weapon"
+      },
+      {
+        "id": "removed_non_weapon",
+        "label": "Removed an item that could not have been a weapon"
+      },
+      {
+        "id": "manipulated_object",
+        "label": "Kept squeezing, sliding, or manipulating an object after it was clear it wasn't a weapon"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet (e.g. waiting on body-cam footage)"
+      }
+    ]
+  }
+]

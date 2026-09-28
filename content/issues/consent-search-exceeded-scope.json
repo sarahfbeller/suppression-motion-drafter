@@ -1,0 +1,119 @@
+{
+  "id": "consent-search-exceeded-scope",
+  "label": "Search Exceeded the Scope of Consent",
+  "motion_heading": "The Search Exceeded the Scope of Any Consent Given",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "event_group": "any_search"
+        },
+        {
+          "any": [
+            {
+              "question": "q_search_justification",
+              "op": "includes",
+              "value": "consent"
+            },
+            {
+              "question": "q_search_justification",
+              "op": "includes",
+              "value": "not_sure"
+            }
+          ]
+        },
+        {
+          "question": "q_consent_scope_problems",
+          "op": "not_empty"
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_search_justification",
+          "op": "includes",
+          "value": "not_sure"
+        },
+        "flag": "justification_unknown",
+        "display_note": "You aren't sure yet how police justified the search. This section was drafted anyway; find out from the reports and the prosecution's response what justification they claim before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_consent_scope_problems",
+          "op": "includes",
+          "value": "not_sure"
+        },
+        "flag": "consent_scope_unknown",
+        "display_note": "You aren't sure yet whether the search stayed within the consent. This section was drafted anyway; get the exact words of the request and any video before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "limited_by_authorization",
+        "text": "When a search is authorized by consent, its scope is limited by the terms of that authorization.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Walter v. United States",
+            "citation": "447 U.S. 649 (1980)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "objective_reasonableness",
+        "text": "The scope of consent is measured by what a reasonable person would have understood from the exchange between the officer and the person consenting.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Florida v. Jimeno",
+            "citation": "500 U.S. 248 (1991)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "person_may_limit",
+        "text": "A person may limit the scope of the search to which they consent.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Florida v. Jimeno",
+            "citation": "500 U.S. 248 (1991)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "withdrawal",
+        "text": "Consent may be withdrawn, and a search that continues after withdrawal is no longer supported by consent.",
+        "when": {
+          "question": "q_consent_scope_problems",
+          "op": "includes",
+          "value": "continued_after_withdrawal"
+        },
+        "authorities": []
+      }
+    ]
+  },
+  "practice_notes": [
+    "Pin down the exact words of the request and the answer — 'can I look in your car?' is narrower than 'can I search your car?', and what was said about the object of the search matters.",
+    "If your client objected or limited the search partway through, find out whether it's on video."
+  ],
+  "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Walter v. United States, Florida v. Jimeno. Unverified; pincites empty.",
+    "withdrawal has no authority: I'm not certain of a Supreme Court case holding that consent can be withdrawn mid-search, so it's left as a gap. Ninth Circuit and Alaska authority not researched."
+  ]
+}

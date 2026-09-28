@@ -8,7 +8,7 @@ file disagrees with them, the code wins and this file should be corrected.
 
 | File | Contents |
 |---|---|
-| `content/config.json` | `courts` and `phase_order` |
+| `content/config.json` | `courts`, `motion_order`, and `event_groups` |
 | `content/questions/*.json` | The question bank, grouped by topic. Every file in the directory is loaded. |
 | `content/issues/*.json` | One issue per file; the file name is the issue id. Every file in the directory is loaded. |
 
@@ -42,8 +42,14 @@ issue conditions.
 - Finer distinctions (inside the home vs. its yard, trunk vs. passenger compartment) are
   follow-up questions under an event, not more events.
 - Every issue's `match_condition` must require an event: its top-level `all` includes
-  `{ q_encounter_events includes <event> }`, or an `any` made only of those. That's what lets the
-  tree skip an issue's questions when its event didn't happen.
+  `{ q_encounter_events includes <event> }`, an `any` made only of those, or an event group. That's
+  what lets the tree skip an issue's questions when its event didn't happen.
+
+**Event groups.** `config.event_groups` names a set of events, such as `any_search`. A condition
+leaf `{ "event_group": "any_search" }` means at least one of those events was checked; the engine
+expands it into the equivalent `any`, and a group listed inside an `any` is merged into it. Use a
+group instead of repeating the same list of events in several issues. The validator checks that
+every member is an encounter event and warns about groups no issue uses.
 
 ## Case session
 
@@ -72,7 +78,6 @@ Questions hold content only. Ordering, branching, and skip logic belong to the d
 | Field | Meaning |
 |---|---|
 | `id` | Lowercase slug, same as the file name. |
-| `phase` | When in the encounter the violation happened; one of `config.phase_order`. Sets the default order of sections in the motion. |
 | `label` | Memo name for the issue; may include case names. |
 | `motion_heading` | Court-facing argument heading. Advocacy, no citations. |
 | `status`, `last_reviewed`, `reviewed_by` | See review status. |
@@ -81,9 +86,11 @@ Questions hold content only. Ordering, branching, and skip logic belong to the d
 | `law_paragraph` | `{ rule_statements: [...] }` |
 | `practice_notes` | Tips for the attorney. Memo only. |
 
-**Order in the motion.** Issues are ordered by `phase`, then alphabetically by id. If two issues in
-the same phase need a set order, split the phase rather than adding an ordering field. Attorneys
-reorder sections in their own documents; the app doesn't.
+**Order in the motion.** `config.motion_order` maps each phase of the encounter, in chronological
+order, to the issues in that phase, in the order they appear in the motion. Every issue file must
+be listed exactly once; the validator checks both directions. Where an issue goes is a judgment
+call, so a new issue isn't done until it's placed. Attorneys reorder sections in their own
+documents; the app doesn't.
 
 **`applicable_courts`.** `["scotus"]` means the issue applies in every forum; don't also list the
 circuit or state. List a specific court alone (e.g. `["ak"]`) when the issue rests on that court's
@@ -113,7 +120,7 @@ issue is skipped entirely: nothing about it is rendered.
 ## Conditions
 
 Used by `match_condition`, every `when`, and nothing else. A condition is a leaf
-`{ question, op, value }` or a compound `{ all: [...] }` / `{ any: [...] }`; compounds can nest.
+`{ question, op, value }`, an event group leaf `{ event_group }` (see above), or a compound `{ all: [...] }` / `{ any: [...] }`; compounds can nest.
 Values are option ids, never labels.
 
 | Question type | Ops |

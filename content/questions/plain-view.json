@@ -1,0 +1,86 @@
+[
+  {
+    "id": "q_how_found",
+    "type": "multi_select",
+    "prompt": "How do police say they came across the evidence? Select all that apply.",
+    "options": [
+      {
+        "id": "plain_view",
+        "label": "They saw it in plain view"
+      },
+      {
+        "id": "plain_feel",
+        "label": "They felt it during a pat-down"
+      },
+      {
+        "id": "found_in_search",
+        "label": "They found it during a search"
+      },
+      {
+        "id": "handed_over",
+        "label": "Your client or someone else handed it over"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_officer_location_lawful",
+    "type": "multiple_choice",
+    "prompt": "Did the officer have a right to be where they were when they saw the item?",
+    "options": [
+      {
+        "id": "lawful",
+        "label": "Yes — somewhere they clearly had a right to be (public place, lawful stop, inside under a valid warrant)"
+      },
+      {
+        "id": "disputed",
+        "label": "Disputed — e.g. entered a home or yard without a warrant, went beyond a warrant or consent, or the stop itself was unlawful"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_item_apparent",
+    "type": "multiple_choice",
+    "prompt": "Was it immediately obvious, without further investigation, that the item was contraband or evidence?",
+    "options": [
+      {
+        "id": "obvious",
+        "label": "Yes"
+      },
+      {
+        "id": "required_investigation",
+        "label": "No — the officer had to examine, test, or investigate further to know"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_item_moved",
+    "type": "multiple_choice",
+    "prompt": "Did the officer move, open, or handle anything to see the item or its identifying details?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  }
+]

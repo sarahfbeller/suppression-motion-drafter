@@ -1,0 +1,60 @@
+[
+  {
+    "id": "q_consent_circumstances",
+    "type": "multi_select",
+    "prompt": "What were the circumstances when consent was given? Select all that apply.",
+    "options": [
+      {
+        "id": "many_officers",
+        "label": "Several officers were present"
+      },
+      {
+        "id": "show_of_force",
+        "label": "Weapons were drawn, or there was another show of force"
+      },
+      {
+        "id": "claim_of_authority",
+        "label": "An officer said or implied they could search anyway, had a warrant, or would get one"
+      },
+      {
+        "id": "detained",
+        "label": "Your client was under arrest or otherwise detained when asked"
+      },
+      {
+        "id": "not_told_could_refuse",
+        "label": "Your client wasn't told they could refuse"
+      },
+      {
+        "id": "repeated_requests",
+        "label": "Police kept asking after your client first refused"
+      },
+      {
+        "id": "impaired_understanding",
+        "label": "Your client was intoxicated, injured, or had difficulty understanding (language, age, mental condition)"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_consent_scope_problems",
+    "type": "multi_select",
+    "prompt": "Did the search go beyond what your client agreed to? Select all that apply; leave blank if it stayed within the consent.",
+    "options": [
+      {
+        "id": "exceeded_area",
+        "label": "Police searched places or containers the consent didn't cover"
+      },
+      {
+        "id": "continued_after_withdrawal",
+        "label": "Police kept searching after your client withdrew or limited consent"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  }
+]

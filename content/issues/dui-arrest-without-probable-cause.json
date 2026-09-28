@@ -1,0 +1,81 @@
+{
+  "id": "dui-arrest-without-probable-cause",
+  "label": "DUI Arrest Without Probable Cause",
+  "motion_heading": "The Arrest for Driving Under the Influence Was Not Supported by Probable Cause",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "arrest"
+        },
+        {
+          "question": "q_arrest_offense",
+          "op": "includes",
+          "value": "dui"
+        },
+        {
+          "question": "q_dui_pc_disputed",
+          "op": "in",
+          "value": [
+            "yes",
+            "not_sure"
+          ]
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_dui_pc_disputed",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "dui_pc_unknown",
+        "display_note": "You aren't sure yet whether probable cause for the DUI arrest holds up. This section was drafted anyway; review the officer's observations, the field sobriety tests, and any video before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "probable_cause_required",
+        "text": "A warrantless arrest is lawful only if the officer has probable cause to believe that the person arrested has committed a crime.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Devenpeck v. Alford",
+            "citation": "543 U.S. 146 (2004)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "probable_cause_standard",
+        "text": "Probable cause exists only where the facts and circumstances within the officer's knowledge, based on reasonably trustworthy information, are sufficient to warrant a prudent person in believing that the person arrested had committed an offense.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Beck v. Ohio",
+            "citation": "379 U.S. 89 (1964)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      }
+    ]
+  },
+  "practice_notes": [],
+  "_author_notes": [
+    "Skeleton only (2026-09-27). The maintainer will add the DUI probable-cause factors as a large multi-select and the Alaska case law, likely replacing q_dui_pc_disputed as the gating question. applicable_courts is ['scotus'] for now; Alaska-only statements get applicable_courts ['ak'].",
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Devenpeck v. Alford, Beck v. Ohio. Unverified; pincites empty."
+  ]
+}

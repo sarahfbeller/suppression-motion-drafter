@@ -22,7 +22,7 @@ ENUMERATION_LIMIT = 200_000
 UNCERTAIN_OPTION_IDS = {"unknown", "not_sure", "unclear"}
 
 QUESTION_TYPES = {"yes_no", "multiple_choice", "multi_select", "short_text"}
-ISSUE_KEYS = {"id", "phase", "label", "motion_heading", "status", "last_reviewed",
+ISSUE_KEYS = {"id", "label", "motion_heading", "status", "last_reviewed",
               "reviewed_by", "applicable_courts", "trigger", "law_paragraph", "practice_notes"}
 TRIGGER_KEYS = {"match_condition", "review_conditions",
                 "excluded_explanations"}
@@ -138,7 +138,7 @@ def check_config(r, root):
     c = load_or_report(r, root, where)
     if c is None:
         return None
-    if not check_keys(r, where, c, {"courts", "phase_order"}, ["courts", "phase_order"]):
+    if not check_keys(r, where, c, {"courts", "motion_order", "event_groups"}, ["courts", "motion_order"]):
         return None
 
     courts = {k: v for k, v in c["courts"].items() if not k.startswith("_")}
@@ -154,16 +154,24 @@ def check_config(r, root):
         r.err(where, f"courts must define {E.SCOTUS!r} with kind 'scotus'")
     c["courts"] = courts
 
-    phases = c["phase_order"]
-    if not isinstance(phases, list) or not phases:
-        r.err(where, "phase_order must be a non-empty list")
-        c["phase_order"] = []
+    mo = c["motion_order"]
+    if not isinstance(mo, dict) or not mo or not all(isinstance(v, list) for v in mo.values()):
+        r.err(where, "motion_order must be an object mapping each phase to a list of issue ids")
+        c["motion_order"] = {}
     else:
-        if len(phases) != len(set(phases)):
-            r.err(where, "phase_order has duplicates")
-        for ph in phases:
+        for ph in mo:
             if not SLUG_RE.match(str(ph)):
-                r.err(where, f"phase {ph!r} must be a lowercase slug")
+                r.err(where, f"motion_order phase {ph!r} must be a lowercase slug")
+        seen = set()
+        for iid in E.motion_order(c):
+            if iid in seen:
+                r.err(where, f"motion_order lists {iid!r} more than once")
+            seen.add(iid)
+        files = {os.path.splitext(os.path.basename(p))[0] for p in E.content_files(root, "issues")}
+        for iid in sorted(seen - files):
+            r.err(where, f"motion_order lists {iid!r}, but there's no content/issues/{iid}.json")
+        for iid in sorted(files - seen):
+            r.err(where, f"content/issues/{iid}.json isn't in motion_order — add it where it belongs in the motion")
 
     return c
 
@@ -176,6 +184,29 @@ def check_encounter_events(r, questions):
             r.err(where, "missing — every issue's match_condition starts from an encounter event")
     elif q["type"] != "multi_select":
         r.err(where, "must be multi_select")
+
+
+def check_event_groups(r, questions, config):
+    """config.event_groups: name -> non-empty list of q_encounter_events option ids."""
+    where = "content/config.json event_groups"
+    groups = config.setdefault("event_groups", {})
+    if not isinstance(groups, dict):
+        r.err(where, "must be an object mapping each group name to a list of events")
+        config["event_groups"] = {}
+        return
+    q = questions.get(E.ENCOUNTER_EVENTS)
+    events = {o["id"] for o in q["options"]} if q else set()
+    for name, members in groups.items():
+        if not SLUG_RE.match(str(name)):
+            r.err(where, f"group name {name!r} must be a lowercase slug")
+        if not isinstance(members, list) or not members:
+            r.err(where, f"group {name!r} must be a non-empty list of events")
+            continue
+        if len(members) != len(set(members)):
+            r.err(where, f"group {name!r} lists an event twice")
+        for m in members:
+            if q and m not in events:
+                r.err(where, f"group {name!r}: {m!r} isn't an option of {E.ENCOUNTER_EVENTS}")
 
 
 def is_event_gate(cond):
@@ -299,17 +330,40 @@ def domain(q, refs=None):
 
 
 def referenced_options(conds):
-    """question id -> option ids mentioned by any of these conditions."""
-    refs = {}
-    def walk(c):
+    """question id -> the option ids worth enumerating, given these conditions.
+
+    Starts from the option ids the conditions mention, then keeps one representative of any
+    options that are interchangeable: ones mentioned only as 'includes' leaves inside the same
+    'any' groups (e.g. an issue that starts from any of ten encounter events). Swapping such
+    options never changes any condition's value, so enumerating one of them is enough.
+    """
+    contexts = {}  # (question, option) -> set of places it's mentioned
+
+    def group_of_includes(c):
+        kids = c.get("any", [])
+        return kids and all("question" in k and k.get("op") == "includes"
+                            and k["question"] == kids[0]["question"] for k in kids)
+
+    def walk(c, parent=None):
         if "all" in c or "any" in c:
             for k in c.get("all", []) + c.get("any", []):
-                walk(k)
+                walk(k, c)
             return
         v = c.get("value")
-        refs.setdefault(c["question"], set()).update(v if isinstance(v, list) else [] if v is None else [v])
+        values = v if isinstance(v, list) else [] if v is None else [v]
+        shared = parent is not None and c.get("op") == "includes" and group_of_includes(parent)
+        for x in values:
+            contexts.setdefault((c["question"], x), set()).add(id(parent) if shared else id(c))
     for c in conds:
         walk(c)
+
+    refs, seen = {}, set()
+    for (q, x), ctx in contexts.items():
+        sig = (q, frozenset(ctx))
+        refs.setdefault(q, set())
+        if sig not in seen:
+            seen.add(sig)
+            refs[q].add(x)
     return refs
 
 
@@ -429,8 +483,6 @@ def check_issue(r, where, issue, config, questions, used_questions):
 
     if not SLUG_RE.match(str(issue.get("id", ""))):
         r.err(where, "id must be a lowercase slug")
-    if issue.get("phase") not in config["phase_order"]:
-        r.err(where, f"phase {issue.get('phase')!r} not in config phase_order")
     if not issue.get("label"):
         r.err(where, "empty label")
     heading = issue.get("motion_heading", "")
@@ -730,6 +782,8 @@ def validate(root):
     questions = check_questions(r, root)
     check_filing_court(r, questions, config)
     check_encounter_events(r, questions)
+    check_event_groups(r, questions, config)
+    groups_used = set()
     used = set()
     headings = {}
     for path in E.content_files(root, "issues"):
@@ -741,12 +795,18 @@ def validate(root):
             continue
         if issue.get("id") != os.path.splitext(os.path.basename(path))[0]:
             r.err(where, f"id {issue.get('id')!r} doesn't match the file name")
+        issue, g_used, g_unknown = E.expand_issue(issue, config["event_groups"])
+        groups_used |= g_used
+        for name in sorted(g_unknown):
+            r.err(where, f"unknown event_group {name!r} (groups are defined in config event_groups)")
         check_issue(r, where, issue, config, questions, used)
         h = issue.get("motion_heading")
         if h:
             if h in headings:
                 r.warn(where, f"same motion_heading as {headings[h]}")
             headings[h] = where
+    for name in sorted(set(config["event_groups"]) - groups_used):
+        r.warn("content/config.json event_groups", f"group {name!r} isn't used by any issue")
     for qid, q in sorted(questions.items()):
         if qid not in used and qid != E.FILING_COURT:
             if q["type"] == "short_text":

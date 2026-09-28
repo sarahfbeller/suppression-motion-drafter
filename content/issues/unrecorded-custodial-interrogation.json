@@ -1,0 +1,96 @@
+{
+  "id": "unrecorded-custodial-interrogation",
+  "label": "Custodial Interrogation Was Not Recorded (Stephan)",
+  "motion_heading": "The Defendant's Statements Must Be Suppressed Because the Custodial Interrogation Was Not Recorded",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "ak"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "statements"
+        },
+        {
+          "question": "q_custody",
+          "op": "in",
+          "value": [
+            "yes",
+            "not_sure"
+          ]
+        },
+        {
+          "question": "q_questioning_location",
+          "op": "in",
+          "value": [
+            "place_of_detention",
+            "not_sure"
+          ]
+        },
+        {
+          "question": "q_interrogation_recorded",
+          "op": "in",
+          "value": [
+            "partially",
+            "not_recorded",
+            "not_sure"
+          ]
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_custody",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "custody_unknown",
+        "display_note": "You aren't sure yet whether your client was in custody. This section was drafted anyway; pin down whether your client was under arrest or restrained like an arrest (handcuffs, locked car, told not free to leave) before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_questioning_location",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "location_unknown",
+        "display_note": "You aren't sure yet where the questioning happened. This section was drafted anyway; confirm the location from the reports before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_interrogation_recorded",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "recording_unknown",
+        "display_note": "You aren't sure yet whether the questioning was recorded. This section was drafted anyway; request every recording from every officer and device before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "recording_required",
+        "text": "A custodial interrogation conducted in a place of detention must be electronically recorded when recording is feasible.",
+        "authorities": []
+      },
+      {
+        "id": "unexcused_failure_suppression",
+        "text": "An unexcused failure to record requires suppression of the unrecorded statements.",
+        "authorities": []
+      }
+    ]
+  },
+  "practice_notes": [
+    "Ask for all recordings, including from other devices and officers, and for any explanation of why recording wasn't done — the feasibility of recording is the likely battleground."
+  ],
+  "_author_notes": [
+    "Alaska-only issue added at the maintainer's request (Stephan). Both statements were written from general knowledge and have no authorities: Alaska citations aren't covered by the Supreme Court citation policy. Unverified; add Stephan and later cases, and check that the statements (feasibility, the remedy, and whether suppression is limited to the unrecorded portion) match Alaska law."
+  ]
+}

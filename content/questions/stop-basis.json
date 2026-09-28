@@ -1,0 +1,44 @@
+[
+  {
+    "id": "q_stop_type",
+    "type": "multiple_choice",
+    "prompt": "What was the original basis for the stop?",
+    "options": [
+      {
+        "id": "traffic_violation",
+        "label": "Traffic violation"
+      },
+      {
+        "id": "terry_stop",
+        "label": "Suspicion of a crime other than a traffic violation"
+      },
+      {
+        "id": "other",
+        "label": "Other"
+      }
+    ]
+  },
+  {
+    "id": "q_stop_basis_problems",
+    "type": "multi_select",
+    "prompt": "Is there reason to dispute the officer's basis for the stop? Select all that apply; leave blank if the basis looks solid.",
+    "options": [
+      {
+        "id": "violation_disputed",
+        "label": "The claimed traffic violation didn't happen, or the conduct described isn't actually a violation"
+      },
+      {
+        "id": "hunch_or_generalities",
+        "label": "The officer's reasons were a hunch or generalities (nervousness, high-crime area, time of night)"
+      },
+      {
+        "id": "uncorroborated_tip",
+        "label": "The stop rested on an anonymous tip police didn't corroborate"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet (e.g. waiting on dash-cam footage or reports)"
+      }
+    ]
+  }
+]

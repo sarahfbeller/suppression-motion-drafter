@@ -1,0 +1,197 @@
+[
+  {
+    "id": "q_custody",
+    "type": "multiple_choice",
+    "prompt": "Was your client in custody when questioned — under arrest, or restrained in a way a reasonable person would see as like an arrest?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_interrogation",
+    "type": "multiple_choice",
+    "prompt": "Were the statements a response to police questioning, or to words or actions police should have known were likely to draw an incriminating response (as opposed to volunteered)?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_miranda_warnings",
+    "type": "multiple_choice",
+    "prompt": "Were Miranda warnings given before the questioning?",
+    "options": [
+      {
+        "id": "complete",
+        "label": "Yes, complete warnings"
+      },
+      {
+        "id": "incomplete",
+        "label": "Warnings were given but were incomplete, garbled, or misleading"
+      },
+      {
+        "id": "none",
+        "label": "No warnings before questioning"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_waiver_problems",
+    "type": "multi_select",
+    "prompt": "Is there reason to question your client's waiver of Miranda rights? Select all that apply; leave blank if the waiver looks solid.",
+    "options": [
+      {
+        "id": "impaired_understanding",
+        "label": "Your client may not have understood the rights (language, intoxication, mental condition, age)"
+      },
+      {
+        "id": "pressured",
+        "label": "Police pressured, threatened, promised something, or tricked your client into waiving"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_invocation",
+    "type": "multi_select",
+    "prompt": "Did your client ask for a lawyer or say they wanted to stop talking? Select all that apply.",
+    "options": [
+      {
+        "id": "asked_for_lawyer",
+        "label": "Asked for a lawyer"
+      },
+      {
+        "id": "said_wanted_silence",
+        "label": "Said they wanted to remain silent or stop talking"
+      },
+      {
+        "id": "ambiguous",
+        "label": "Said something that might have been an invocation (e.g. 'maybe I should get a lawyer')"
+      }
+    ]
+  },
+  {
+    "id": "q_after_invocation",
+    "type": "multiple_choice",
+    "prompt": "What did police do after that?",
+    "options": [
+      {
+        "id": "stopped",
+        "label": "Stopped questioning and didn't resume"
+      },
+      {
+        "id": "continued",
+        "label": "Kept questioning"
+      },
+      {
+        "id": "resumed",
+        "label": "Stopped, but came back and questioned again"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_coercion",
+    "type": "multi_select",
+    "prompt": "Were there signs the statements were coerced? Select all that apply; leave blank if none.",
+    "options": [
+      {
+        "id": "threats_or_force",
+        "label": "Threats or physical force"
+      },
+      {
+        "id": "promises",
+        "label": "Promises of leniency or other benefits"
+      },
+      {
+        "id": "deception",
+        "label": "Lies about the evidence or the situation"
+      },
+      {
+        "id": "harsh_conditions",
+        "label": "Long questioning, or deprivation of sleep, food, medication, or other necessities"
+      },
+      {
+        "id": "vulnerability",
+        "label": "Your client was especially vulnerable (age, mental condition, intoxication, injury)"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_questioning_location",
+    "type": "multiple_choice",
+    "prompt": "Where did the questioning happen?",
+    "options": [
+      {
+        "id": "place_of_detention",
+        "label": "At a police station, jail, or other place of detention"
+      },
+      {
+        "id": "elsewhere",
+        "label": "Somewhere else (roadside, home, hospital)"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_interrogation_recorded",
+    "type": "multiple_choice",
+    "prompt": "Was the questioning electronically recorded?",
+    "options": [
+      {
+        "id": "fully",
+        "label": "Yes, all of it"
+      },
+      {
+        "id": "partially",
+        "label": "Only part of it"
+      },
+      {
+        "id": "not_recorded",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  }
+]

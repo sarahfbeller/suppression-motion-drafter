@@ -4,6 +4,7 @@ Used by validate.py (to check content) and render.py (to produce the motion and
 memo), so both agree on exactly what a condition means and how text renders.
 Standard library only.
 """
+import copy
 import glob
 import json
 import os
@@ -43,14 +44,20 @@ def load_repo(root):
     for path in content_files(root, "questions"):
         for q in load_json(path):
             questions[q["id"]] = q
-    issues = [load_json(path) for path in content_files(root, "issues")]
+    groups = config.get("event_groups", {})
+    issues = [expand_issue(load_json(path), groups)[0] for path in content_files(root, "issues")]
     return config, questions, ordered_issues(config, issues)
 
 
+def motion_order(config):
+    """Every issue id in motion order: config.motion_order's phases in order, each phase's issues in order."""
+    return [iid for ids in config["motion_order"].values() for iid in ids]
+
+
 def ordered_issues(config, issues):
-    """Order issues by phase (when in the encounter the violation happened), then by id."""
-    phase_rank = {p: i for i, p in enumerate(config["phase_order"])}
-    return sorted(issues, key=lambda i: (phase_rank.get(i.get("phase"), len(phase_rank)), i.get("id", "")))
+    """Order issues as listed in config.motion_order. Unlisted issues (a validator error) go last."""
+    rank = {iid: i for i, iid in enumerate(motion_order(config))}
+    return sorted(issues, key=lambda i: (rank.get(i.get("id"), len(rank)), i.get("id", "")))
 
 
 # --------------------------------------------------------------------------- conditions
@@ -85,6 +92,46 @@ def eval_condition(cond, answers):
     if op == "empty":
         return len(a) == 0
     raise ValueError(f"unknown op {op!r}")
+
+
+def expand_event_groups(cond, groups, used, unknown):
+    """Replace each {event_group: name} leaf with the 'any' of encounter events it stands for.
+
+    An expanded group directly inside an 'any' is spliced into it, so "any of these two groups"
+    becomes one flat 'any'. Names found in groups are added to used; others to unknown (left as is).
+    """
+    if set(cond) == {"event_group"}:
+        name = cond["event_group"]
+        if name not in groups:
+            unknown.add(name)
+            return cond
+        used.add(name)
+        return {"any": [{"question": ENCOUNTER_EVENTS, "op": "includes", "value": e} for e in groups[name]]}
+    if "all" in cond:
+        return {"all": [expand_event_groups(c, groups, used, unknown) for c in cond["all"]]}
+    if "any" in cond:
+        kids = []
+        for c in cond["any"]:
+            e = expand_event_groups(c, groups, used, unknown)
+            kids.extend(e["any"] if set(c) == {"event_group"} and "any" in e else [e])
+        return {"any": kids}
+    return cond
+
+
+def expand_issue(issue, groups):
+    """A copy of issue with every event group in its conditions expanded. Returns (issue, used, unknown)."""
+    issue, used, unknown = copy.deepcopy(issue), set(), set()
+    trig = issue.get("trigger", {})
+    if isinstance(trig.get("match_condition"), dict):
+        trig["match_condition"] = expand_event_groups(trig["match_condition"], groups, used, unknown)
+    for kind in ("review_conditions", "excluded_explanations"):
+        for note in trig.get(kind, []):
+            if isinstance(note, dict) and isinstance(note.get("when"), dict):
+                note["when"] = expand_event_groups(note["when"], groups, used, unknown)
+    for st in issue.get("law_paragraph", {}).get("rule_statements", []):
+        if isinstance(st, dict) and isinstance(st.get("when"), dict):
+            st["when"] = expand_event_groups(st["when"], groups, used, unknown)
+    return issue, used, unknown
 
 
 def condition_questions(cond):

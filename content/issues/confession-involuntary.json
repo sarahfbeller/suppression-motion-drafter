@@ -1,0 +1,105 @@
+{
+  "id": "confession-involuntary",
+  "label": "Confession Involuntary Under Due Process (Independent of Miranda)",
+  "motion_heading": "The Defendant's Statements Were Involuntary and Their Use Would Violate Due Process",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "statements"
+        },
+        {
+          "question": "q_coercion",
+          "op": "not_empty"
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_coercion",
+          "op": "includes",
+          "value": "not_sure"
+        },
+        "flag": "coercion_unknown",
+        "display_note": "You aren't sure yet whether the statements were coerced. This section was drafted anyway; review the full recording and your client's condition at the time before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "due_process_bar",
+        "text": "The Due Process Clause forbids the use of an involuntary statement, regardless of whether Miranda was followed.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Mincey v. Arizona",
+            "citation": "437 U.S. 385 (1978)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "totality",
+        "text": "Whether a statement was voluntary is judged from the totality of the circumstances.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Arizona v. Fulminante",
+            "citation": "499 U.S. 279 (1991)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "credible_threat",
+        "text": "A confession obtained through a credible threat of violence is coerced.",
+        "when": {
+          "question": "q_coercion",
+          "op": "includes",
+          "value": "threats_or_force"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Arizona v. Fulminante",
+            "citation": "499 U.S. 279 (1991)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "no_impeachment",
+        "text": "An involuntary statement cannot be used for any purpose, including impeachment.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Mincey v. Arizona",
+            "citation": "437 U.S. 385 (1978)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      }
+    ]
+  },
+  "practice_notes": [
+    "Unlike Miranda, this doesn't require custody — it applies to any statement to police. Raise it alongside any Miranda issue, since an involuntary statement is excluded even for impeachment.",
+    "Build the record on your client's vulnerabilities (age, education, mental health, intoxication, injury) as well as police conduct; both go into the totality."
+  ],
+  "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Mincey v. Arizona, Arizona v. Fulminante. Unverified; pincites empty."
+  ]
+}

@@ -1,6 +1,5 @@
 {
   "id": "prolonged-stop",
-  "phase": "stop-conduct",
   "label": "Stop Prolonged Beyond Its Original Purpose",
   "motion_heading": "The Stop Was Unlawfully Prolonged Beyond Its Original Purpose",
   "status": "unreviewed",

@@ -83,12 +83,33 @@ class StructuredStatements(unittest.TestCase):
         self.assertEqual(E.citation_parts(statute), {"name": "Example statute", "italic": False, "rest": ""})
 
 
+class EventGroups(unittest.TestCase):
+    def setUp(self):
+        self.config, _questions, self.issues = E.load_repo(ROOT)
+
+    def included(self, answers):
+        result = E.evaluate_session(self.config, self.issues, {"answers": answers})
+        return {e["issue"]["id"] for e in result["included"] + result["no_paragraph"]}
+
+    def test_plain_view_starts_from_any_member_of_either_group(self):
+        facts = {"q_how_found": ["plain_view"], "q_officer_location_lawful": "disputed"}
+        for event in ("digital_device", "field_sobriety_tests", "entry_home"):
+            with self.subTest(event=event):
+                self.assertIn("plain-view-not-lawfully-present",
+                              self.included({**STATE, "q_encounter_events": [event], **facts}))
+
+    def test_plain_view_not_reached_outside_the_groups(self):
+        facts = {"q_how_found": ["plain_view"], "q_officer_location_lawful": "disputed"}
+        self.assertNotIn("plain-view-not-lawfully-present",
+                         self.included({**STATE, "q_encounter_events": ["third_party_data"], **facts}))
+
+
 class MatchedButNoParagraph(unittest.TestCase):
     """The memo must say whether an empty issue needs research or has a content problem."""
 
     def setUp(self):
         self.config, _questions, issues = E.load_repo(ROOT)
-        self.issue = copy.deepcopy(next(i for i in issues if i["id"] == "passenger-frisk-suspicionless"))
+        self.issue = copy.deepcopy(next(i for i in issues if i["id"] == "frisk-without-reasonable-suspicion"))
         self.answers = {**FEDERAL, "q_encounter_events": ["vehicle_stop", "frisk"], "q_occupant_role": "passenger",
                         "q_frisk_suspicion_basis": "none_articulated"}
 

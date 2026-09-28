@@ -1,0 +1,77 @@
+{
+  "id": "plain-feel-manipulation",
+  "label": "Officer Manipulated an Object to Identify It (Not Plain Feel)",
+  "motion_heading": "The Officer's Manipulation of an Object During the Pat-Down Exceeded the Plain-Feel Doctrine",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "frisk"
+        },
+        {
+          "question": "q_frisk_conduct",
+          "op": "includes",
+          "value": "manipulated_object"
+        }
+      ]
+    }
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "immediately_apparent_required",
+        "text": "An officer conducting a lawful frisk may seize an object without a warrant only if its incriminating character is immediately apparent from the lawful pat-down itself.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Minnesota v. Dickerson",
+            "citation": "508 U.S. 366 (1993)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "manipulation_is_a_search",
+        "text": "Once the officer has concluded that an object is not a weapon, continued squeezing, sliding, or manipulating of it to determine what it is exceeds the scope of a lawful frisk and is an unconstitutional search.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Minnesota v. Dickerson",
+            "citation": "508 U.S. 366 (1993)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "fruits_suppressed",
+        "text": "Evidence obtained through a search that exceeds the lawful scope of a frisk must be suppressed.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Minnesota v. Dickerson",
+            "citation": "508 U.S. 366 (1993)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      }
+    ]
+  },
+  "practice_notes": [
+    "The officer's report often gives the game away — phrases like 'I manipulated the object' or 'I felt what I believed, based on training, to be narcotics' after ruling out a weapon are exactly the Dickerson fact pattern.",
+    "Ask how long the officer's hand stayed on the object and what motion was used; a single pat that reveals contraband is treated very differently from continued exploration."
+  ],
+  "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Minnesota v. Dickerson. Unverified; pincites empty."
+  ]
+}

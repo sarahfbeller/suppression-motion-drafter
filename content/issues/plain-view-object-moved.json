@@ -1,0 +1,88 @@
+{
+  "id": "plain-view-object-moved",
+  "label": "Officer Moved an Object to See It (Not Plain View)",
+  "motion_heading": "Moving the Object to Expose It Was a Separate Search Not Justified by Plain View",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "any": [
+            {
+              "event_group": "any_stop_or_contact"
+            },
+            {
+              "event_group": "any_search"
+            }
+          ]
+        },
+        {
+          "question": "q_how_found",
+          "op": "includes",
+          "value": "plain_view"
+        },
+        {
+          "question": "q_item_moved",
+          "op": "in",
+          "value": [
+            "yes",
+            "not_sure"
+          ]
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_item_moved",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "item_moved_unknown",
+        "display_note": "You aren't sure yet whether the officer moved or handled anything. This section was drafted anyway; review the body-cam footage before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "moving_is_a_search",
+        "text": "Moving an object even a few inches to expose what was not already in view is a search, separate from whatever lawful activity brought the officer there.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Arizona v. Hicks",
+            "citation": "480 U.S. 321 (1987)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "probable_cause_for_moving",
+        "text": "Such a search requires probable cause; reasonable suspicion is not enough.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Arizona v. Hicks",
+            "citation": "480 U.S. 321 (1987)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      }
+    ]
+  },
+  "practice_notes": [
+    "Body-cam footage is key: note anything the officer picked up, turned over, opened, or shifted before the item came into view."
+  ],
+  "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Arizona v. Hicks. Unverified; pincites empty.",
+    "Starts from any stop, contact, or search (config event groups any_stop_or_contact and any_search). That includes digital_device, per the maintainer: whether these statements fit digital evidence is a question for legal review."
+  ]
+}

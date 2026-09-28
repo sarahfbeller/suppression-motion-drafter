@@ -8,6 +8,8 @@ Not read by the app — this is for whoever (you) is authoring content.
 - [ ] **Which encounter event does this issue start from?** Every `match_condition` must
   require at least one event from `q_encounter_events` in its top-level `all` (the validator
   rejects it otherwise). Pick the event(s) whose absence means the issue can't arise at all.
+  If the right set is an existing event group (e.g. `any_search`), use the group instead of
+  listing the events.
   If no event fits, raise it with the maintainer rather than stretching one — the event list
   is hand-maintained on purpose. Finer facts (where in the car, which room) are follow-up
   questions, not new events.
@@ -82,5 +84,5 @@ Not read by the app — this is for whoever (you) is authoring content.
 
 ## Open items / things not yet decided
 
-- Decision tree's top-level branching (the "what kind of encounter was this" root
-  categories) — not yet designed.
+- Decision tree: the top layer (`q_encounter_events`) exists; the derived part that picks the
+  next question hasn't been built.

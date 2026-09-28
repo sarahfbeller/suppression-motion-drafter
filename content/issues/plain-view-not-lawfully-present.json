@@ -1,0 +1,103 @@
+{
+  "id": "plain-view-not-lawfully-present",
+  "label": "Officer Was Not Lawfully Present When the Item Was Seen (Not Plain View)",
+  "motion_heading": "The Plain-View Doctrine Does Not Apply Because the Officer Was Not Lawfully in the Place From Which the Item Was Seen",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "any": [
+            {
+              "event_group": "any_stop_or_contact"
+            },
+            {
+              "event_group": "any_search"
+            }
+          ]
+        },
+        {
+          "question": "q_how_found",
+          "op": "includes",
+          "value": "plain_view"
+        },
+        {
+          "question": "q_officer_location_lawful",
+          "op": "in",
+          "value": [
+            "disputed",
+            "not_sure"
+          ]
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_officer_location_lawful",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "officer_location_unknown",
+        "display_note": "You aren't sure yet whether the officer had a right to be where they were. This section was drafted anyway; establish exactly where the officer was standing and how they got there before filing, or cut this section."
+      }
+    ],
+    "excluded_explanations": [
+      {
+        "when": {
+          "all": [
+            {
+              "question": "q_how_found",
+              "op": "includes",
+              "value": "not_sure"
+            }
+          ]
+        },
+        "flag": "how_found_unknown",
+        "display_note": "You aren't sure yet how police say they came across the evidence, so the plain-view issues weren't drafted. If the reports claim plain view or plain feel, revisit whether the officer was lawfully present, whether the item's nature was immediately apparent, and whether anything was moved."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "lawful_vantage_point",
+        "text": "The plain-view doctrine permits a warrantless seizure only if the officer did not violate the Fourth Amendment in arriving at the place from which the object could be plainly viewed.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Horton v. California",
+            "citation": "496 U.S. 128 (1990)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "lawful_access",
+        "text": "The officer must also have a lawful right of access to the object itself.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Horton v. California",
+            "citation": "496 U.S. 128 (1990)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      }
+    ]
+  },
+  "practice_notes": [
+    "This issue usually depends on another one: if the entry, stop, or search that put the officer there was unlawful, plain view falls with it. Make sure that underlying issue is argued too."
+  ],
+  "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Horton v. California. Unverified; pincites empty.",
+    "Starts from any stop, contact, or search (config event groups any_stop_or_contact and any_search). That includes digital_device, per the maintainer: whether these statements fit digital evidence is a question for legal review."
+  ]
+}

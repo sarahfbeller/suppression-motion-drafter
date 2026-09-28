@@ -1,0 +1,37 @@
+[
+  {
+    "id": "q_search_justification",
+    "type": "multi_select",
+    "prompt": "How did police justify the search? Select all they relied on.",
+    "options": [
+      {
+        "id": "consent",
+        "label": "Consent"
+      },
+      {
+        "id": "incident_to_arrest",
+        "label": "Search incident to arrest"
+      },
+      {
+        "id": "warrant",
+        "label": "A search warrant"
+      },
+      {
+        "id": "vehicle_probable_cause",
+        "label": "Probable cause to search a vehicle (automobile exception)"
+      },
+      {
+        "id": "inventory",
+        "label": "Inventory of an impounded vehicle or booked property"
+      },
+      {
+        "id": "other",
+        "label": "Something else"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  }
+]

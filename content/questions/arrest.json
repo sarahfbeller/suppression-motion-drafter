@@ -1,0 +1,44 @@
+[
+  {
+    "id": "q_arrest_offense",
+    "type": "multi_select",
+    "prompt": "What was your client arrested for? Select all that apply.",
+    "options": [
+      {
+        "id": "dui",
+        "label": "DUI"
+      },
+      {
+        "id": "drugs",
+        "label": "A drug offense"
+      },
+      {
+        "id": "weapon",
+        "label": "A weapons offense"
+      },
+      {
+        "id": "other",
+        "label": "Something else"
+      }
+    ]
+  },
+  {
+    "id": "q_dui_pc_disputed",
+    "type": "multiple_choice",
+    "prompt": "Is there reason to dispute that the officer had probable cause to arrest your client for DUI?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No — probable cause looks solid"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  }
+]

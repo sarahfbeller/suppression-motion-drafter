@@ -1,0 +1,170 @@
+{
+  "id": "no-reasonable-suspicion-for-stop",
+  "label": "No Reasonable Suspicion for the Initial Stop",
+  "motion_heading": "The Initial Stop Was Not Supported by Reasonable Suspicion",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "vehicle_stop"
+        },
+        {
+          "question": "q_stop_basis_problems",
+          "op": "not_empty"
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_stop_basis_problems",
+          "op": "includes",
+          "value": "violation_disputed"
+        },
+        "flag": "mistake_of_law",
+        "display_note": "If the dispute is that the conduct isn't actually a violation, expect the prosecution to argue the officer made a reasonable mistake of law, which can still support a stop (Heien v. North Carolina, 574 U.S. 54 (2014)). Be ready to show the statute is clear and the officer's reading wasn't reasonable."
+      },
+      {
+        "when": {
+          "question": "q_stop_basis_problems",
+          "op": "includes",
+          "value": "not_sure"
+        },
+        "flag": "stop_basis_unknown",
+        "display_note": "You aren't sure yet whether the stop's basis holds up. This section was drafted anyway; get the dash-cam footage, the officer's report, and dispatch records before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "stop_is_seizure",
+        "text": "Stopping an automobile and detaining its occupants is a seizure under the Fourth Amendment.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Delaware v. Prouse",
+            "citation": "440 U.S. 648 (1979)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "passenger_seized",
+        "text": "A passenger is seized by a traffic stop just as the driver is, and may challenge the stop's legality.",
+        "when": {
+          "question": "q_occupant_role",
+          "op": "equals",
+          "value": "passenger"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Brendlin v. California",
+            "citation": "551 U.S. 249 (2007)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "reasonable_suspicion_required",
+        "text": "An officer may not stop a vehicle without at least articulable and reasonable suspicion that the driver or an occupant is subject to seizure for a violation of law.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Delaware v. Prouse",
+            "citation": "440 U.S. 648 (1979)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "particularized_basis",
+        "text": "Reasonable suspicion requires a particularized and objective basis for suspecting the particular person stopped of wrongdoing.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "United States v. Cortez",
+            "citation": "449 U.S. 411 (1981)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "hunch_insufficient",
+        "text": "An officer's inchoate and unparticularized suspicion or hunch is not enough.",
+        "when": {
+          "question": "q_stop_basis_problems",
+          "op": "includes",
+          "value": "hunch_or_generalities"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Terry v. Ohio",
+            "citation": "392 U.S. 1 (1968)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "high_crime_area_alone",
+        "text": "Presence in an area of expected criminal activity, standing alone, does not supply reasonable suspicion.",
+        "when": {
+          "question": "q_stop_basis_problems",
+          "op": "includes",
+          "value": "hunch_or_generalities"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Brown v. Texas",
+            "citation": "443 U.S. 47 (1979)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "anonymous_tip",
+        "text": "An anonymous tip that lacks indicia of reliability does not, by itself, supply reasonable suspicion.",
+        "when": {
+          "question": "q_stop_basis_problems",
+          "op": "includes",
+          "value": "uncorroborated_tip"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Florida v. J.L.",
+            "citation": "529 U.S. 266 (2000)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      }
+    ]
+  },
+  "practice_notes": [
+    "Get the dash-cam and body-cam footage and compare it to the report — whether the claimed violation actually happened is often visible on video.",
+    "The stop's lawfulness is judged by what the officer knew before the stop. Facts learned afterward (smell, admissions, contraband) can't justify it retroactively.",
+    "If the stop falls, everything that followed (observations, statements, search results) is potentially fruit — consider which later issues depend on it."
+  ],
+  "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Delaware v. Prouse, Brendlin v. California, United States v. Cortez, Terry v. Ohio, Brown v. Texas, Florida v. J.L., and Heien v. North Carolina (review note). Unverified; pincites empty.",
+    "Gated on vehicle_stop only, per the maintainer ('traffic stop'). Pedestrian stops would need their own gate or issue."
+  ]
+}

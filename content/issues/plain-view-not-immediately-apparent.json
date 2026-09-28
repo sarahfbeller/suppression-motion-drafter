@@ -1,0 +1,115 @@
+{
+  "id": "plain-view-not-immediately-apparent",
+  "label": "Incriminating Character of the Item Was Not Immediately Apparent",
+  "motion_heading": "The Incriminating Character of the Item Was Not Immediately Apparent",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "any": [
+            {
+              "event_group": "any_stop_or_contact"
+            },
+            {
+              "event_group": "any_search"
+            }
+          ]
+        },
+        {
+          "any": [
+            {
+              "question": "q_how_found",
+              "op": "includes",
+              "value": "plain_view"
+            },
+            {
+              "question": "q_how_found",
+              "op": "includes",
+              "value": "plain_feel"
+            }
+          ]
+        },
+        {
+          "question": "q_item_apparent",
+          "op": "in",
+          "value": [
+            "required_investigation",
+            "not_sure"
+          ]
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_item_apparent",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "apparent_unknown",
+        "display_note": "You aren't sure yet whether the item's nature was immediately obvious. This section was drafted anyway; get the officer's account of what they saw or felt and what they did next before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraph": {
+    "rule_statements": [
+      {
+        "id": "immediately_apparent",
+        "text": "A warrantless seizure of an item in plain view is permitted only if the item's incriminating character is immediately apparent.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Horton v. California",
+            "citation": "496 U.S. 128 (1990)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "probable_cause_required",
+        "text": "That requires probable cause to believe the item is contraband or evidence of a crime, without any further search.",
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Arizona v. Hicks",
+            "citation": "480 U.S. 321 (1987)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "plain_feel",
+        "text": "The same limit applies to items detected by touch: an object felt during a lawful pat-down may be seized only if its contour or mass makes its identity as contraband immediately apparent.",
+        "when": {
+          "question": "q_how_found",
+          "op": "includes",
+          "value": "plain_feel"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Minnesota v. Dickerson",
+            "citation": "508 U.S. 366 (1993)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      }
+    ]
+  },
+  "practice_notes": [
+    "Look for any step the officer took before being sure what the item was — a field test, a closer look, a question to your client. Each one suggests the character wasn't immediately apparent."
+  ],
+  "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Horton v. California, Arizona v. Hicks, Minnesota v. Dickerson. Unverified; pincites empty.",
+    "Starts from any stop, contact, or search (config event groups any_stop_or_contact and any_search). That includes digital_device, per the maintainer: whether these statements fit digital evidence is a question for legal review."
+  ]
+}

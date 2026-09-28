@@ -1,0 +1,29 @@
+[
+  {
+    "id": "q_sita_problems",
+    "type": "multi_select",
+    "prompt": "Did the search go beyond what a search incident to arrest allows? Select all that apply; leave blank if it didn't.",
+    "options": [
+      {
+        "id": "beyond_immediate_control",
+        "label": "Police searched beyond your client's person and the area within their immediate reach (e.g. other rooms, closed areas)"
+      },
+      {
+        "id": "vehicle_after_secured",
+        "label": "Police searched a vehicle after your client was secured and away from it"
+      },
+      {
+        "id": "cell_phone_data",
+        "label": "Police looked through the data on a cell phone"
+      },
+      {
+        "id": "remote_in_time_or_place",
+        "label": "The search happened well after the arrest, or somewhere else"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  }
+]
