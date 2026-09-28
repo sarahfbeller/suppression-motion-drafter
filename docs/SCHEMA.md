@@ -107,13 +107,18 @@ issue is skipped entirely: nothing about it is rendered.
   true goes in the memo's "considered but not included" section. These are checked for every
   unmatched issue.
 
-**Uncertain answers never exclude an issue silently.** If answering `unknown`, `not_sure`, or
-`unclear` would exclude an issue that another answer would include, the validator requires one of:
+**Uncertain answers never decide an issue silently.** This covers `unknown`, `not_sure`, and
+`unclear` options on single-choice questions, and the same options checked alone on a checklist
+(compared with checking something else, or leaving it blank). Wherever such an answer changes
+whether an issue is included, the validator requires one of:
 
-- Include the issue on that answer, with a review condition explaining the uncertainty. This is
-  the default: a drafted section is easy to delete, a missing one is easy to miss.
+- Include the issue on that answer, with a review condition that fires on it and explains the
+  uncertainty. This is the default: a drafted section is easy to delete, a missing one is easy to
+  miss.
 - An excluded explanation for that answer, when the uncertainty means the argument shouldn't be
   drafted at all.
+
+Each issue needs its own note; a note on a related issue doesn't count.
 
 `flag` is a short snake_case id, unique within the issue. It is never rendered.
 
