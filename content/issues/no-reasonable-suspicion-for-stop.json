@@ -40,6 +40,15 @@
         },
         "flag": "stop_basis_unknown",
         "display_note": "You aren't sure yet whether the stop's basis holds up. This section was drafted anyway; get the dash-cam footage, the officer's report, and dispatch records before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_stop_type",
+          "op": "equals",
+          "value": "other"
+        },
+        "flag": "other_stop_basis",
+        "display_note": "The stop's stated basis was neither a traffic violation nor suspicion of a crime (for example, a welfare check). Expect the prosecution to rely on a different justification, such as community caretaking; this section argues only that reasonable suspicion was lacking, so address the other justification separately."
       }
     ]
   },
@@ -77,8 +86,49 @@
         ]
       },
       {
-        "id": "reasonable_suspicion_required",
+        "id": "traffic_basis",
+        "text": "When the stop is based on a traffic violation, the officer must have at least articulable and reasonable suspicion that the driver or an occupant is subject to seizure for a violation of law; without it, stopping the vehicle is unreasonable.",
+        "when": {
+          "question": "q_stop_type",
+          "op": "equals",
+          "value": "traffic_violation"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Delaware v. Prouse",
+            "citation": "440 U.S. 648 (1979)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "criminal_basis",
+        "text": "When the stop is based on suspicion of a crime, the officer must be able to point to specific and articulable facts that, together with rational inferences from them, reasonably warrant the intrusion.",
+        "when": {
+          "question": "q_stop_type",
+          "op": "equals",
+          "value": "terry_stop"
+        },
+        "authorities": [
+          {
+            "type": "case",
+            "name": "Terry v. Ohio",
+            "citation": "392 U.S. 1 (1968)",
+            "court": "scotus",
+            "pincite": ""
+          }
+        ]
+      },
+      {
+        "id": "general_basis",
         "text": "An officer may not stop a vehicle without at least articulable and reasonable suspicion that the driver or an occupant is subject to seizure for a violation of law.",
+        "when": {
+          "question": "q_stop_type",
+          "op": "equals",
+          "value": "other"
+        },
         "authorities": [
           {
             "type": "case",
@@ -165,6 +215,7 @@
   ],
   "_author_notes": [
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Delaware v. Prouse, Brendlin v. California, United States v. Cortez, Terry v. Ohio, Brown v. Texas, Florida v. J.L., and Heien v. North Carolina (review note). Unverified; pincites empty.",
-    "Gated on vehicle_stop only, per the maintainer ('traffic stop'). Pedestrian stops would need their own gate or issue."
+    "Gated on vehicle_stop only, per the maintainer ('traffic stop'). Pedestrian stops would need their own gate or issue.",
+    "Statements vary with q_stop_type (drafted 2026-09-27 at the maintainer's request): traffic_basis for traffic stops (Prouse), criminal_basis for stops on suspicion of a crime (Terry's 'specific and articulable facts'), general_basis for 'other' (the former reasonable_suspicion_required statement, Prouse). If q_stop_type is unanswered, only the unconditional statements render. The community-caretaking mention in the other_stop_basis review note is from general knowledge, uncited."
   ]
 }
