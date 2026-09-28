@@ -21,11 +21,11 @@
     "options": [
       {
         "id": "vehicle_stop",
-        "label": "Police stopped a vehicle the defendant was driving or riding in"
+        "label": "Police stopped a vehicle your client was driving or riding in"
       },
       {
         "id": "pedestrian_stop",
-        "label": "Police approached, stopped, or detained the defendant on foot"
+        "label": "Police approached, stopped, or detained your client on foot"
       },
       {
         "id": "welfare_check",
@@ -33,19 +33,19 @@
       },
       {
         "id": "field_sobriety_tests",
-        "label": "The defendant performed field sobriety tests"
+        "label": "Your client performed field sobriety tests"
       },
       {
         "id": "frisk",
-        "label": "Police patted down the defendant"
+        "label": "Police patted down your client"
       },
       {
         "id": "arrest",
-        "label": "The defendant was arrested"
+        "label": "Your client was arrested"
       },
       {
         "id": "search_person",
-        "label": "Police searched the defendant's person (beyond a pat-down)"
+        "label": "Police searched your client's person (beyond a pat-down)"
       },
       {
         "id": "search_vehicle",
@@ -73,7 +73,7 @@
       },
       {
         "id": "police_surveillance",
-        "label": "Police tracked or watched the defendant using technology (GPS tracker, pole camera, drone, cell-site simulator)"
+        "label": "Police tracked or watched your client using technology (GPS tracker, pole camera, drone, cell-site simulator)"
       },
       {
         "id": "dog_sniff",
@@ -85,19 +85,19 @@
       },
       {
         "id": "statements",
-        "label": "The defendant made statements to police"
+        "label": "Your client made statements to police"
       },
       {
         "id": "identification",
-        "label": "A witness identified the defendant (lineup, photo array, show-up)"
+        "label": "A witness identified your client (lineup, photo array, show-up)"
       },
       {
         "id": "breath_test",
-        "label": "The defendant was asked to take a breath test (took it or refused)"
+        "label": "Your client was asked to take a breath test (took it or refused)"
       },
       {
         "id": "blood_draw",
-        "label": "The defendant's blood was drawn"
+        "label": "Your client's blood was drawn"
       }
     ]
   }

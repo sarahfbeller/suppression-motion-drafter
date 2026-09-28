@@ -265,6 +265,26 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             stmt(d, "core_prolongation_rule")["applicable_courts"] = ["9th_cir"]
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "this statement only applies in")
 
+    # ---- "your client" in questions, "the defendant" in the motion
+
+    def test_defendant_in_question(self):
+        def f(qs):
+            next(q for q in qs if q["id"] == "q_occupant_role")["prompt"] = "Was the defendant the driver?"
+        self.assertError(self.run_with("content/questions/vehicle-occupants.json", f), "say 'your client'")
+
+    def test_defendant_in_option_label(self):
+        def f(qs):
+            next(q for q in qs if q["id"] == "q_encounter_events")["options"][0]["label"] = "The defendant was stopped"
+        self.assertError(self.run_with("content/questions/case-setup.json", f), "say 'your client'")
+
+    def test_client_in_motion_text(self):
+        cases = [lambda d: d.update({"motion_heading": "The Stop of My Client Was Unlawfully Prolonged"}),
+                 lambda d: stmt(d, "dog_sniff_no_added_time").update({"text": "Police may not hold a client longer."})]
+        for i, fn in enumerate(cases):
+            with self.subTest(case=i):
+                self.setUp()
+                self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", fn), "say 'the defendant'")
+
     # ---- encounter events
 
     def test_issue_without_event_gate(self):

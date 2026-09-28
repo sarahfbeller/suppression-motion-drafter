@@ -2,7 +2,7 @@
   {
     "id": "q_occupant_role",
     "type": "multiple_choice",
-    "prompt": "Was the defendant the driver or a passenger in the stopped vehicle?",
+    "prompt": "Was your client the driver or a passenger in the stopped vehicle?",
     "options": [
       {
         "id": "driver",
@@ -17,16 +17,16 @@
   {
     "id": "q_passenger_ordered_out",
     "type": "yes_no",
-    "prompt": "Was the passenger ordered to exit the vehicle?"
+    "prompt": "Was your client ordered to exit the vehicle?"
   },
   {
     "id": "q_frisk_suspicion_basis",
     "type": "multiple_choice",
-    "prompt": "What did the officer articulate as the basis for frisking the passenger specifically?",
+    "prompt": "What did the officer articulate as the basis for frisking your client specifically?",
     "options": [
       {
         "id": "passenger_specific",
-        "label": "Something specific to this passenger (e.g. visible bulge, furtive movement, matched a description)"
+        "label": "Something specific to your client (e.g. visible bulge, furtive movement, matched a description)"
       },
       {
         "id": "generalized_only",

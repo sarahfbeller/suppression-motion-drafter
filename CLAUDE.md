@@ -47,6 +47,11 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
   the state of the file — what's unverified, why something is structured a certain way —
   go here, never in `practice_notes`.
 
+Wording: questions say "your client" (enforced by the validator). The motion says "the
+defendant" (also enforced). Memo notes say "your client" when the sentence is about this
+client's case, and "the defendant" for general statements of law (not enforced — a judgment
+call per sentence).
+
 ## Design principles (details in docs/SCHEMA.md)
 
 - The question bank is content only. All ordering, branching, and skip logic belongs to

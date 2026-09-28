@@ -40,7 +40,7 @@
 
 **Practice notes:**
 
-- Document the defendant's actual English proficiency at the time of the advisement — an interpreter's later availability at trial doesn't cure a station-house advisement given only in English when the decision had to be made.
+- Document your client's actual English proficiency at the time of the advisement — an interpreter's later availability at trial doesn't cure a station-house advisement given only in English when the decision had to be made.
 - For an intoxication-based comprehension claim, be aware of the tension: the same BAC or observations that support this claim may also support the state's case on the underlying DUI charge. Weigh how heavily to lean on this theory alongside your other defenses.
 - This is closely related to, but distinct from, the failure-to-advise issue — here the advisement was procedurally proper, but the defendant's ability to receive it wasn't. Don't conflate the two in briefing; they rest on different facts.
 

@@ -2,7 +2,7 @@
   {
     "id": "q_contact_requested",
     "type": "multi_select",
-    "prompt": "Before deciding whether to take the breath test, did the defendant ask to contact anyone? Select all that apply.",
+    "prompt": "Before deciding whether to take the breath test, did your client ask to contact anyone? Select all that apply.",
     "options": [
       {
         "id": "attorney",
@@ -44,7 +44,7 @@
       },
       {
         "id": "no_privacy",
-        "label": "An opportunity was given, but the defendant was not able to communicate privately"
+        "label": "An opportunity was given, but your client was not able to communicate privately"
       },
       {
         "id": "unreasonable_time",
@@ -69,7 +69,7 @@
   {
     "id": "q_independent_test_advisement",
     "type": "multiple_choice",
-    "prompt": "Did the officer clearly and expressly advise the defendant of the right to an independent chemical test?",
+    "prompt": "Did the officer clearly and expressly advise your client of the right to an independent chemical test?",
     "options": [
       {
         "id": "no_advisement",
@@ -93,15 +93,15 @@
   {
     "id": "q_comprehension_barrier",
     "type": "multiple_choice",
-    "prompt": "Was there anything that may have prevented the defendant from actually understanding the advisement, even if it was properly given?",
+    "prompt": "Was there anything that may have prevented your client from actually understanding the advisement, even if it was properly given?",
     "options": [
       {
         "id": "language",
-        "label": "Language barrier — advisement was given only in a language the defendant did not adequately understand"
+        "label": "Language barrier — advisement was given only in a language your client did not adequately understand"
       },
       {
         "id": "intoxication",
-        "label": "Intoxication level so severe the defendant could not knowingly and intelligently understand the advisement"
+        "label": "Intoxication level so severe your client could not knowingly and intelligently understand the advisement"
       },
       {
         "id": "other_barrier",

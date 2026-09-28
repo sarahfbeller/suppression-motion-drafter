@@ -46,6 +46,9 @@ CITATION_IN_TEXT = [
     (re.compile(r"\b(?:Alaska|Fed\.) (?:Criminal Rule|Crim\.|R\.|Const\.)"), "a rule or constitution citation"),
     (re.compile(r"§"), "a section symbol"),
 ]
+# Questions talk to the attorney ("your client"); the motion talks to the court ("the defendant").
+DEFENDANT_RE = re.compile(r"\bdefendant", re.I)
+CLIENT_RE = re.compile(r"\bclient", re.I)
 PLACEHOLDER_RE = re.compile(r"\b(?:PLACEHOLDER|FILL_IN|TODO|TBD|XXX)\b")
 AUTHOR_NOTE_RE = re.compile(
     r"\b(?:prior draft|placeholder|todo|tbd|not (?:yet )?(?:verified|confirmed)|unverified|"
@@ -240,6 +243,8 @@ def check_questions(r, root):
                 continue
             if not q.get("prompt"):
                 r.err(where, "empty prompt")
+            elif DEFENDANT_RE.search(q["prompt"]):
+                r.err(where, "prompt says 'defendant' — questions address the attorney, so say 'your client'")
             if q["type"] in ("yes_no", "short_text"):
                 if "options" in q:
                     r.err(where, f"{q['type']} questions must not have options")
@@ -262,6 +267,8 @@ def check_questions(r, root):
                         r.err(where, f"duplicate option label {o['label']!r}")
                     if not o["label"]:
                         r.err(where, "empty option label")
+                    elif DEFENDANT_RE.search(o["label"]):
+                        r.err(where, f"option {o['id']!r} says 'defendant' — say 'your client'")
                     seen_ids.add(o["id"])
                     seen_labels.add(o["label"])
             if len(r.errors) > n_errors:
@@ -431,6 +438,8 @@ def check_issue(r, where, issue, config, questions, used_questions):
         r.err(where, "empty motion_heading")
     elif citation_in(heading):
         r.err(where, f"motion_heading contains {citation_in(heading)}")
+    if CLIENT_RE.search(heading):
+        r.err(where, "motion_heading says 'client' — the motion is for the court, so say 'the defendant'")
 
     status = issue.get("status")
     if status not in ("unreviewed", "reviewed"):
@@ -505,6 +514,8 @@ def check_issue(r, where, issue, config, questions, used_questions):
             what = citation_in(text)
             if what:
                 r.err(sw, f"text embeds {what} — citations belong only in 'authorities'")
+            if CLIENT_RE.search(text):
+                r.err(sw, "text says 'client' — the motion is for the court, so say 'the defendant'")
             if not re.search(r"[.?!][\"'”’]?$", text):
                 r.err(sw, "text must end with sentence punctuation (the citation follows it)")
         if "when" in st:
