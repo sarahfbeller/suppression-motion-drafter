@@ -13,6 +13,11 @@
     "match_condition": {
       "all": [
         {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "breath_test"
+        },
+        {
           "question": "q_contact_requested",
           "op": "not_empty"
         },

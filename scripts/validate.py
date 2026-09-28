@@ -165,6 +165,31 @@ def check_config(r, root):
     return c
 
 
+def check_encounter_events(r, questions):
+    where = f"question {E.ENCOUNTER_EVENTS}"
+    q = questions.get(E.ENCOUNTER_EVENTS)
+    if q is None:
+        if E.ENCOUNTER_EVENTS not in questions.broken:
+            r.err(where, "missing — every issue's match_condition starts from an encounter event")
+    elif q["type"] != "multi_select":
+        r.err(where, "must be multi_select")
+
+
+def is_event_gate(cond):
+    """{q_encounter_events includes x}, or an 'any' made only of those."""
+    def leaf(c):
+        return c.get("question") == E.ENCOUNTER_EVENTS and c.get("op") == "includes"
+    return leaf(cond) or ("any" in cond and all(leaf(c) for c in cond["any"]))
+
+
+def check_event_gate(r, where, match):
+    kids = match["all"] if "all" in match else [match]
+    if not any(is_event_gate(c) for c in kids):
+        r.err(where, f"match_condition must require an encounter event: put "
+                     f"{{{E.ENCOUNTER_EVENTS} includes <event>}}, or an 'any' of those, "
+                     f"directly in its top-level 'all'")
+
+
 def check_filing_court(r, questions, config):
     """The one question the engine itself reads: its options are the state and circuit court codes."""
     where = f"question {E.FILING_COURT}"
@@ -246,15 +271,39 @@ def check_questions(r, root):
     return questions
 
 
-def domain(q):
+def domain(q, refs=None):
+    """Every possible answer to q, plus UNANSWERED.
+
+    For multi_select, refs (the option ids some condition mentions) keeps this small: options no
+    condition mentions are interchangeable, so one of them stands in for all. They still matter
+    for 'empty' / 'not_empty'.
+    """
     if q["type"] == "yes_no":
         vals = ["yes", "no"]
     elif q["type"] == "multiple_choice":
         vals = [o["id"] for o in q["options"]]
     else:  # multi_select: every subset
         ids = [o["id"] for o in q["options"]]
+        if refs is not None:
+            others = [i for i in ids if i not in refs]
+            ids = [i for i in ids if i in refs] + others[:1]
         vals = [list(c) for n in range(len(ids) + 1) for c in itertools.combinations(ids, n)]
     return vals + [UNANSWERED]
+
+
+def referenced_options(conds):
+    """question id -> option ids mentioned by any of these conditions."""
+    refs = {}
+    def walk(c):
+        if "all" in c or "any" in c:
+            for k in c.get("all", []) + c.get("any", []):
+                walk(k)
+            return
+        v = c.get("value")
+        refs.setdefault(c["question"], set()).update(v if isinstance(v, list) else [] if v is None else [v])
+    for c in conds:
+        walk(c)
+    return refs
 
 
 # --------------------------------------------------------------------------- conditions
@@ -320,17 +369,25 @@ def check_condition(r, where, cond, questions):
     return True
 
 
-def assignments(qids, questions):
+def assignments(qids, questions, refs=None):
     qids = sorted(qids)
-    for combo in itertools.product(*(domain(questions[q]) for q in qids)):
+    refs = refs or {}
+    for combo in itertools.product(*(domain(questions[q], refs.get(q)) for q in qids)):
         yield {q: v for q, v in zip(qids, combo) if v is not UNANSWERED}
 
 
-def space_size(qids, questions):
+def space_size(qids, questions, refs=None):
+    refs = refs or {}
     n = 1
     for q in qids:
-        n *= len(domain(questions[q]))
+        n *= len(domain(questions[q], refs.get(q)))
     return n
+
+
+def issue_conditions(trig, statements):
+    return ([trig["match_condition"]] + [n["when"] for n in trig.get("review_conditions", [])]
+            + [n["when"] for n in trig.get("excluded_explanations", [])]
+            + [st["when"] for st in statements if "when" in st])
 
 
 # --------------------------------------------------------------------------- issues
@@ -401,6 +458,7 @@ def check_issue(r, where, issue, config, questions, used_questions):
         conds_ok &= check_condition(r, f"{where} match_condition", match, questions)
         if conds_ok:
             used_questions |= E.condition_questions(match)
+            check_event_gate(r, where, match)
 
     flags = set()
     for kind in ("review_conditions", "excluded_explanations"):
@@ -518,11 +576,12 @@ def check_issue(r, where, issue, config, questions, used_questions):
                                                f"go to the attorney — move it to '_author_notes'? {note[:70]!r}")
 
     if conds_ok and match is not None:
-        check_reachability(r, where, trig, statements, questions)
-        check_every_match_has_a_statement(r, where, issue, statements, questions, courts)
+        refs = referenced_options(issue_conditions(trig, statements))
+        check_reachability(r, where, trig, statements, questions, refs)
+        check_every_match_has_a_statement(r, where, issue, statements, questions, courts, refs)
 
 
-def check_every_match_has_a_statement(r, where, issue, statements, questions, courts):
+def check_every_match_has_a_statement(r, where, issue, statements, questions, courts, refs):
     """In every forum the issue applies in, every matching set of answers must leave at least one
     statement standing after its 'when' and applicable_courts — otherwise the issue matches but
     produces nothing, and it isn't a research gap."""
@@ -531,14 +590,14 @@ def check_every_match_has_a_statement(r, where, issue, statements, questions, co
     for st in statements:
         if "when" in st:
             qids |= E.condition_questions(st["when"])
-    if space_size(qids, questions) > ENUMERATION_LIMIT:
+    if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
         return
     for code in sorted(courts):
         binding = [E.SCOTUS, code]
         if courts[code]["kind"] == "scotus" or not E.applies_in(issue["applicable_courts"], binding):
             continue
         live = [st for st in statements if E.applies_in(E.statement_courts(issue, st), binding)]
-        for a in assignments(qids, questions):
+        for a in assignments(qids, questions, refs):
             if E.eval_condition(match, a) and not any("when" not in st or E.eval_condition(st["when"], a)
                                                       for st in live):
                 r.err(where, f"in {courts[code]['display_name']}, the issue can match with no rule statement "
@@ -547,15 +606,15 @@ def check_every_match_has_a_statement(r, where, issue, statements, questions, co
                 break
 
 
-def check_reachability(r, where, trig, statements, questions):
+def check_reachability(r, where, trig, statements, questions, refs):
     match = trig["match_condition"]
     mq = E.condition_questions(match)
 
     def explore(extra_cond):
         qids = mq | (E.condition_questions(extra_cond) if extra_cond else set())
-        if space_size(qids, questions) > ENUMERATION_LIMIT:
+        if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
             return None
-        return assignments(qids, questions)
+        return assignments(qids, questions, refs)
 
     space = explore(None)
     if space is None:
@@ -605,10 +664,10 @@ def check_reachability(r, where, trig, statements, questions):
             continue
         for uid in [o["id"] for o in q["options"] if o["id"] in UNCERTAIN_OPTION_IDS]:
             qids = mq | ex_qids
-            if space_size(qids, questions) > ENUMERATION_LIMIT:
+            if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
                 continue
             alternatives = [o["id"] for o in q["options"] if o["id"] != uid]
-            for a in assignments(qids, questions):
+            for a in assignments(qids, questions, refs):
                 if a.get(qid) != uid or E.eval_condition(match, a):
                     continue
                 if any(E.eval_condition(e["when"], a) for e in excluded):
@@ -659,6 +718,7 @@ def validate(root):
         return r
     questions = check_questions(r, root)
     check_filing_court(r, questions, config)
+    check_encounter_events(r, questions)
     used = set()
     headings = {}
     for path in E.content_files(root, "issues"):

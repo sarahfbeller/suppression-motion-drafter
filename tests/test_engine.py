@@ -89,7 +89,7 @@ class MatchedButNoParagraph(unittest.TestCase):
     def setUp(self):
         self.config, _questions, issues = E.load_repo(ROOT)
         self.issue = copy.deepcopy(next(i for i in issues if i["id"] == "passenger-frisk-suspicionless"))
-        self.answers = {**FEDERAL, "q_occupant_role": "passenger", "q_passenger_frisked": "yes",
+        self.answers = {**FEDERAL, "q_encounter_events": ["vehicle_stop", "frisk"], "q_occupant_role": "passenger",
                         "q_frisk_suspicion_basis": "none_articulated"}
 
     def memo(self):

@@ -70,7 +70,8 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
 
 ## Open items
 
-- The decision tree (top-level "what kind of encounter was this" branching) is undesigned.
+- Decision tree: the top layer exists (`q_encounter_events`; every issue requires an event).
+  Still to build: the derived part that picks the next question from the answers so far.
 - Output should be formatted .docx for both the motion and the memo, with each rule
   statement's citations in a footnote. Likely front-end work; the engine already returns
   statement text and authorities separately.

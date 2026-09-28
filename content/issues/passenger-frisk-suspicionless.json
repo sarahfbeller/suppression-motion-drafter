@@ -13,14 +13,19 @@
     "match_condition": {
       "all": [
         {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "vehicle_stop"
+        },
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "frisk"
+        },
+        {
           "question": "q_occupant_role",
           "op": "equals",
           "value": "passenger"
-        },
-        {
-          "question": "q_passenger_frisked",
-          "op": "equals",
-          "value": "yes"
         },
         {
           "question": "q_frisk_suspicion_basis",

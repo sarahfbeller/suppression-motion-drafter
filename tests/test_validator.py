@@ -265,6 +265,35 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             stmt(d, "core_prolongation_rule")["applicable_courts"] = ["9th_cir"]
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "this statement only applies in")
 
+    # ---- encounter events
+
+    def test_issue_without_event_gate(self):
+        def f(d):
+            d["trigger"]["match_condition"]["all"] = [
+                c for c in d["trigger"]["match_condition"]["all"] if c["question"] != "q_encounter_events"]
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "must require an encounter event")
+
+    def test_event_gate_as_any(self):
+        def f(d):
+            d["trigger"]["match_condition"]["all"][0] = {"any": [
+                {"question": "q_encounter_events", "op": "includes", "value": "vehicle_stop"},
+                {"question": "q_encounter_events", "op": "includes", "value": "pedestrian_stop"}]}
+        r = self.run_with(f"{ISSUES}/prolonged-stop.json", f)
+        self.assertFalse(any("encounter event" in e for e in r.errors), "\n".join(r.errors))
+
+    def test_superseded_questions_are_gone(self):
+        for qid in ("q_warrant_used", "q_passenger_frisked"):
+            with self.subTest(qid=qid):
+                self.setUp()
+                def f(d):
+                    d["trigger"]["match_condition"]["all"].append({"question": qid, "op": "equals", "value": "yes"})
+                self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "unknown question")
+
+    def test_reachability_still_checked_with_many_events(self):
+        # 20 event options would be 2^20 subsets; the validator must still enumerate, not skip.
+        r = V.validate(self.tmp)
+        self.assertFalse(any("reachability — skipped" in w for w in r.warnings), "\n".join(r.warnings))
+
     # ---- an issue that matches but produces nothing
 
     def test_match_with_every_statement_filtered_by_when(self):

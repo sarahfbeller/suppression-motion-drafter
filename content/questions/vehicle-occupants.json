@@ -20,11 +20,6 @@
     "prompt": "Was the passenger ordered to exit the vehicle?"
   },
   {
-    "id": "q_passenger_frisked",
-    "type": "yes_no",
-    "prompt": "Was the passenger frisked (patted down)?"
-  },
-  {
     "id": "q_frisk_suspicion_basis",
     "type": "multiple_choice",
     "prompt": "What did the officer articulate as the basis for frisking the passenger specifically?",

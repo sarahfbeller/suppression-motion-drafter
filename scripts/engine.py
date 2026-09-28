@@ -18,6 +18,7 @@ KIND_RANK = {"scotus": 0, "circuit": 1, "state": 2}
 
 SCOTUS = "scotus"
 FILING_COURT = "q_filing_court"  # answer is the state or circuit court code whose law binds, besides SCOTUS
+ENCOUNTER_EVENTS = "q_encounter_events"  # what happened in the encounter; every issue requires one of these
 
 # '<volume> <reporter> <first page> (<court> <year>)'
 CITATION_RE = re.compile(r"^(?P<base>\d+ .+? \d+) (?P<paren>\([^()]*\d{4}\))$")

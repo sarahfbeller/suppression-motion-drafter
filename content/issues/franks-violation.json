@@ -13,9 +13,9 @@
     "match_condition": {
       "all": [
         {
-          "question": "q_warrant_used",
-          "op": "equals",
-          "value": "yes"
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "warrant"
         },
         {
           "question": "q_affidavit_accuracy",

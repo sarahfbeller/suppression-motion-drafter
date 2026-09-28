@@ -5,6 +5,12 @@ Not read by the app — this is for whoever (you) is authoring content.
 
 ## Judgment calls to make on every issue
 
+- [ ] **Which encounter event does this issue start from?** Every `match_condition` must
+  require at least one event from `q_encounter_events` in its top-level `all` (the validator
+  rejects it otherwise). Pick the event(s) whose absence means the issue can't arise at all.
+  If no event fits, raise it with the maintainer rather than stretching one — the event list
+  is hand-maintained on purpose. Finer facts (where in the car, which room) are follow-up
+  questions, not new events.
 - [ ] **Is there a near-miss worth explaining?** For each way `match_condition` can fail,
   decide if it's (a) just "the fact pattern doesn't apply" — no explanation needed — or
   (b) a legally meaningful close call the attorney should know about even though the issue

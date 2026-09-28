@@ -29,6 +29,22 @@ and state authority never in a federal one.
 It's the one question the engine reads directly. Conditions can't use it: where an issue or rule
 statement is the law goes in its `applicable_courts`.
 
+## Encounter events
+
+`q_encounter_events` (in `content/questions/case-setup.json`) is a multi-select checklist of what
+happened in the encounter: stops and contacts, searches, statements and identifications, chemical
+tests. It's the hand-written top of the decision tree; everything below it will be derived from
+issue conditions.
+
+- Events are facts, not legal conclusions ("police stopped a vehicle," not "seizure"), and the
+  attorney checks all that apply (a bag opened in a car is both `search_vehicle` and
+  `search_container`).
+- Finer distinctions (inside the home vs. its yard, trunk vs. passenger compartment) are
+  follow-up questions under an event, not more events.
+- Every issue's `match_condition` must require an event: its top-level `all` includes
+  `{ q_encounter_events includes <event> }`, or an `any` made only of those. That's what lets the
+  tree skip an issue's questions when its event didn't happen.
+
 ## Case session
 
 A case session is `{ answers }`: question id → answer (see question types). It must answer
@@ -76,7 +92,8 @@ issue is skipped entirely: nothing about it is rendered.
 
 **`trigger`.**
 
-- `match_condition`: the issue is included when this is true.
+- `match_condition`: the issue is included when this is true. Must require an encounter event
+  (see above).
 - `review_conditions`: `[{ when, flag, display_note }]`. For an included issue, each note whose
   `when` is true goes in the memo under that issue.
 - `excluded_explanations`: same shape. For an issue that didn't match, each note whose `when` is

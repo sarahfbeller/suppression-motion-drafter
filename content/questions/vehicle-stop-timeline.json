@@ -13,10 +13,6 @@
         "label": "Terry stop (reasonable suspicion of a crime)"
       },
       {
-        "id": "dui_checkpoint",
-        "label": "DUI checkpoint"
-      },
-      {
         "id": "other",
         "label": "Other"
       }
