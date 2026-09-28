@@ -723,27 +723,47 @@ def check_reachability(r, where, trig, statements, questions, refs):
         elif redundant:
             r.warn(f"{where} statement {st['id']}", "'when' is true whenever the issue matches — it can be removed")
 
-    # An "I don't know" answer that alone knocks the issue out, with no explanation to the attorney.
+    # Uncertain answers ("not sure", "unknown", "unclear") must never silently decide an issue:
+    # if one can exclude it, an excluded_explanation must say so; if one can include it, a review
+    # note must say so. On a multi_select, the uncertain answer is that option checked alone.
     excluded = trig.get("excluded_explanations", [])
-    ex_qids = set().union(*[E.condition_questions(e["when"]) for e in excluded]) if excluded else set()
+    reviews = trig.get("review_conditions", [])
+    note_qids = set()
+    for n in excluded + reviews:
+        note_qids |= E.condition_questions(n["when"])
     for qid in sorted(mq):
         q = questions[qid]
-        if q["type"] != "multiple_choice":
+        if q["type"] not in ("multiple_choice", "multi_select"):
             continue
+        multi = q["type"] == "multi_select"
         for uid in [o["id"] for o in q["options"] if o["id"] in UNCERTAIN_OPTION_IDS]:
-            qids = mq | ex_qids
-            if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
+            others = (mq | note_qids) - {qid}
+            if space_size(others, questions, refs) > ENUMERATION_LIMIT:
                 continue
-            alternatives = [o["id"] for o in q["options"] if o["id"] != uid]
-            for a in assignments(qids, questions, refs):
-                if a.get(qid) != uid or E.eval_condition(match, a):
+            uncertain = [uid] if multi else uid
+            # On a checklist, leaving it blank ("none of these") is an alternative too.
+            alternatives = [[o["id"]] if multi else o["id"] for o in q["options"] if o["id"] != uid]
+            if multi:
+                alternatives.append([])
+            answer = f"{qid} = {uid!r}" + (" (checked alone)" if multi else "")
+            excl_reported = incl_reported = False
+            for a in assignments(others, questions, refs):
+                a = {**a, qid: uncertain}
+                matched = E.eval_condition(match, a)
+                decides = any(E.eval_condition(match, {**a, qid: alt}) != matched for alt in alternatives)
+                if not decides:
                     continue
-                if any(E.eval_condition(e["when"], a) for e in excluded):
-                    continue
-                if any(E.eval_condition(match, {**a, qid: alt}) for alt in alternatives):
-                    r.err(where, f"answering {qid} = {uid!r} silently excludes this issue (a different "
+                if not matched and not excl_reported and not any(E.eval_condition(e["when"], a) for e in excluded):
+                    r.err(where, f"answering {answer} silently excludes this issue (a different "
                                  f"answer would have included it, and no excluded_explanation fires). "
                                  f"Include it with a review note (the default), or add an excluded_explanation.")
+                    excl_reported = True
+                if matched and not incl_reported and not any(E.eval_condition(n["when"], a) for n in reviews):
+                    r.err(where, f"answering {answer} can include this issue with no review note firing, so "
+                                 f"the attorney isn't told the section rests on an uncertain answer. Add a "
+                                 f"review_conditions note for it.")
+                    incl_reported = True
+                if excl_reported and incl_reported:
                     break
 
 

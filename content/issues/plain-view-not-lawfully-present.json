@@ -50,16 +50,12 @@
     "excluded_explanations": [
       {
         "when": {
-          "all": [
-            {
-              "question": "q_how_found",
-              "op": "includes",
-              "value": "not_sure"
-            }
-          ]
+          "question": "q_how_found",
+          "op": "includes",
+          "value": "not_sure"
         },
         "flag": "how_found_unknown",
-        "display_note": "You aren't sure yet how police say they came across the evidence, so the plain-view issues weren't drafted. If the reports claim plain view or plain feel, revisit whether the officer was lawfully present, whether the item's nature was immediately apparent, and whether anything was moved."
+        "display_note": "You aren't sure yet how police say they came across the evidence, so this issue wasn't drafted. If the reports claim plain view, check whether the officer had a right to be where they were when they saw it."
       }
     ]
   },

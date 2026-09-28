@@ -451,6 +451,27 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             del d["trigger"]["review_conditions"]
         self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "silently excludes")
 
+    def test_silent_exclusion_on_checklist_not_sure(self):
+        def f(d):
+            d["trigger"]["excluded_explanations"] = []
+        self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f),
+                         "q_how_found = 'not_sure' (checked alone) silently excludes")
+
+    def test_uncertain_inclusion_without_review_note(self):
+        # Franks is drafted on intent = unknown; without its review note the attorney wouldn't know.
+        def f(d):
+            d["trigger"]["review_conditions"] = [
+                n for n in d["trigger"]["review_conditions"] if n["flag"] != "franks_intent_unknown"]
+        self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f),
+                         "q_intent = 'unknown' can include this issue with no review note")
+
+    def test_uncertain_inclusion_without_review_note_on_checklist(self):
+        def f(d):
+            d["trigger"]["review_conditions"] = [
+                n for n in d["trigger"]["review_conditions"] if n["flag"] != "consent_circumstances_unknown"]
+        self.assertError(self.run_with(f"{ISSUES}/consent-not-voluntary.json", f),
+                         "q_consent_circumstances = 'not_sure' (checked alone) can include this issue")
+
     def test_silent_exclusion_resolved_by_excluded_explanation(self):
         def f(d):
             intent = next(c for c in d["trigger"]["match_condition"]["all"] if c["question"] == "q_intent")
