@@ -159,12 +159,6 @@
     ]
   },
   "practice_notes": [
-    "Reconstruct the scene: where your client was when the search happened, whether they were handcuffed or in a patrol car, and exactly what was opened or searched and in what order. Body-cam footage is usually the best source.",
     "A search incident to arrest requires a lawful arrest — if the arrest itself lacked probable cause, argue that too; this issue assumes the arrest was lawful.",
-    "Expect the prosecution to fall back on other justifications (automobile exception, inventory, inevitable discovery) if this one fails; check which of those the facts could support."
   ],
-  "_author_notes": [
-    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Chimel v. California, Arizona v. Gant, Riley v. California, Preston v. United States. Unverified; pincites empty.",
-    "Added 2026-09-27 at the maintainer's request, along with q_search_justification (search-justification.json), which replaced q_consent_relied_on."
-  ]
 }

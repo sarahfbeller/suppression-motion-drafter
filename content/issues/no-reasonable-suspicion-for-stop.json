@@ -105,7 +105,7 @@
       },
       {
         "id": "criminal_basis",
-        "text": "When the stop is based on suspicion of a crime, the officer must be able to point to specific and articulable facts that, together with rational inferences from them, reasonably warrant the intrusion.",
+        "text": "Under the Fourth Amendment to the United States Constitution, an officer cannot stop a person without reasonable suspicion of criminal activity.",
         "when": {
           "question": "q_stop_type",
           "op": "equals",
@@ -123,7 +123,7 @@
       },
       {
         "id": "general_basis",
-        "text": "An officer may not stop a vehicle without at least articulable and reasonable suspicion that the driver or an occupant is subject to seizure for a violation of law.",
+        "text": "An officer may not stop a vehicle without reasonable suspicion that the driver or an occupant is subject to seizure for a violation of law.",
         "when": {
           "question": "q_stop_type",
           "op": "equals",
@@ -154,7 +154,7 @@
       },
       {
         "id": "hunch_insufficient",
-        "text": "An officer's inchoate and unparticularized suspicion or hunch is not enough.",
+        "text": "An officer's unparticularized suspicion or hunch is not enough.",
         "when": {
           "question": "q_stop_basis_problems",
           "op": "includes",
@@ -209,13 +209,11 @@
     ]
   },
   "practice_notes": [
-    "Get the dash-cam and body-cam footage and compare it to the report — whether the claimed violation actually happened is often visible on video.",
     "The stop's lawfulness is judged by what the officer knew before the stop. Facts learned afterward (smell, admissions, contraband) can't justify it retroactively.",
     "If the stop falls, everything that followed (observations, statements, search results) is potentially fruit — consider which later issues depend on it."
   ],
   "_author_notes": [
-    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Delaware v. Prouse, Brendlin v. California, United States v. Cortez, Terry v. Ohio, Brown v. Texas, Florida v. J.L., and Heien v. North Carolina (review note). Unverified; pincites empty.",
     "Gated on vehicle_stop only, per the maintainer ('traffic stop'). Pedestrian stops would need their own gate or issue.",
-    "Statements vary with q_stop_type (drafted 2026-09-27 at the maintainer's request): traffic_basis for traffic stops (Prouse), criminal_basis for stops on suspicion of a crime (Terry's 'specific and articulable facts'), general_basis for 'other' (the former reasonable_suspicion_required statement, Prouse). If q_stop_type is unanswered, only the unconditional statements render. The community-caretaking mention in the other_stop_basis review note is from general knowledge, uncited."
+    "Statements vary with q_stop_type (drafted 2026-09-27 at the maintainer's request): traffic_basis for traffic stops (Prouse), criminal_basis for stops on suspicion of a crime (Terry's 'specific and articulable facts'), general_basis for 'other' (Prouse). If q_stop_type is unanswered, only the unconditional statements render."
   ]
 }

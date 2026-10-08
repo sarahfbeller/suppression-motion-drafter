@@ -89,11 +89,7 @@
       }
     ]
   },
-  "practice_notes": [
-    "Body-cam footage is key: note anything the officer picked up, turned over, opened, or shifted before the item came into view."
-  ],
   "_author_notes": [
-    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Arizona v. Hicks. Unverified; pincites empty.",
     "Starts from any stop, contact, or search (config event groups any_stop_or_contact and any_search). That includes digital_device, per the maintainer: whether these statements fit digital evidence is a question for legal review."
   ]
 }

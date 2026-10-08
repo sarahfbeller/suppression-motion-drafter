@@ -1,7 +1,7 @@
 {
   "id": "franks-violation",
   "label": "Franks Violation — False Statement or Material Omission in Affidavit",
-  "motion_heading": "The Defendant Is Entitled to a Franks Hearing Because the Warrant Affidavit Contained Material Falsehoods or Omissions",
+  "motion_heading": "The Warrant Affidavit Contained Material Falsehoods or Omissions",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
@@ -109,7 +109,6 @@
   },
   "practice_notes": [
     "A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.",
-    "Request the officer's underlying notes, dispatch recordings, or informant file in discovery before filing — they're often the source of the contradiction.",
     "Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant."
   ],
   "_author_notes": [

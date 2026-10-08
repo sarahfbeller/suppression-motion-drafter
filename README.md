@@ -11,6 +11,7 @@ a **motion** (court-facing argument sections with rule paragraphs and citations)
 - `content/issues/` — one file per suppression issue
 - `scripts/validate.py` — checks all content; run before every commit
 - `scripts/render.py` — reference renderer: case session in, motion and memo out
+- `scripts/review_doc.py` — writes `review/content-review.md`, a readable review of every issue and question for legal review (edits go in the JSON; regenerate after)
 - `scripts/engine.py` — condition evaluation and rendering logic shared by both
 - `tests/` — confirms the validator catches every known class of content bug
 - `examples/sessions/` — sample case sessions; `examples/output/` — what they render to

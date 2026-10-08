@@ -1,0 +1,225 @@
+#!/usr/bin/env python3
+"""Write a readable review document of every issue and every question.
+
+Usage (from the repo root):
+    python3 scripts/review_doc.py [--out review/content-review.md]
+
+For legal review. It's read-only: edits go in the JSON files, and each item says which file
+and which id to edit. Regenerate after editing. Conditions are spelled out in plain English
+using the questions' prompts and option labels, so they can be checked without reading JSON.
+"""
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import engine as E  # noqa: E402
+import render as R  # noqa: E402
+
+
+def load_raw(root):
+    """Config, questions (id -> question, with its file), and issues as written (event groups unexpanded)."""
+    config = E.load_json(os.path.join(root, "content", "config.json"))
+    questions, files = {}, []
+    for path in E.content_files(root, "questions"):
+        rel = os.path.relpath(path, root)
+        qs = E.load_json(path)
+        files.append((rel, [q["id"] for q in qs]))
+        for q in qs:
+            questions[q["id"]] = {**q, "_file": rel}
+    issues = {}
+    for path in E.content_files(root, "issues"):
+        issue = E.load_json(path)
+        issues[issue["id"]] = {**issue, "_file": os.path.relpath(path, root)}
+    return config, questions, files, issues
+
+
+# --------------------------------------------------------------------------- conditions in English
+
+def label(q, oid):
+    for o in q.get("options", []):
+        if o["id"] == oid:
+            return f"“{o['label']}”"
+    return f"“{oid}”"
+
+
+def leaf_text(c, questions, groups):
+    if set(c) == {"event_group"}:
+        name = c["event_group"]
+        members = groups.get(name, [])
+        q = questions.get(E.ENCOUNTER_EVENTS, {})
+        return f"any `{name}` event is checked ({'; '.join(label(q, m) for m in members)})"
+    q = questions.get(c["question"], {"prompt": c["question"]})
+    op, v = c["op"], c.get("value")
+    prompt = f"*{q['prompt']}*"
+    if op == "equals":
+        return f"{prompt} → {label(q, v) if q.get('options') else '“' + str(v) + '”'}"
+    if op == "not_equals":
+        return f"{prompt} → anything but {label(q, v) if q.get('options') else '“' + str(v) + '”'}"
+    if op == "in":
+        return f"{prompt} → {' or '.join(label(q, x) for x in v)}"
+    if op == "not_in":
+        return f"{prompt} → anything but {' or '.join(label(q, x) for x in v)}"
+    if op == "includes":
+        return f"{prompt} → {label(q, v)} checked"
+    if op == "not_includes":
+        return f"{prompt} → {label(q, v)} not checked"
+    if op == "not_empty":
+        return f"{prompt} → anything checked"
+    if op == "empty":
+        return f"{prompt} → nothing checked"
+    return f"{prompt} {op} {v}"
+
+
+def condition_lines(c, questions, groups, depth=0):
+    """Nested bullet lines. 'all' reads as ALL of, 'any' as ANY of."""
+    pad = "  " * depth
+    if "all" in c or "any" in c:
+        kind = "all" if "all" in c else "any"
+        kids = c[kind]
+        if len(kids) == 1:
+            return condition_lines(kids[0], questions, groups, depth)
+        out = [f"{pad}- {'ALL' if kind == 'all' else 'ANY'} of:"]
+        for k in kids:
+            out += condition_lines(k, questions, groups, depth + 1)
+        return out
+    return [f"{pad}- {leaf_text(c, questions, groups)}"]
+
+
+def when_inline(c, questions, groups):
+    lines = condition_lines(c, questions, groups)
+    if len(lines) == 1:
+        return lines[0][2:]
+    return "\n" + "\n".join("  " + x for x in lines)
+
+
+# --------------------------------------------------------------------------- document
+
+def issue_section(n, issue, phase, config, questions, groups):
+    courts = config["courts"]
+    ac = ", ".join(courts[c]["display_name"] for c in issue["applicable_courts"])
+    trig = issue["trigger"]
+    out = [f"## {n}. {issue['label']}", "",
+           f"`{issue['_file']}` · phase: {phase} · applies in: {ac} · status: **{issue['status']}**", "",
+           f"**Motion heading:** {issue['motion_heading']}", "",
+           "### Included when", ""]
+    out += condition_lines(trig["match_condition"], questions, groups) + [""]
+
+    out += ["### Rule statements (motion text, in order)", ""]
+    for st in issue["law_paragraph"]["rule_statements"]:
+        cites = "; ".join(R.authority(a) + (f" [{courts[a['court']]['display_name']}]" if a["court"] != E.SCOTUS else "")
+                          for a in st["authorities"])
+        out.append(f"- `{st['id']}`: {st['text']}")
+        if "applicable_courts" in st:
+            out.append(f"  - *Only in:* {', '.join(courts[c]['display_name'] for c in st['applicable_courts'])}")
+        if "when" in st:
+            out.append(f"  - *Only when:* {when_inline(st['when'], questions, groups)}")
+        out.append(f"  - *Cites:* {cites}" if cites else "  - *Cites:* **none — shows as a gap in the memo**")
+    out.append("")
+
+    for kind, title in (("review_conditions", "Memo: review notes (when included)"),
+                        ("excluded_explanations", "Memo: near-miss explanations (when not included)")):
+        notes = trig.get(kind, [])
+        if notes:
+            out += [f"### {title}", ""]
+            for note in notes:
+                out.append(f"- `{note['flag']}` — *when:* {when_inline(note['when'], questions, groups)}")
+                out.append(f"  - {note['display_note']}")
+            out.append("")
+
+    if issue.get("practice_notes"):
+        out += ["### Memo: practice notes", ""] + [f"- {p}" for p in issue["practice_notes"]] + [""]
+    if issue.get("_author_notes"):
+        out += ["### Author notes (never rendered)", ""] + [f"- {p}" for p in issue["_author_notes"]] + [""]
+    return out
+
+
+def option_uses(cond, out):
+    """Collect (question, option) pairs a condition mentions."""
+    if "all" in cond or "any" in cond:
+        for k in cond.get("all", []) + cond.get("any", []):
+            option_uses(k, out)
+        return
+    v = cond.get("value")
+    for x in (v if isinstance(v, list) else [] if v is None else [v]):
+        out.add((cond["question"], x))
+
+
+def question_section(rel, qids, questions, used_by, used_options):
+    out = [f"### `{rel}`", ""]
+    for qid in qids:
+        q = questions[qid]
+        out.append(f"- **`{qid}`** ({q['type'].replace('_', ' ')}): {q['prompt']}")
+        engine_read = qid == E.FILING_COURT
+        for o in q.get("options", []):
+            unused = "" if engine_read or (qid, o["id"]) in used_options else " *(no issue uses this option)*"
+            out.append(f"  - `{o['id']}`: {o['label']}{unused}")
+        users = sorted(used_by.get(qid, []))
+        if qid == E.FILING_COURT:
+            out.append("  - *Used by:* the engine (sets which courts' authority is cited)")
+        else:
+            out.append(f"  - *Used by:* {', '.join(users) if users else '**no issue**'}")
+    return out + [""]
+
+
+def build(root):
+    config, questions, files, issues = load_raw(root)
+    groups = config.get("event_groups", {})
+    order = E.motion_order(config)
+    phase_of = {iid: ph for ph, ids in config["motion_order"].items() for iid in ids}
+
+    used_by, used_options = {}, set()
+    for iid, issue in issues.items():
+        expanded = E.expand_issue(issue, groups)[0]
+        trig = expanded["trigger"]
+        conds = ([trig["match_condition"]] + [n["when"] for n in trig.get("review_conditions", [])]
+                 + [n["when"] for n in trig.get("excluded_explanations", [])]
+                 + [st["when"] for st in expanded["law_paragraph"]["rule_statements"] if "when" in st])
+        for c in conds:
+            option_uses(c, used_options)
+            for qid in E.condition_questions(c):
+                used_by.setdefault(qid, set()).add(iid)
+
+    out = ["# Content review", "",
+           "Generated by `scripts/review_doc.py` — don't edit this file. Make changes in the JSON file "
+           "named under each item (search for the id), then regenerate.", "",
+           f"{len(order)} issues, in motion order, then every question.", "",
+           "## Contents", ""]
+    for n, iid in enumerate(order, 1):
+        out.append(f"{n}. [{issues[iid]['label']}](#{n}-{anchor(issues[iid]['label'])}) — {phase_of[iid]}")
+    out += ["", "[Questions](#questions)", "", "---", ""]
+
+    for n, iid in enumerate(order, 1):
+        out += issue_section(n, issues[iid], phase_of[iid], config, questions, groups) + ["---", ""]
+
+    out += ["# Questions", "", "Grouped by file, in file order. *Used by* lists every issue whose conditions "
+            "mention the question. Options no condition mentions are marked; on a checklist they can still "
+            "matter for “anything checked” / “nothing checked.”", ""]
+    q = questions.get(E.ENCOUNTER_EVENTS)
+    if groups and q:
+        out += ["**Event groups** (`content/config.json`):", ""]
+        for name, members in groups.items():
+            out.append(f"- `{name}`: {'; '.join(label(q, m) for m in members)}")
+        out.append("")
+    for rel, qids in files:
+        out += question_section(rel, qids, questions, used_by, used_options)
+    return "\n".join(out)
+
+
+def anchor(text):
+    """GitHub-style heading anchor."""
+    keep = [ch.lower() if ch.isalnum() or ch in "-_" else "-" if ch == " " else "" for ch in text]
+    return "".join(ch for ch in keep if ch)
+
+
+def main(argv):
+    out = argv[argv.index("--out") + 1] if "--out" in argv else os.path.join("review", "content-review.md")
+    text = build(os.getcwd())
+    os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
+    with open(out, "w", encoding="utf-8") as f:
+        f.write(text + "\n")
+    print(f"wrote {out}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

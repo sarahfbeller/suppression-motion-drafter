@@ -1,7 +1,7 @@
 {
   "id": "independent-test-comprehension-barrier",
   "label": "Comprehension Barrier Preventing Knowing Understanding of Right to Independent Test",
-  "motion_heading": "The Defendant Could Not Knowingly and Intelligently Understand the Advisement of the Right to an Independent Chemical Test",
+  "motion_heading": "The Defendant Did Not Understand the Advisement of the Right to an Independent Chemical Test",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
@@ -61,7 +61,7 @@
       },
       {
         "id": "language_barrier",
-        "text": "A defendant with too poor a grasp of English to understand an advisement given only in English may be unable to make a knowing and intelligent decision regarding the right to an independent test, even where the advisement itself followed correct procedure.",
+        "text": "When an arrestee fails to understand their right to an independent test due to a language barrier, \"the due process clause of Article I, Section 7 of the Alaska Constitution . . . requires suppression of the breath test result.\"",
         "when": {
           "question": "q_comprehension_barrier",
           "op": "equals",
@@ -73,13 +73,13 @@
             "name": "Ahtuangaruak v. State",
             "citation": "820 P.2d 310 (Alaska App. 1991)",
             "court": "ak",
-            "pincite": ""
+            "pincite": "311–12"
           }
         ]
       },
       {
         "id": "intoxication_barrier",
-        "text": "A defendant whose intoxication was severe enough that they could not understand what they were giving up has not validly waived the right.",
+        "text": "When an arrestee fails to understand their right to an independent test due to intoxication, \"the due process clause of Article I, Section 7 of the Alaska Constitution . . . requires suppression of the breath test result.\"",
         "when": {
           "question": "q_comprehension_barrier",
           "op": "equals",
@@ -92,6 +92,13 @@
             "citation": "792 P.2d 673 (Alaska 1990)",
             "court": "ak",
             "pincite": ""
+          },
+          {
+            "type": "case",
+            "name": "Ahtuangaruak v. State",
+            "citation": "820 P.2d 310 (Alaska App. 1991)",
+            "court": "ak",
+            "pincite": "311–12"
           }
         ]
       },
@@ -143,10 +150,7 @@
   "practice_notes": [
     "Document your client's actual English proficiency at the time of the advisement — an interpreter's later availability at trial doesn't cure a station-house advisement given only in English when the decision had to be made.",
     "For an intoxication-based comprehension claim, be aware of the tension: the same BAC or observations that support this claim may also support the state's case on the underlying DUI charge. Weigh how heavily to lean on this theory alongside your other defenses.",
-    "This is closely related to, but distinct from, the failure-to-advise issue — here the advisement was procedurally proper, but the defendant's ability to receive it wasn't. Don't conflate the two in briefing; they rest on different facts."
   ],
   "_author_notes": [
-    "The two remedy statements (suppression vs. favorable presumption) were previously memo-style notes on this issue and are now court-facing text. Nelson and Snyder address failure to advise; confirm the same remedies apply to an invalid waiver caused by a comprehension barrier.",
-    "Nelson/Snyder pincites carried over from independent-test-advisement-failure — verify."
   ]
 }

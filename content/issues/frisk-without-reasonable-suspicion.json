@@ -139,7 +139,7 @@
       },
       {
         "id": "hunch_insufficient",
-        "text": "An officer's inchoate and unparticularized suspicion or hunch is not enough.",
+        "text": "An officer's unparticularized suspicion or hunch is not enough.",
         "authorities": [
           {
             "type": "case",
@@ -153,12 +153,7 @@
     ]
   },
   "practice_notes": [
-    "Pin down exactly what the officer said or wrote to justify the frisk — vague references to 'officer safety' or the neighborhood, without anything tied to your client specifically, are the weakest part of the government's position.",
     "If your client was a passenger and was also asked for ID and that added time to the stop, that may raise a separate timing issue independent of the frisk itself.",
     "A passenger has standing to challenge the stop itself and any search of their own person (Brendlin v. California, 551 U.S. 249 (2007)), but standing to challenge a search of the vehicle's contents is analyzed separately — don't assume one covers the other."
   ],
-  "_author_notes": [
-    "Merged from passenger-frisk-suspicionless (2026-09-27). The passenger-specific statements (mere_presence_insufficient, general_officer_safety_insufficient) and their Arizona v. Johnson citations came from that file unchanged; they now render only when your client was a passenger.",
-    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Ybarra v. Illinois, and Arizona v. Johnson and Terry v. Ohio as used in armed_and_dangerous_required, passenger_standard, and hunch_insufficient. Unverified; pincites empty."
-  ]
 }

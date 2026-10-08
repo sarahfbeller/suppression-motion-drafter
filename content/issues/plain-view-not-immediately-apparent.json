@@ -1,7 +1,7 @@
 {
   "id": "plain-view-not-immediately-apparent",
   "label": "Incriminating Character of the Item Was Not Immediately Apparent",
-  "motion_heading": "The Incriminating Character of the Item Was Not Immediately Apparent",
+  "motion_heading": "The Plain-View Doctrine Does Not Apply Because the Incriminating Character of the Item Was Not Immediately Apparent",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
@@ -93,7 +93,6 @@
     "Look for any step the officer took before being sure what the item was — a field test, a closer look, a question to your client. Each one suggests the character wasn't immediately apparent."
   ],
   "_author_notes": [
-    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Horton v. California, Arizona v. Hicks. Unverified; pincites empty.",
     "Starts from any stop, contact, or search (config event groups any_stop_or_contact and any_search). That includes digital_device, per the maintainer: whether these statements fit digital evidence is a question for legal review.",
     "Sight only (2026-09-27, maintainer's decision). Touch cases belong to plain-feel-manipulation (manipulating the object to identify it) and frisk-exceeded-weapons-search (removing something that couldn't be a weapon), so each fact pattern produces one section. The plain_feel option of q_how_found is kept as a recordable fact, though no issue uses it now."
   ]

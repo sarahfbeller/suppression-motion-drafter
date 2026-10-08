@@ -1,7 +1,7 @@
 {
   "id": "denial-of-contact-before-breath-test",
   "label": "Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)",
-  "motion_heading": "The Defendant Was Denied the Statutory Right to Contact an Attorney or a Relative or Friend Before Deciding Whether to Submit to a Breath Test",
+  "motion_heading": "The Breath Test Must Be Suppressed Because the Defendant Was Denied the Statutory Right to Consult Before Deciding Whether to Submit to a Breath Test",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",
@@ -127,7 +127,7 @@
     "rule_statements": [
       {
         "id": "core_communication_right",
-        "text": "A person arrested has the right to telephone or otherwise communicate with an attorney and any relative or friend immediately after arrest.",
+        "text": "A person has the right to telephone or otherwise communicate with an attorney and any relative or friend immediately after arrest.",
         "authorities": [
           {
             "type": "statute",
@@ -158,7 +158,7 @@
       },
       {
         "id": "extends_to_relative_or_friend",
-        "text": "This right extends to requests to contact a relative or friend, not just an attorney — the statute draws no distinction between the two on its face.",
+        "text": "This right extends to requests to contact a relative or friend when the request served a purpose related to the defense process such as obtaining advice on whether to take the test.",
         "when": {
           "question": "q_contact_requested",
           "op": "includes",
@@ -169,31 +169,6 @@
             "type": "case",
             "name": "Zsupnik v. State",
             "citation": "789 P.2d 357 (Alaska 1990)",
-            "court": "ak",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "remedy_limited_to_defense_purpose",
-        "text": "The remedy for denying a request to contact a relative or friend is exclusion of evidence only where the request served a purpose related to the defense process, such as obtaining advice on whether to take the test.",
-        "when": {
-          "question": "q_contact_requested",
-          "op": "includes",
-          "value": "relative_or_friend"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Zsupnik v. State",
-            "citation": "789 P.2d 357 (Alaska 1990)",
-            "court": "ak",
-            "pincite": ""
-          },
-          {
-            "type": "case",
-            "name": "Winfrey v. State",
-            "citation": "78 P.3d 725 (Alaska App. 2003)",
             "court": "ak",
             "pincite": ""
           }
@@ -237,13 +212,4 @@
       }
     ]
   },
-  "practice_notes": [
-    "This is an Alaska statutory/due-process right (AS 12.25.150(b)), not a Fourth Amendment claim, and not the same as federal Miranda right-to-counsel doctrine — Miranda governs counsel during interrogation; this governs contact before a testing decision. Don't conflate the two in briefing.",
-    "If the request was to contact a relative or friend rather than an attorney, pin down and document the stated purpose of that request as early as possible — under Zsupnik, whether the purpose was defense-related is what determines whether suppression is even available.",
-    "Get the booking/custody video and any phone or dispatch logs — these claims turn on the specific timeline: when the request was made, when (if ever) contact occurred, and how much time was given relative to what was actually needed."
-  ],
-  "_author_notes": [
-    "A prior draft asserted that Alaska treats the standard 20-minute pre-test observation period as per se reasonable. Removed because no citation was confirmed; it needs a verified citation before going back in.",
-    "private_communication is new wording for Farrell's proposition (previously summarized as 'police must make reasonable effort to accommodate private consultation'). Verify against the opinion."
-  ]
 }

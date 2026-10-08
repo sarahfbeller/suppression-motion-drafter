@@ -57,23 +57,18 @@
     ]
   },
   {
-    "id": "q_contact_timeline",
-    "type": "short_text",
-    "prompt": "Roughly what was the timeline — when was the request made, when was contact made (if any), and when was the test administered?"
-  },
-  {
     "id": "q_breath_test_administered",
     "type": "yes_no",
-    "prompt": "Was a breath test actually administered (as opposed to refused, or not administered at all)?"
+    "prompt": "Was a breath test successfully completed (as opposed to being refused or not administered)?"
   },
   {
     "id": "q_independent_test_advisement",
     "type": "multiple_choice",
-    "prompt": "Did the officer clearly and expressly advise your client of the right to an independent chemical test?",
+    "prompt": "Did the officer clearly and expressly advise your client of their right to an independent chemical test?",
     "options": [
       {
         "id": "no_advisement",
-        "label": "No advisement of the right to an independent test was given at all"
+        "label": "No advisement of the right to an independent test was given"
       },
       {
         "id": "unclear_advisement",
@@ -93,15 +88,15 @@
   {
     "id": "q_comprehension_barrier",
     "type": "multiple_choice",
-    "prompt": "Was there anything that may have prevented your client from actually understanding the advisement, even if it was properly given?",
+    "prompt": "Was there anything that may have prevented your client from actually understanding the advisement?",
     "options": [
       {
         "id": "language",
-        "label": "Language barrier — advisement was given only in a language your client did not adequately understand"
+        "label": "Advisement was given in a language your client did not adequately understand"
       },
       {
         "id": "intoxication",
-        "label": "Intoxication level so severe your client could not knowingly and intelligently understand the advisement"
+        "label": "Client's intoxication level was so high they could not understand advisement"
       },
       {
         "id": "other_barrier",
@@ -109,7 +104,7 @@
       },
       {
         "id": "none",
-        "label": "No comprehension barrier apparent"
+        "label": "No"
       }
     ]
   }
