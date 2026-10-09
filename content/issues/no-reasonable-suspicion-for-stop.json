@@ -213,6 +213,7 @@
     "If the stop falls, everything that followed (observations, statements, search results) is potentially fruit — consider which later issues depend on it."
   ],
   "_author_notes": [
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Delaware v. Prouse, Brendlin v. California, United States v. Cortez, Terry v. Ohio, Brown v. Texas, Florida v. J.L. Unverified; pincites empty.",
     "Gated on vehicle_stop only, per the maintainer ('traffic stop'). Pedestrian stops would need their own gate or issue.",
     "Statements vary with q_stop_type (drafted 2026-09-27 at the maintainer's request): traffic_basis for traffic stops (Prouse), criminal_basis for stops on suspicion of a crime (Terry's 'specific and articulable facts'), general_basis for 'other' (Prouse). If q_stop_type is unanswered, only the unconditional statements render."
   ]
