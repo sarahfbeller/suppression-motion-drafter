@@ -27,7 +27,7 @@ ISSUE_KEYS = {"id", "label", "motion_heading", "status", "last_reviewed",
 TRIGGER_KEYS = {"match_condition", "review_conditions",
                 "excluded_explanations"}
 NOTE_KEYS = {"when", "flag", "display_note"}
-PARAGRAPH_KEYS = {"id", "when", "applicable_courts", "sentences"}
+PARAGRAPH_KEYS = {"id", "when", "applicable_courts", "sentences", "fill_in"}
 SENTENCE_KEYS = {"id", "text", "kind", "authorities"}
 SENTENCE_KINDS = {"rule", "argument"}
 CASE_KEYS = {"type", "name", "citation", "pincite", "court"}
@@ -622,7 +622,11 @@ def check_issue(r, where, issue, config, questions, used_questions):
     good_paragraphs = []
     for para in paragraphs:
         pw = f"{where} paragraph {para.get('id', '?') if isinstance(para, dict) else '?'}"
-        if not check_keys(r, pw, para, PARAGRAPH_KEYS, ["id", "sentences"]):
+        if not check_keys(r, pw, para, PARAGRAPH_KEYS, ["id"]):
+            continue
+        if ("sentences" in para) == ("fill_in" in para):
+            r.err(pw, "a paragraph has either 'sentences' (motion text) or 'fill_in' (an instruction to "
+                      "the attorney), and not both")
             continue
         if not SLUG_RE.match(str(para["id"])):
             r.err(pw, "id must be a lowercase slug")
@@ -643,6 +647,10 @@ def check_issue(r, where, issue, config, questions, used_questions):
                     r.err(pw, f"applicable_courts has {broader}, but the issue only applies in {sorted(ac)}")
             if p_ac and set(p_ac) == set(ac):
                 r.warn(pw, "applicable_courts is the same as the issue's — remove it; paragraphs inherit it")
+        if "fill_in" in para:
+            check_fill_in(r, pw, para["fill_in"])
+            good_paragraphs.append(para)
+            continue
         sentences = para["sentences"]
         if not isinstance(sentences, list) or not sentences:
             r.err(pw, "sentences must be a non-empty list")
@@ -669,6 +677,19 @@ def check_issue(r, where, issue, config, questions, used_questions):
         refs = referenced_options(issue_conditions(trig, good_paragraphs))
         check_reachability(r, where, trig, good_paragraphs, questions, refs)
         check_every_match_has_a_paragraph(r, where, issue, good_paragraphs, questions, courts, refs)
+
+
+def check_fill_in(r, pw, text):
+    """A fill-in is an instruction to the attorney, printed in the motion in brackets."""
+    if not isinstance(text, str) or not text:
+        r.err(pw, "fill_in must be a non-empty instruction to the attorney")
+        return
+    if BRACE_RE.search(text):
+        r.err(pw, "fill_in is written to the attorney, so it doesn't use client tokens — say 'your client'")
+    if "[" in text or "]" in text:
+        r.err(pw, "fill_in can't contain brackets; the renderer adds them")
+    if not re.search(r"[.?!]$", text):
+        r.err(pw, "fill_in must end with sentence punctuation")
 
 
 def check_sentence(r, pw, st, p_ac, narrowed, courts, sentence_ids, counts):
@@ -795,7 +816,7 @@ def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, co
         if courts[code]["kind"] == "scotus" or not E.applies_in(issue["applicable_courts"], binding):
             continue
         live = [p for p in paragraphs if E.applies_in(E.paragraph_courts(issue, p), binding)
-                and E.has_cited(p["sentences"])]
+                and E.has_cited(p.get("sentences", []))]
         for a in assignments(qids, questions, refs):
             if E.eval_condition(match, a) and not any("when" not in p or E.eval_condition(p["when"], a)
                                                       for p in live):

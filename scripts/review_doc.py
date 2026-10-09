@@ -111,6 +111,9 @@ def issue_section(n, issue, phase, config, questions, groups):
             out.append(f"  - *Only in:* {', '.join(courts[c]['display_name'] for c in para['applicable_courts'])}")
         if "when" in para:
             out.append(f"  - *Only when:* {when_inline(para['when'], questions, groups)}")
+        if "fill_in" in para:
+            out.append(f"  - *Fill-in for the attorney:* {para['fill_in']}")
+            continue
         for st in para["sentences"]:
             out.append(f"  - `{st['id']}`: {st['text']}")
             if st.get("kind") == "argument":
@@ -118,6 +121,8 @@ def issue_section(n, issue, phase, config, questions, groups):
                 continue
             cites = "; ".join(cite_text(a, courts) for a in st["authorities"])
             out.append(f"    - *Cites:* {cites}" if cites else "    - *Cites:* **none — shows as a gap in the memo**")
+    if not any("fill_in" in p for p in issue["law_paragraphs"]):
+        out.append(f"- *No fill-in of its own: the section ends with “[Fill in: {E.GENERIC_FILL_IN}]”*")
     out.append("")
 
     for kind, title in (("review_conditions", "Memo: review notes (when included)"),

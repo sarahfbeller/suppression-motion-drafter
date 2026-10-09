@@ -42,7 +42,8 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
 
 - **Motion text** (the court): `motion_heading`, sentence `text`, authorities.
 - **Memo text** (the attorney): `practice_notes`, `review_conditions` and
-  `excluded_explanations` display notes.
+  `excluded_explanations` display notes, and `fill_in` prompts (printed in the motion in
+  brackets, for the attorney to replace).
 - **Author notes** (the maintainer): any `_`-prefixed field. Never rendered. Notes about
   the state of the file — what's unverified, why something is structured a certain way —
   go here, never in `practice_notes`.

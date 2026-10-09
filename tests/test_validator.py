@@ -531,6 +531,28 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertError(self.run_with(f"{ISSUES}/no-reasonable-suspicion-for-stop.json", f),
                          "that case isn't cited")
 
+    # ---- fill-ins
+
+    def add_paragraph(self, para):
+        return self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d["law_paragraphs"].append(para))
+
+    def test_fill_in_is_fine(self):
+        r = self.add_paragraph({"id": "apply", "fill_in": "Explain what your client was told."})
+        self.assertEqual(r.errors, [], "\n".join(r.errors))
+
+    def test_fill_in_and_sentences_together(self):
+        self.assertError(self.add_paragraph({"id": "apply", "fill_in": "Explain.", "sentences": []}), "and not both")
+
+    def test_fill_in_with_token(self):
+        self.assertError(self.add_paragraph({"id": "apply", "fill_in": "Explain what {client} was told."}),
+                         "doesn't use client tokens")
+
+    def test_fill_in_with_brackets(self):
+        self.assertError(self.add_paragraph({"id": "apply", "fill_in": "[Explain.]"}), "can't contain brackets")
+
+    def test_empty_fill_in(self):
+        self.assertError(self.add_paragraph({"id": "apply", "fill_in": ""}), "non-empty instruction")
+
     # ---- client tokens (the motion never names the client)
 
     def heading(self, h):

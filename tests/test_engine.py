@@ -13,6 +13,7 @@ import engine as E  # noqa: E402
 import render as R  # noqa: E402
 
 STATE = {"q_filing_court": "ak"}
+GENERIC = "\n\n**[Fill in: Apply the law to your client's facts.]**"
 FEDERAL = {"q_filing_court": "9th_cir"}
 
 
@@ -72,7 +73,7 @@ class Paragraphs(unittest.TestCase):
     def test_paragraphs_are_separated(self):
         text, _ = self.render({"id": "a", "sentences": [{"id": "x", "text": "One.", "authorities": [case("A v. B")]}]},
                               {"id": "b", "sentences": [{"id": "y", "text": "Two.", "authorities": [case("C v. D")]}]})
-        self.assertEqual(text, "One. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\nTwo. *C v. D*, 1 P.3d 1 (Alaska 2000).")
+        self.assertEqual(text, "One. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\nTwo. *C v. D*, 1 P.3d 1 (Alaska 2000)." + GENERIC)
 
     def test_when_gates_the_whole_paragraph(self):
         para = {"id": "a", "when": {"question": "q_independent_suspicion", "op": "equals", "value": "yes"},
@@ -84,13 +85,13 @@ class Paragraphs(unittest.TestCase):
         text, gaps = self.render({"id": "a", "sentences": [
             {"id": "x", "text": "Rule.", "authorities": [case("A v. B")]},
             {"id": "y", "kind": "argument", "text": "So it follows.", "authorities": []}]})
-        self.assertEqual(text, "Rule. *A v. B*, 1 P.3d 1 (Alaska 2000). So it follows.")
+        self.assertEqual(text, "Rule. *A v. B*, 1 P.3d 1 (Alaska 2000). So it follows." + GENERIC)
         self.assertEqual(gaps, [])
 
     def test_argument_only_paragraph_renders(self):
         text, gaps = self.render({"id": "a", "sentences": [{"id": "x", "text": "Rule.", "authorities": [case("A v. B")]}]},
                                  {"id": "b", "sentences": [{"id": "y", "kind": "argument", "text": "Applied.", "authorities": []}]})
-        self.assertEqual(text, "Rule. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\nApplied.")
+        self.assertEqual(text, "Rule. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\nApplied." + GENERIC)
         self.assertEqual(gaps, [])
 
     def test_mixed_paragraph_whose_law_was_all_dropped_does_not_render(self):
@@ -98,6 +99,42 @@ class Paragraphs(unittest.TestCase):
             {"id": "x", "text": "Rule.", "authorities": []},
             {"id": "y", "kind": "argument", "text": "So it follows.", "authorities": []}]})
         self.assertEqual((text, gaps), ("", ["Rule."]))
+
+
+class FillIns(unittest.TestCase):
+    """Application text the answers can't decide is left to the attorney as a bracketed prompt."""
+
+    def setUp(self):
+        self.config, _questions, issues = E.load_repo(ROOT)
+        self.issue = copy.deepcopy(next(i for i in issues if i["id"] == "prolonged-stop"))
+        self.law = {"id": "law", "sentences": [{"id": "x", "text": "Rule.", "authorities": [case("A v. B")]}]}
+
+    def render(self, *paragraphs, answers=STATE):
+        self.issue["law_paragraphs"] = [self.law, *paragraphs]
+        return R.section(E.law_paragraphs(self.issue, answers, E.binding_courts(answers), self.config)[0])
+
+    def test_generic_fill_in_ends_every_section(self):
+        self.assertTrue(self.render().endswith(GENERIC))
+
+    def test_own_fill_in_replaces_the_generic_one(self):
+        text = self.render({"id": "apply", "fill_in": "Explain the hunch."})
+        self.assertEqual(text, "Rule. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\n**[Fill in: Explain the hunch.]**")
+
+    def test_generic_comes_back_when_the_own_fill_in_does_not_apply(self):
+        text = self.render({"id": "apply", "fill_in": "Explain the hunch.",
+                            "when": {"question": "q_independent_suspicion", "op": "equals", "value": "yes"}},
+                           answers={**STATE, "q_independent_suspicion": "no"})
+        self.assertTrue(text.endswith(GENERIC))
+        self.assertNotIn("hunch", text)
+
+    def test_memo_counts_fill_ins(self):
+        config, _questions, issues = E.load_repo(ROOT)
+        issue = next(i for i in issues if i["id"] == "frisk-without-reasonable-suspicion")
+        answers = {**FEDERAL, "q_encounter_events": ["vehicle_stop", "frisk"],
+                   "q_occupant_role": "driver", "q_frisk_suspicion_basis": "none_articulated"}
+        result = E.evaluate_session(config, [issue], {"answers": answers})
+        motion = R.render_motion(result)
+        self.assertIn("the motion has 1 bracketed [Fill in: …] prompt.", R.render_memo(result, config, motion))
 
 
 class Citations(unittest.TestCase):

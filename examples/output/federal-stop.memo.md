@@ -6,6 +6,8 @@
 
 **Pronouns for your client:** he/him.
 
+**Fill in the application:** the motion has 3 bracketed [Fill in: …] prompts. Replace each with your own argument applying the law to your client's facts, and delete the prompt.
+
 **Fill in your client's name:** the motion says [Client] in 1 place. Replace each one with your client's name the way you want it to appear in the motion, e.g. "Mr. Smith" or "Smith". Find and replace works, including for possessives ([Client]'s).
 
 ## Issues included in the motion

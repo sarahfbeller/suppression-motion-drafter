@@ -171,7 +171,8 @@ A condition can only be satisfied by answers the attorney actually gave.
 
 ## Paragraphs and sentences
 
-`law_paragraphs` is an ordered list of `{ id, when?, applicable_courts?, sentences }`. A paragraph
+`law_paragraphs` is an ordered list of `{ id, when?, applicable_courts?, sentences }` (or a fill-in,
+below). A paragraph
 is the unit that's included or left out: its sentences have no conditions of their own, so a
 sentence that leans on the one before it ("Under this test…", *Id.*, "For example…") never loses it.
 
@@ -212,6 +213,15 @@ An issue needs at least one cited sentence in the motion to be a section; argume
 one. The validator checks that every match leaves a paragraph with a cited sentence.
 
 A paragraph that doesn't apply in this forum is skipped silently.
+
+**Fill-ins.** Application text is generated only when the answers fully decide what it says (an
+argument paragraph with a `when` and client tokens). Everything else is left to the attorney: a
+paragraph `{ id, when?, applicable_courts?, fill_in }` is an instruction to the attorney, printed in
+the motion as **[Fill in: …]** where the text belongs. It's written to the attorney ("your
+client"), has no tokens or brackets, and ends with sentence punctuation. If a section renders no
+fill-in of its own, the engine ends it with "[Fill in: Apply the law to your client's facts.]", so
+no section is only law. The memo counts the prompts. Fill-ins don't count as law: an issue whose
+only rendered paragraphs are fill-ins and argument isn't a section.
 
 ## Authorities
 
@@ -269,7 +279,7 @@ themselves while deciding what to file? Memo. Is it about the state of the file?
 ## Output
 
 **Motion:** an "ARGUMENT" heading, then one numbered section per included issue (I, II, III…) with
-its `motion_heading` and law paragraphs. Nothing else. If no issue produced a paragraph, a single
+its `motion_heading` and law paragraphs, including fill-in prompts. Nothing else. If no issue produced a paragraph, a single
 line says so.
 
 **Memo** (never filed):

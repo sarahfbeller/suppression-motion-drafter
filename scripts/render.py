@@ -62,6 +62,10 @@ def citation(authorities, previous):
     return "; ".join(parts)
 
 
+def fill_in_marker(text):
+    return f"[Fill in: {text}]"
+
+
 def section(paragraphs):
     """Markdown puts citations inline: each sentence's text, then its citation sentence.
 
@@ -69,6 +73,9 @@ def section(paragraphs):
     """
     out, previous = [], None
     for para in paragraphs:
+        if "fill_in" in para:
+            out.append(f"**{fill_in_marker(para['fill_in'])}**")
+            continue
         sentences = []
         for st in para["sentences"]:
             if not st["authorities"]:
@@ -106,6 +113,11 @@ def render_memo(result, config, motion=""):
              f"**Forum:** {forum} ({specific_name}). **Authority cited:** {cited}.", ""]
     pronouns = PRONOUN_LABELS.get(result["pronouns"], "not answered, so the motion repeats your client's name")
     lines += [f"**Pronouns for your client:** {pronouns}.", ""]
+    f = motion.count("[Fill in:")
+    if f:
+        lines += [f"**Fill in the application:** the motion has {f} bracketed [Fill in: …] "
+                  f"{'prompt' if f == 1 else 'prompts'}. Replace each with your own argument applying the law "
+                  f"to your client's facts, and delete the prompt.", ""]
     n = motion.count(E.NAME_MARKER)
     if n:
         lines += [f"**Fill in your client's name:** the motion says {E.NAME_MARKER} in {n} "

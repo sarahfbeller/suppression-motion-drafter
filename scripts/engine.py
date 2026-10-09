@@ -39,6 +39,10 @@ VERB_FORMS = {  # agree with {they}: singular for he, she, and the name; plural 
     "do": ("does", "does", "do", "does"),
 }
 PRONOUN_OPTIONS = ("he_him", "she_her", "they_them", "no_pronouns")
+
+# Application text that the answers can't fully decide is left to the attorney: a fill-in paragraph
+# prints as a bracketed instruction. A section with no fill-in of its own ends with this one.
+GENERIC_FILL_IN = "Apply the law to your client's facts."
 TOKEN_RE = re.compile(r"\{([A-Za-z]+)\}")
 
 # '<volume> <reporter> <first page> (<court> <year>)'
@@ -250,14 +254,15 @@ def id_form(a, previous):
 def law_paragraphs(issue, answers, courts, config):
     """Return (paragraphs, gap_sentence_texts) for one issue.
 
-    paragraphs is the ordered list of paragraphs that render, each as { id, sentences }, and each
-    sentence as { id, text, kind, authorities } with authorities filtered to courts and in
+    paragraphs is the ordered list of paragraphs that render, each as { id, sentences } or, for a
+    fill-in, { id, fill_in }. Each sentence is { id, text, kind, authorities } with authorities filtered to courts and in
     citation order (SCOTUS, circuit, state). A paragraph renders when its 'when' is absent or true
     and it applies in this forum. Inside it, a cited sentence with no authority for these courts
     is dropped and reported as a gap; an argument sentence always renders. A paragraph made only
     of argument (e.g. an application paragraph) renders as is, but one whose cited sentences were
     all dropped doesn't, since its argument would rest on nothing. Whether citations go inline or
-    in footnotes is up to the renderer.
+    in footnotes is up to the renderer. If anything renders but no fill-in paragraph does, the
+    generic one is added at the end, so no section is only law.
     """
     paragraphs, gaps = [], []
     for para in issue["law_paragraphs"]:
@@ -265,6 +270,9 @@ def law_paragraphs(issue, answers, courts, config):
             continue
         if not applies_in(paragraph_courts(issue, para), courts):
             continue  # not the law in this forum, so not a gap either
+        if "fill_in" in para:
+            paragraphs.append({"id": para["id"], "fill_in": para["fill_in"]})
+            continue
         sentences = []
         for st in para["sentences"]:
             kind = st.get("kind", "rule")
@@ -278,6 +286,8 @@ def law_paragraphs(issue, answers, courts, config):
         had_cited = any(st.get("kind", "rule") != "argument" for st in para["sentences"])
         if sentences and (not had_cited or has_cited(sentences)):
             paragraphs.append({"id": para["id"], "sentences": sentences})
+    if paragraphs and not any("fill_in" in p for p in paragraphs):
+        paragraphs.append({"id": "fill_in", "fill_in": GENERIC_FILL_IN})
     return paragraphs, gaps
 
 
@@ -301,7 +311,7 @@ def evaluate_session(config, issues, session):
         trig = issue["trigger"]
         if eval_condition(trig["match_condition"], answers):
             paragraphs, gaps = law_paragraphs(issue, answers, courts, config)
-            cited_courts = {a["court"] for p in paragraphs for st in p["sentences"] for a in st["authorities"]}
+            cited_courts = {a["court"] for p in paragraphs for st in p.get("sentences", []) for a in st["authorities"]}
             entry = {
                 "issue": issue,
                 "heading": fill_client(issue["motion_heading"], answers.get(CLIENT_PRONOUNS)),
@@ -314,7 +324,7 @@ def evaluate_session(config, issues, session):
                                            and specific not in cited_courts),
             }
             # Argument with no law in front of it isn't a section.
-            cited = any(has_cited(p["sentences"]) for p in paragraphs)
+            cited = any(has_cited(p.get("sentences", [])) for p in paragraphs)
             (result["included"] if cited else result["no_paragraph"]).append(entry)
         else:
             for ex in trig.get("excluded_explanations", []):
