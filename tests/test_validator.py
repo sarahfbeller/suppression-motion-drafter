@@ -508,6 +508,18 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
                                                 "citation": "575 U.S. 348", "pincite": "", "court": "scotus"}}
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "must look like")
 
+    def test_secondary_source_in_parenthetical(self):
+        def f(d):
+            stmt(d, "core_prolongation_rule")["authorities"][0]["parenthetical"] = {
+                "text": "citing", "authority": {"type": "secondary", "name": "1 A. Treatise § 2 (3d ed. 2020)"}}
+        r = self.run_with(f"{ISSUES}/prolonged-stop.json", f)
+        self.assertEqual(r.errors, [], "\n".join(r.errors))
+
+    def test_secondary_source_as_authority(self):
+        def f(d):
+            stmt(d, "core_prolongation_rule")["authorities"].append({"type": "secondary", "name": "1 A. Treatise § 2"})
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "only appear inside a parenthetical")
+
     def test_case_in_parenthetical_text(self):
         def f(d):
             stmt(d, "core_prolongation_rule")["authorities"][0]["parenthetical"] = {
@@ -531,6 +543,16 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
                  "authorities": [{"type": "constitution", "name": "U.S. Const. amend. V", "citation": "", "court": "scotus"}]}]})
         r = self.run_with(f"{ISSUES}/miranda-warnings-inadequate.json", f)
         self.assertFalse(any("Miranda" in e for e in r.errors), "\n".join(r.errors))
+
+    def test_short_case_name_cited_earlier_in_the_same_paragraph(self):
+        def f(d):
+            d["law_paragraphs"].append({"id": "later", "sentences": [
+                {"id": "cited", "text": "Warnings must be given.",
+                 "authorities": [{"type": "case", "name": "Florida v. Powell", "citation": "559 U.S. 50 (2010)",
+                                  "pincite": "", "court": "scotus"}]},
+                {"id": "named", "kind": "argument", "text": "*Powell* controls.", "authorities": []}]})
+        r = self.run_with(f"{ISSUES}/miranda-warnings-inadequate.json", f)
+        self.assertFalse(any("Powell" in e for e in r.errors), "\n".join(r.errors))
 
     def test_short_case_name_cited_only_in_a_conditional_paragraph(self):
         # Florida v. Powell is cited only when warnings were incomplete, so it may not have printed.

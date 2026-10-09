@@ -101,11 +101,49 @@
       ]
     },
     {
-      "id": "claim_of_authority",
+      "id": "ambiguous_phrasing",
+      "applicable_courts": [
+        "ak"
+      ],
       "when": {
         "question": "q_consent_circumstances",
         "op": "includes",
-        "value": "claim_of_authority"
+        "value": "do_you_mind_phrasing"
+      },
+      "sentences": [
+        {
+          "id": "do_you_mind_ambiguous",
+          "text": "Questions phrased as “do you mind if” lead to ambiguous responses that “may inhibit the State’s ability to prove the unequivocal consent that the law requires.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Gosuk v. State",
+              "citation": "484 P.3d 130 (Alaska App. 2021)",
+              "court": "ak",
+              "pincite": "137",
+              "parenthetical": {
+                "text": "quotation omitted"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "claim_of_authority",
+      "when": {
+        "any": [
+          {
+            "question": "q_consent_circumstances",
+            "op": "includes",
+            "value": "claim_of_authority"
+          },
+          {
+            "question": "q_consent_circumstances",
+            "op": "includes",
+            "value": "implied_threat"
+          }
+        ]
       },
       "sentences": [
         {
@@ -118,6 +156,89 @@
               "citation": "391 U.S. 543 (1968)",
               "court": "scotus",
               "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "acquiescence_alaska",
+      "applicable_courts": [
+        "ak"
+      ],
+      "when": {
+        "question": "q_consent_circumstances",
+        "op": "includes",
+        "value": "repeated_requests"
+      },
+      "sentences": [
+        {
+          "id": "acquiescence_not_consent_alaska",
+          "text": "“[A]cquiescence is not the same as freely given consent, and the State bears the burden of proving that the consent was untainted by any implicit threats or subtle coercion that may have existed under the circumstances.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Gosuk v. State",
+              "citation": "484 P.3d 130 (Alaska App. 2021)",
+              "court": "ak",
+              "pincite": "137",
+              "parenthetical": {
+                "text": "citing",
+                "authority": {
+                  "type": "case",
+                  "name": "Bumper v. North Carolina",
+                  "citation": "391 U.S. 543 (1968)",
+                  "court": "scotus",
+                  "pincite": "548–49"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "repeated_questioning_coercive",
+          "text": "Repeated questioning “may become coercive” when police convey they will not accept “no.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Gosuk v. State",
+              "citation": "484 P.3d 130 (Alaska App. 2021)",
+              "court": "ak",
+              "pincite": "137",
+              "parenthetical": {
+                "text": "citing",
+                "authority": {
+                  "type": "secondary",
+                  "name": "4 Wayne R. LaFave, Search and Seizure § 8.2(b), at 79 (6th ed. 2020)"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "acquiescence_federal",
+      "applicable_courts": [
+        "9th_cir"
+      ],
+      "when": {
+        "question": "q_consent_circumstances",
+        "op": "includes",
+        "value": "repeated_requests"
+      },
+      "sentences": [
+        {
+          "id": "acquiescence_not_consent_federal",
+          "text": "Acquiescence is not the same as freely given consent.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Bumper v. North Carolina",
+              "citation": "391 U.S. 543 (1968)",
+              "court": "scotus",
+              "pincite": "548–49",
+              "signal": "See"
             }
           ]
         }
@@ -145,6 +266,64 @@
           ]
         }
       ]
+    },
+    {
+      "id": "traffic_stop_consent_requests",
+      "applicable_courts": [
+        "ak"
+      ],
+      "when": {
+        "question": "q_encounter_events",
+        "op": "includes",
+        "value": "vehicle_stop"
+      },
+      "sentences": [
+        {
+          "id": "brown_unjustified_infringement",
+          "text": "In *Brown*, the Court of Appeals discussed the increasing frequency of drivers being questioned about drug possession and asked for consent to search, which the court characterized as “an apparently ongoing and unjustified infringement of the privacy rights of Alaska citizens.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Brown v. State",
+              "citation": "182 P.3d 624 (Alaska App. 2008)",
+              "court": "ak",
+              "pincite": "629–30, 633–34"
+            }
+          ]
+        },
+        {
+          "id": "brown_most_motorists_accede",
+          "text": "The court explained that “[s]tudies reveal that the vast majority of motorists who are subjected to this type of request will accede to the officer and allow the search,” making it less clear if such consent can be considered voluntary.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Brown v. State",
+              "citation": "182 P.3d 624 (Alaska App. 2008)",
+              "court": "ak",
+              "pincite": "630"
+            }
+          ]
+        },
+        {
+          "id": "brown_possible_preclusion",
+          "text": "The court stated the trend was of such concern that Article I, Section 14 of the Alaska Constitution should perhaps “be interpreted to completely preclude requests for searches during a routine traffic stop unless the search is related to the ground for the stop or is otherwise supported by a reasonable suspicion of criminality.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Brown v. State",
+              "citation": "182 P.3d 624 (Alaska App. 2008)",
+              "court": "ak",
+              "pincite": "634"
+            }
+          ]
+        },
+        {
+          "id": "brown_instructive",
+          "kind": "argument",
+          "text": "*Brown* did not decide whether to apply that rule to all traffic stops, but its reasoning is instructive in the totality analysis for whether consent was voluntary.",
+          "authorities": []
+        }
+      ]
     }
   ],
   "practice_notes": [
@@ -152,6 +331,12 @@
     "If consent followed an unlawful stop or detention, argue it's also tainted as fruit of that illegality — a separate argument from voluntariness."
   ],
   "_author_notes": [
-    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Bumper v. North Carolina, Schneckloth v. Bustamonte. Unverified; pincites empty."
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Bumper v. North Carolina, Schneckloth v. Bustamonte. Unverified; pincites empty.",
+    "ambiguous_phrasing: text and citation (Gosuk at 137, quotation omitted) supplied by the maintainer, 2026-10-08. Alaska only. A quick search (2026-10-08) found no Supreme Court case on 'do you mind if' phrasing; the unequivocal-consent rule is state law. Florida v. Jimeno's reasonable-person test is about the scope of consent, so it wasn't attached. Ninth Circuit authority not researched.",
+    "acquiescence_alaska: text and citations supplied by the maintainer, 2026-10-08 (Gosuk at 137, citing Bumper at 548–49 and LaFave § 8.2(b)). Changes: the first quotation starts '[A]cquiescence' because it now begins a sentence; 'and other cases' was dropped from the first citing parenthetical (the format puts the parenthetical's text before its citation, and Bluebook doesn't need it); the maintainer cited Gosuk the second time as 'Gosuk, 484 P.3d at 137', but the renderer doesn't make short forms other than Id., so it prints in full. The repeated_requests option was relabeled from 'Police kept asking after your client first refused' to cover giving in to repeated requests generally (same id).",
+    "acquiescence_federal: a skeleton at the maintainer's request. A quick search (2026-10-08) found no Supreme Court case on repeated consent requests. The sentence rests on Bumper at 548–49 as Gosuk reads it; Bumper itself concerns acquiescence to a claim of lawful authority (a claimed warrant), so the general statement may be broader than Bumper's holding. Verify. Ninth Circuit authority not researched.",
+    "The Schneckloth at 228 sentence ('[T]he Fourth and Fourteenth Amendments require that a consent not be coerced...') was added and then cut by the maintainer, 2026-10-08 (it overlapped main's no_coercion). The claim_of_authority option was split: it was 'An officer said or implied they could search anyway, had a warrant, or would get one'; it's now only a claimed warrant or right to search (Bumper), and the new implied_threat option covers a threat to get a warrant or other consequences. Id kept, since no stored answers exist yet.",
+    "claim_of_authority (Bumper) also prints for implied_threat, at the maintainer's request (2026-10-08).",
+    "traffic_stop_consent_requests: text and citations supplied by the maintainer, 2026-10-08 (Brown at 629–30, 633–34; Id. at 630; Id. at 634). Alaska only, whenever there was a vehicle stop (the issue already requires consent). The last sentence is argument, so it has no citation; 'Brown' there is marked as a short case name."
   ]
 }

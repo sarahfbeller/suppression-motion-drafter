@@ -656,8 +656,11 @@ def check_issue(r, where, issue, config, questions, used_questions):
         if not isinstance(sentences, list) or not sentences:
             r.err(pw, "sentences must be a non-empty list")
             continue
+        so_far = list(earlier)  # plus this paragraph's earlier sentences, which print with it
         for st in sentences:
-            check_sentence(r, pw, st, p_ac, "applicable_courts" in para, courts, sentence_ids, counts, earlier)
+            check_sentence(r, pw, st, p_ac, "applicable_courts" in para, courts, sentence_ids, counts, so_far)
+            if isinstance(st, dict):
+                so_far += [(a, p_ac) for a in st.get("authorities", []) if isinstance(a, dict) and a.get("type") == "case"]
         good_paragraphs.append(para)
         if "when" not in para:  # always prints where it applies, so later sentences can name its cases
             earlier += [(a, p_ac) for st in sentences if isinstance(st, dict)
@@ -742,7 +745,7 @@ def check_sentence(r, pw, st, p_ac, narrowed, courts, sentence_ids, counts, earl
             cited = [(a, ac) for a, ac in list(earlier) + here if name in a.get("name", "")]
             if not cited:
                 r.err(sw, f"text names *{name}*, but no case with that name is cited for this sentence or "
-                          f"earlier in the issue in a paragraph that always prints ('*' marks short case names only)")
+                          f"earlier in this paragraph or in an earlier paragraph that always prints ('*' marks short case names only)")
             elif not any(citable_everywhere(a, ac, p_ac) for a, ac in cited):
                 r.err(sw, f"text names *{name}*, but in some forums where this paragraph applies that case "
                           f"isn't cited — limit the paragraph's applicable_courts to the case's court")
@@ -773,6 +776,15 @@ def check_authority(r, sw, a, p_ac, narrowed, courts, counts, nested):
         return
     aw = f"{sw} authority {a.get('name', '?')!r}" + (" (in a parenthetical)" if nested else "")
     t = a.get("type")
+    if t == "secondary":
+        # A treatise or article, only ever inside a parenthetical ("citing 4 LaFave ..."): never
+        # cited as authority itself. The name is the whole citation.
+        if not nested:
+            r.err(aw, "secondary sources can only appear inside a parenthetical — motion authority is binding law")
+        check_keys(r, aw, a, {"type", "name"}, ["type", "name"])
+        if not a.get("name"):
+            r.err(aw, "empty name")
+        return
     if t not in AUTHORITY_TYPES:
         r.err(aw, f"invalid type {t!r}")
         return

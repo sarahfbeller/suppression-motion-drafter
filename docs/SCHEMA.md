@@ -192,9 +192,9 @@ A sentence:
 - `text`: one proposition (a sentence, two at most). May be a direct quotation. Ends with sentence
   punctuation. No citations: never a full case name, reporter citation, statute, or *Id.* A short
   case name is allowed when marked `*Name*` (it renders in italics). The case must be cited for
-  that same sentence, or in an earlier paragraph of the issue that has no `when` (so it always
-  prints first, as with "*Miranda* warnings"), and be cited in every forum where this paragraph
-  applies. `*` is used for nothing else.
+  that same sentence, earlier in the same paragraph, or in an earlier paragraph of the issue that
+  has no `when` (so it always prints first, as with "*Miranda* warnings"), and be cited in every
+  forum where this paragraph applies. `*` is used for nothing else.
 - `kind`: `"argument"` for reasoning that needs no citation, including anything about this
   client (client tokens are allowed only here); its `authorities` must be empty.
   Omitted, the sentence states law and needs authority.
@@ -238,7 +238,9 @@ only rendered paragraphs are fill-ins and argument isn't a section.
   sentence.
 - `parenthetical`: optional; `{ text, authority? }`. `text` has no citations; a case it refers to
   goes in `authority` (a full authority without its own signal or parenthetical), which is checked
-  like any other and printed after the text.
+  like any other and printed after the text. Only here, the authority may also be
+  `{ type: "secondary", name }` for a treatise or article a court cited ("citing 4 Wayne R.
+  LaFave, …"); `name` is the whole citation. A secondary source is never authority on its own.
 
 A case cites as *Name*, `<volume reporter page>, <pincite> (<court year>)`, with the pincite left
 out when empty; anything else cites as its name. A sentence's authorities are ordered Supreme
