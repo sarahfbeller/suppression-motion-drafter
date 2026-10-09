@@ -15,7 +15,8 @@
   },
   "motion_order": {
     "stop-initiation": [
-      "no-reasonable-suspicion-for-stop"
+      "no-reasonable-suspicion-for-stop",
+      "no-reasonable-suspicion-for-pedestrian-stop"
     ],
     "stop-conduct": [
       "prolonged-stop",

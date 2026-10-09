@@ -1,0 +1,330 @@
+{
+  "id": "no-reasonable-suspicion-for-pedestrian-stop",
+  "label": "No Reasonable Suspicion for an Investigative Stop of a Person Not in a Vehicle",
+  "motion_heading": "The Investigative Stop of {client} Was Not Supported by Reasonable Suspicion",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "scotus"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "pedestrian_stop"
+        },
+        {
+          "question": "q_stop_basis_problems",
+          "op": "not_empty"
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_stop_basis_problems",
+          "op": "includes",
+          "value": "violation_disputed"
+        },
+        "flag": "mistake_of_law",
+        "display_note": "If the dispute is that the conduct isn't actually a violation, expect the prosecution to argue the officer made a reasonable mistake of law, which can still support a stop (Heien v. North Carolina, 574 U.S. 54 (2014)). Be ready to show the statute is clear and the officer's reading wasn't reasonable."
+      },
+      {
+        "when": {
+          "question": "q_stop_basis_problems",
+          "op": "includes",
+          "value": "not_sure"
+        },
+        "flag": "stop_basis_unknown",
+        "display_note": "You aren't sure yet whether the stop's basis holds up. This section was drafted anyway; get the body-cam footage, the officer's report, and dispatch records before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraphs": [
+    {
+      "id": "seizure_alaska",
+      "applicable_courts": [
+        "ak"
+      ],
+      "sentences": [
+        {
+          "id": "seizure_defined_alaska",
+          "text": "A Fourth Amendment seizure occurs when “the officer, by means of physical force or a show of authority, has in some way restrained the liberty of a citizen.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Waring v. State",
+              "citation": "670 P.2d 357 (Alaska 1983)",
+              "court": "ak",
+              "pincite": "363",
+              "parenthetical": {
+                "text": "quoting",
+                "authority": {
+                  "type": "case",
+                  "name": "Terry v. Ohio",
+                  "citation": "392 U.S. 1 (1968)",
+                  "court": "scotus",
+                  "pincite": "19"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "not_free_to_leave",
+          "text": "“[T]he question of whether an investigative stop occurred [hinges on whether] the challenged police conduct would lead a reasonable person to believe that the person was not free to leave.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Ozhuwan v. State",
+              "citation": "786 P.2d 918 (Alaska App. 1990)",
+              "court": "ak",
+              "pincite": "920"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seizure_federal",
+      "applicable_courts": [
+        "9th_cir"
+      ],
+      "sentences": [
+        {
+          "id": "seizure_defined_federal",
+          "text": "A Fourth Amendment seizure occurs when “the officer, by means of physical force or a show of authority, has in some way restrained the liberty of a citizen.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Terry v. Ohio",
+              "citation": "392 U.S. 1 (1968)",
+              "court": "scotus",
+              "pincite": "19"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seizure_examples",
+      "sentences": [
+        {
+          "id": "show_of_authority_examples",
+          "text": "The Supreme Court has explained that “[e]xamples of circumstances that might indicate a seizure, even where the person did not attempt to leave, would be . . . the display of a weapon by an officer, . . . or the use of language or tone of voice indicating that compliance with the officer’s request might be compelled.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "United States v. Mendenhall",
+              "citation": "446 U.S. 544 (1980)",
+              "court": "scotus",
+              "pincite": "554"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reasonable_suspicion",
+      "sentences": [
+        {
+          "id": "particularized_basis",
+          "text": "Reasonable suspicion requires a particularized and objective basis for suspecting the particular person stopped of wrongdoing.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "United States v. Cortez",
+              "citation": "449 U.S. 411 (1981)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "criminal_basis",
+      "sentences": [
+        {
+          "id": "criminal_basis",
+          "text": "Under the Fourth Amendment to the United States Constitution, an officer cannot stop a person without reasonable suspicion of criminal activity.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Terry v. Ohio",
+              "citation": "392 U.S. 1 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alaska_coleman_standard",
+      "applicable_courts": [
+        "ak"
+      ],
+      "sentences": [
+        {
+          "id": "alaska_goes_further",
+          "text": "The Alaska constitution goes further.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Brown v. State",
+              "citation": "182 P.3d 624 (Alaska App. 2008)",
+              "court": "ak",
+              "pincite": "626",
+              "signal": "See"
+            }
+          ]
+        },
+        {
+          "id": "coleman_standard",
+          "text": "Under *Coleman*, a police officer may only temporarily detain someone for an investigative stop if the officer “has a reasonable suspicion that imminent public danger exists or serious harm to persons or property has recently occurred.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Coleman v. State",
+              "citation": "553 P.2d 40 (Alaska 1976)",
+              "court": "ak",
+              "pincite": "46"
+            }
+          ]
+        },
+        {
+          "id": "state_burden",
+          "text": "Once the constitutionality of police action is challenged, the State bears the burden of showing that the officer’s actions were reasonable.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Hays v. State",
+              "citation": "850 P.2d 651 (Alaska App. 1993)",
+              "court": "ak",
+              "pincite": "653",
+              "signal": "See"
+            }
+          ]
+        },
+        {
+          "id": "balancing_test",
+          "text": "Courts in Alaska use a balancing test to determine whether the officer’s suspicion was reasonable and sufficient for a stop.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "State v. Miller",
+              "citation": "207 P.3d 541 (Alaska 2009)",
+              "court": "ak",
+              "pincite": "544",
+              "signal": "See",
+              "parenthetical": {
+                "text": "discussing balancing test set forth in",
+                "authority": {
+                  "type": "case",
+                  "name": "State v. G.B.",
+                  "citation": "769 P.2d 452 (Alaska App. 1989)",
+                  "court": "ak",
+                  "pincite": "455–56"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "balancing_factors",
+          "text": "Under this balancing test, courts weigh the “degree of threat to public safety and the imminence of that threat” against the “strength of the officer’s reasonable suspicion and intrusiveness of the stop.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "State v. Miller",
+              "citation": "207 P.3d 541 (Alaska 2009)",
+              "court": "ak",
+              "pincite": "544"
+            }
+          ]
+        },
+        {
+          "id": "degree_requires_threat",
+          "kind": "argument",
+          "text": "Weighing the “degree” of the public safety threat requires that there be some public safety threat—the officer has to see some evidence of a crime or threat to public safety.",
+          "authorities": []
+        }
+      ]
+    },
+    {
+      "id": "hunch_insufficient",
+      "when": {
+        "question": "q_stop_basis_problems",
+        "op": "includes",
+        "value": "hunch_or_generalities"
+      },
+      "sentences": [
+        {
+          "id": "hunch_insufficient",
+          "text": "An officer's unparticularized suspicion or hunch is not enough.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Terry v. Ohio",
+              "citation": "392 U.S. 1 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "high_crime_area_alone",
+          "text": "Presence in an area of expected criminal activity, standing alone, does not supply reasonable suspicion.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Brown v. Texas",
+              "citation": "443 U.S. 47 (1979)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "anonymous_tip",
+      "when": {
+        "question": "q_stop_basis_problems",
+        "op": "includes",
+        "value": "uncorroborated_tip"
+      },
+      "sentences": [
+        {
+          "id": "anonymous_tip",
+          "text": "An anonymous tip that lacks indicia of reliability does not, by itself, supply reasonable suspicion.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Florida v. J.L.",
+              "citation": "529 U.S. 266 (2000)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "practice_notes": [
+    "The stop's lawfulness is judged by what the officer knew before the stop. Facts learned afterward (smell, admissions, contraband) can't justify it retroactively.",
+    "If the stop falls, everything that followed (observations, statements, search results) is potentially fruit — consider which later issues depend on it."
+  ],
+  "_author_notes": [
+    "Created 2026-10-08 at the maintainer's request for investigative stops of a person who isn't in a vehicle. A separate issue (its own motion section) rather than more paragraphs in no-reasonable-suspicion-for-stop, because a case can have both kinds of stop and the seizure argument belongs only here.",
+    "Copied from no-reasonable-suspicion-for-stop on 2026-10-08, unchanged: particularized_basis, criminal_basis (unconditional here: there's no q_stop_type for pedestrian stops), alaska_coleman_standard, hunch_insufficient/high_crime_area_alone, anonymous_tip, both practice notes, and the mistake_of_law and stop_basis_unknown review notes (dash-cam changed to body-cam). The copies are maintained separately; a fix in one issue isn't automatically in the other.",
+    "The seizure paragraphs and their citations and pincites were supplied by the maintainer (2026-10-08): Waring (quoting Terry at 19) and Ozhuwan in Alaska; Terry at 19 directly in federal court; Mendenhall in both. The seizure argument always prints (the maintainer's call).",
+    "Verify: as I recall, the seizure discussion in Mendenhall (including the passage quoted at 554) was joined by only two Justices, and a majority adopted the test later (e.g. Florida v. Royer, INS v. Delgado). Not checked against the opinions. The maintainer will check whether to add a majority-opinion citation.",
+    "alaska_coleman_standard here omits the tire-spinning example (Burnett), which is about a car; cut by the maintainer 2026-10-08. Otherwise the same as in no-reasonable-suspicion-for-stop.",
+    "Supreme Court citations in the copied paragraphs were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: United States v. Cortez, Terry v. Ohio (criminal_basis, hunch_insufficient), Brown v. Texas, Florida v. J.L. Unverified; pincites empty."
+  ]
+}
