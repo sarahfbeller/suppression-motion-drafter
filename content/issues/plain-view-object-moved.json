@@ -59,36 +59,39 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "moving_is_a_search",
-        "text": "Moving an object even a few inches to expose what was not already in view is a search, separate from whatever lawful activity brought the officer there.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Arizona v. Hicks",
-            "citation": "480 U.S. 321 (1987)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "probable_cause_for_moving",
-        "text": "Such a search requires probable cause; reasonable suspicion is not enough.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Arizona v. Hicks",
-            "citation": "480 U.S. 321 (1987)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "moving_is_a_search",
+          "text": "Moving an object even a few inches to expose what was not already in view is a search, separate from whatever lawful activity brought the officer there.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Arizona v. Hicks",
+              "citation": "480 U.S. 321 (1987)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "probable_cause_for_moving",
+          "text": "Such a search requires probable cause; reasonable suspicion is not enough.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Arizona v. Hicks",
+              "citation": "480 U.S. 321 (1987)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [],
   "_author_notes": [
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Arizona v. Hicks. Unverified; pincites empty.",

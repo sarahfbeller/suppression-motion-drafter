@@ -55,59 +55,67 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "limited_by_authorization",
-        "text": "When a search is authorized by consent, its scope is limited by the terms of that authorization.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Walter v. United States",
-            "citation": "447 U.S. 649 (1980)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "objective_reasonableness",
-        "text": "The scope of consent is measured by what a reasonable person would have understood from the exchange between the officer and the person consenting.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Florida v. Jimeno",
-            "citation": "500 U.S. 248 (1991)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "person_may_limit",
-        "text": "A person may limit the scope of the search to which they consent.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Florida v. Jimeno",
-            "citation": "500 U.S. 248 (1991)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "withdrawal",
-        "text": "Consent may be withdrawn, and a search that continues after withdrawal is no longer supported by consent.",
-        "when": {
-          "question": "q_consent_scope_problems",
-          "op": "includes",
-          "value": "continued_after_withdrawal"
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "limited_by_authorization",
+          "text": "When a search is authorized by consent, its scope is limited by the terms of that authorization.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Walter v. United States",
+              "citation": "447 U.S. 649 (1980)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": []
-      }
-    ]
-  },
+        {
+          "id": "objective_reasonableness",
+          "text": "The scope of consent is measured by what a reasonable person would have understood from the exchange between the officer and the person consenting.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Florida v. Jimeno",
+              "citation": "500 U.S. 248 (1991)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "person_may_limit",
+          "text": "A person may limit the scope of the search to which they consent.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Florida v. Jimeno",
+              "citation": "500 U.S. 248 (1991)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "withdrawal",
+      "when": {
+        "question": "q_consent_scope_problems",
+        "op": "includes",
+        "value": "continued_after_withdrawal"
+      },
+      "sentences": [
+        {
+          "id": "withdrawal",
+          "text": "Consent may be withdrawn, and a search that continues after withdrawal is no longer supported by consent.",
+          "authorities": []
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "Pin down the exact words of the request and the answer — 'can I look in your car?' is narrower than 'can I search your car?', and what was said about the object of the search matters.",
     "If your client objected or limited the search partway through, find out whether it's on video."

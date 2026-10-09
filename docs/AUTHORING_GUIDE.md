@@ -54,8 +54,8 @@ Not read by the app — this is for whoever (you) is authoring content.
 
 ## Never fabricate legal content
 
-- If you don't have real law to cite for a court, leave that court's authority off the rule
-  statement — never a plausible-sounding but made-up citation, and never placeholder text
+- If you don't have real law to cite for a court, leave that court's authority off the
+  sentence — never a plausible-sounding but made-up citation, and never placeholder text
   (the validator rejects `PLACEHOLDER`, `TODO`, `FILL_IN`). A missing authority shows up in the
   memo as a gap; a fake citation that reads as real is far more dangerous.
 - Same logic for circuits: don't borrow another circuit's case as a stand-in for your own

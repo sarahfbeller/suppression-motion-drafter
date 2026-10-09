@@ -64,49 +64,57 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "franks_hearing_standard",
-        "text": "A defendant is entitled to an evidentiary hearing on the validity of a search warrant affidavit upon a substantial preliminary showing that the affiant knowingly and intentionally, or with reckless disregard for the truth, included a false statement in the affidavit that was necessary to the finding of probable cause.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Franks v. Delaware",
-            "citation": "438 U.S. 154 (1978)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "omissions_extension",
-        "text": "The same analysis applies to material omissions from the affidavit, not just affirmative false statements.",
-        "when": {
-          "question": "q_affidavit_accuracy",
-          "op": "in",
-          "value": [
-            "material_omission",
-            "both"
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "franks_hearing_standard",
+          "text": "A defendant is entitled to an evidentiary hearing on the validity of a search warrant affidavit upon a substantial preliminary showing that the affiant knowingly and intentionally, or with reckless disregard for the truth, included a false statement in the affidavit that was necessary to the finding of probable cause.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Franks v. Delaware",
+              "citation": "438 U.S. 154 (1978)",
+              "court": "scotus",
+              "pincite": ""
+            }
           ]
         },
-        "authorities": []
-      },
-      {
-        "id": "materiality_remedy",
-        "text": "If, after excising the false material or including the omitted information, the affidavit's remaining content is insufficient to establish probable cause, the warrant must be voided and the fruits of the search excluded.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Franks v. Delaware",
-            "citation": "438 U.S. 154 (1978)",
-            "court": "scotus",
-            "pincite": ""
-          }
+        {
+          "id": "materiality_remedy",
+          "text": "If, after excising the false material or including the omitted information, the affidavit's remaining content is insufficient to establish probable cause, the warrant must be voided and the fruits of the search excluded.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Franks v. Delaware",
+              "citation": "438 U.S. 154 (1978)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omissions_extension",
+      "when": {
+        "question": "q_affidavit_accuracy",
+        "op": "in",
+        "value": [
+          "material_omission",
+          "both"
         ]
-      }
-    ]
-  },
+      },
+      "sentences": [
+        {
+          "id": "omissions_extension",
+          "text": "The same analysis applies to material omissions from the affidavit, not just affirmative false statements.",
+          "authorities": []
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.",
     "Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant."

@@ -16,8 +16,7 @@
 **Practice notes:**
 
 - Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
-- Get the dispatch log and any body-cam/dash-cam timestamps in discovery early — this issue lives and dies on minute-by-minute sequencing.
-- Pin down the officer's own testimony on when each original-purpose task was completed; officers sometimes pad task completion time in reports to avoid a Rodriguez problem.
+- Get the CAD and any bodycam/dashcam timestamps in discovery early — this issue depends on minute-by-minute sequencing.
 - If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later.
 
 ### II. Frisk Without Reasonable Suspicion That the Person Was Armed and Dangerous
@@ -30,7 +29,6 @@
 
 **Practice notes:**
 
-- Pin down exactly what the officer said or wrote to justify the frisk — vague references to 'officer safety' or the neighborhood, without anything tied to your client specifically, are the weakest part of the government's position.
 - If your client was a passenger and was also asked for ID and that added time to the stop, that may raise a separate timing issue independent of the frisk itself.
 - A passenger has standing to challenge the stop itself and any search of their own person (Brendlin v. California, 551 U.S. 249 (2007)), but standing to challenge a search of the vehicle's contents is analyzed separately — don't assume one covers the other.
 
@@ -45,5 +43,4 @@
 **Practice notes:**
 
 - A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.
-- Request the officer's underlying notes, dispatch recordings, or informant file in discovery before filing — they're often the source of the contradiction.
 - Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant.

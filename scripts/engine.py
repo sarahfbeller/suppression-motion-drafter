@@ -128,9 +128,9 @@ def expand_issue(issue, groups):
         for note in trig.get(kind, []):
             if isinstance(note, dict) and isinstance(note.get("when"), dict):
                 note["when"] = expand_event_groups(note["when"], groups, used, unknown)
-    for st in issue.get("law_paragraph", {}).get("rule_statements", []):
-        if isinstance(st, dict) and isinstance(st.get("when"), dict):
-            st["when"] = expand_event_groups(st["when"], groups, used, unknown)
+    for para in issue.get("law_paragraphs", []):
+        if isinstance(para, dict) and isinstance(para.get("when"), dict):
+            para["when"] = expand_event_groups(para["when"], groups, used, unknown)
     return issue, used, unknown
 
 
@@ -152,16 +152,16 @@ def binding_courts(answers):
 
 
 def applies_in(applicable_courts, courts):
-    """Whether an issue or rule statement is the law in a case bound by courts.
+    """Whether an issue or paragraph is the law in a case bound by courts.
 
     ['scotus'] applies everywhere, since SCOTUS is always a binding court.
     """
     return bool(set(applicable_courts) & set(courts))
 
 
-def statement_courts(issue, st):
-    """A rule statement's applicable_courts, defaulting to its issue's."""
-    return st.get("applicable_courts", issue["applicable_courts"])
+def paragraph_courts(issue, para):
+    """A paragraph's applicable_courts, defaulting to its issue's."""
+    return para.get("applicable_courts", issue["applicable_courts"])
 
 
 def court_rank(config, code):
@@ -173,6 +173,7 @@ def citation_parts(a):
 
     Returns { name, italic, rest }: a case is its italicized name, then ', ' and rest (the
     citation, with any pincite inserted before the parenthetical); anything else is its name alone.
+    Signals and parentheticals are separate fields of the authority; the renderer adds them.
     """
     if a["type"] != "case":
         return {"name": a["name"], "italic": False, "rest": ""}
@@ -183,26 +184,59 @@ def citation_parts(a):
     return {"name": a["name"], "italic": True, "rest": cite}
 
 
-def law_paragraph(issue, answers, courts, config):
-    """Return (statements, gap_statement_texts) for one issue.
+def same_source(a, b):
+    return all(a.get(k) == b.get(k) for k in ("type", "name", "citation", "court"))
 
-    statements is the ordered list of rule statements that survive, each as
-    { id, text, authorities } with authorities filtered to courts and in citation order
-    (SCOTUS, circuit, state). Whether citations go inline or in footnotes is up to the renderer.
+
+def id_form(a, previous):
+    """How a citation shortens to Id., given the authority cited just before it.
+
+    previous is the sole authority of the immediately preceding citation, or None when that
+    citation had several authorities (or there was none). Authorities inside parentheticals are
+    never "the preceding citation". Returns None (cite in full), "" (Id.), or the pincite (Id. at <pincite>).
     """
-    statements, gaps = [], []
-    for st in issue["law_paragraph"]["rule_statements"]:
-        if "when" in st and not eval_condition(st["when"], answers):
+    if previous is None or not same_source(a, previous):
+        return None
+    if a["type"] != "case" or a.get("pincite", "") == previous.get("pincite", ""):
+        return ""
+    return a.get("pincite") or None  # no pincite yet, after one that had one: cite in full
+
+
+def law_paragraphs(issue, answers, courts, config):
+    """Return (paragraphs, gap_sentence_texts) for one issue.
+
+    paragraphs is the ordered list of paragraphs that render, each as { id, sentences }, and each
+    sentence as { id, text, kind, authorities } with authorities filtered to courts and in
+    citation order (SCOTUS, circuit, state). A paragraph renders when its 'when' is absent or true
+    and it applies in this forum. Inside it, a cited sentence with no authority for these courts
+    is dropped and reported as a gap; an argument sentence always renders. A paragraph made only
+    of argument (e.g. an application paragraph) renders as is, but one whose cited sentences were
+    all dropped doesn't, since its argument would rest on nothing. Whether citations go inline or
+    in footnotes is up to the renderer.
+    """
+    paragraphs, gaps = [], []
+    for para in issue["law_paragraphs"]:
+        if "when" in para and not eval_condition(para["when"], answers):
             continue
-        if not applies_in(statement_courts(issue, st), courts):
+        if not applies_in(paragraph_courts(issue, para), courts):
             continue  # not the law in this forum, so not a gap either
-        auths = [a for a in st["authorities"] if a["court"] in courts]
-        auths.sort(key=lambda a: court_rank(config, a["court"]))  # stable within a court
-        if not auths:
-            gaps.append(st["text"])
-            continue
-        statements.append({"id": st["id"], "text": st["text"], "authorities": auths})
-    return statements, gaps
+        sentences = []
+        for st in para["sentences"]:
+            kind = st.get("kind", "rule")
+            auths = [a for a in st["authorities"] if a["court"] in courts]
+            auths.sort(key=lambda a: court_rank(config, a["court"]))  # stable within a court
+            if kind != "argument" and not auths:
+                gaps.append(st["text"])
+                continue
+            sentences.append({"id": st["id"], "text": st["text"], "kind": kind, "authorities": auths})
+        had_cited = any(st.get("kind", "rule") != "argument" for st in para["sentences"])
+        if sentences and (not had_cited or has_cited(sentences)):
+            paragraphs.append({"id": para["id"], "sentences": sentences})
+    return paragraphs, gaps
+
+
+def has_cited(sentences):
+    return any(st.get("kind", "rule") != "argument" for st in sentences)
 
 
 # --------------------------------------------------------------------------- session evaluation
@@ -219,11 +253,11 @@ def evaluate_session(config, issues, session):
             continue
         trig = issue["trigger"]
         if eval_condition(trig["match_condition"], answers):
-            statements, gaps = law_paragraph(issue, answers, courts, config)
-            cited_courts = {a["court"] for st in statements for a in st["authorities"]}
+            paragraphs, gaps = law_paragraphs(issue, answers, courts, config)
+            cited_courts = {a["court"] for p in paragraphs for st in p["sentences"] for a in st["authorities"]}
             entry = {
                 "issue": issue,
-                "statements": statements,
+                "paragraphs": paragraphs,
                 "review_notes": [rc["display_note"] for rc in trig.get("review_conditions", [])
                                  if eval_condition(rc["when"], answers)],
                 "gaps": gaps,
@@ -231,7 +265,9 @@ def evaluate_session(config, issues, session):
                 "missing_specific_court": (SCOTUS in issue["applicable_courts"]
                                            and specific not in cited_courts),
             }
-            (result["included"] if statements else result["no_paragraph"]).append(entry)
+            # Argument with no law in front of it isn't a section.
+            cited = any(has_cited(p["sentences"]) for p in paragraphs)
+            (result["included"] if cited else result["no_paragraph"]).append(entry)
         else:
             for ex in trig.get("excluded_explanations", []):
                 if eval_condition(ex["when"], answers):

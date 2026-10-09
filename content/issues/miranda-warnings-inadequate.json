@@ -73,67 +73,75 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "warnings_required",
-        "text": "Statements obtained through custodial interrogation are inadmissible unless the person was first warned of the right to remain silent, that anything said can be used against them, of the right to the presence of an attorney, and that an attorney will be appointed if they cannot afford one.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Miranda v. Arizona",
-            "citation": "384 U.S. 436 (1966)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "custody_defined",
-        "text": "A person is in custody when there is a formal arrest or a restraint on freedom of movement of the degree associated with a formal arrest.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Stansbury v. California",
-            "citation": "511 U.S. 318 (1994)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "interrogation_defined",
-        "text": "Interrogation includes not only express questioning but also any words or actions police should know are reasonably likely to elicit an incriminating response.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Rhode Island v. Innis",
-            "citation": "446 U.S. 291 (1980)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "must_reasonably_convey",
-        "text": "Warnings that do not reasonably convey these rights do not satisfy Miranda.",
-        "when": {
-          "question": "q_miranda_warnings",
-          "op": "equals",
-          "value": "incomplete"
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "warnings_required",
+          "text": "Statements obtained through custodial interrogation are inadmissible unless the person was first warned of the right to remain silent, that anything said can be used against them, of the right to the presence of an attorney, and that an attorney will be appointed if they cannot afford one.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Miranda v. Arizona",
+              "citation": "384 U.S. 436 (1966)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Florida v. Powell",
-            "citation": "559 U.S. 50 (2010)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+        {
+          "id": "custody_defined",
+          "text": "A person is in custody when there is a formal arrest or a restraint on freedom of movement of the degree associated with a formal arrest.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Stansbury v. California",
+              "citation": "511 U.S. 318 (1994)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "interrogation_defined",
+          "text": "Interrogation includes not only express questioning but also any words or actions police should know are reasonably likely to elicit an incriminating response.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Rhode Island v. Innis",
+              "citation": "446 U.S. 291 (1980)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "must_reasonably_convey",
+      "when": {
+        "question": "q_miranda_warnings",
+        "op": "equals",
+        "value": "incomplete"
+      },
+      "sentences": [
+        {
+          "id": "must_reasonably_convey",
+          "text": "Warnings that do not reasonably convey these rights do not satisfy Miranda.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Florida v. Powell",
+              "citation": "559 U.S. 50 (2010)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "If the warnings came only after an unwarned statement and the questioning was repeated, look at whether the warnings were effective at all — that's a distinct 'question-first' problem worth raising."
   ],

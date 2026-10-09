@@ -44,109 +44,132 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "waiver_standard",
-        "text": "A waiver of the right to an independent test is valid only if it is knowing and intelligent.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Gundersen v. Municipality of Anchorage",
-            "citation": "792 P.2d 673 (Alaska 1990)",
-            "court": "ak",
-            "pincite": ""
-          }
-        ]
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "waiver_standard",
+          "text": "A waiver of the right to an independent test is valid only if it is knowing and intelligent.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Gundersen v. Municipality of Anchorage",
+              "citation": "792 P.2d 673 (Alaska 1990)",
+              "court": "ak",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "language_barrier",
+      "when": {
+        "question": "q_comprehension_barrier",
+        "op": "equals",
+        "value": "language"
       },
-      {
-        "id": "language_barrier",
-        "text": "When an arrestee fails to understand their right to an independent test due to a language barrier, \"the due process clause of Article I, Section 7 of the Alaska Constitution . . . requires suppression of the breath test result.\"",
-        "when": {
-          "question": "q_comprehension_barrier",
-          "op": "equals",
-          "value": "language"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Ahtuangaruak v. State",
-            "citation": "820 P.2d 310 (Alaska App. 1991)",
-            "court": "ak",
-            "pincite": "311–12"
-          }
-        ]
+      "sentences": [
+        {
+          "id": "language_barrier",
+          "text": "When an arrestee fails to understand their right to an independent test due to a language barrier, \"the due process clause of Article I, Section 7 of the Alaska Constitution . . . requires suppression of the breath test result.\"",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Ahtuangaruak v. State",
+              "citation": "820 P.2d 310 (Alaska App. 1991)",
+              "court": "ak",
+              "pincite": "311–12"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "intoxication_barrier",
+      "when": {
+        "question": "q_comprehension_barrier",
+        "op": "equals",
+        "value": "intoxication"
       },
-      {
-        "id": "intoxication_barrier",
-        "text": "When an arrestee fails to understand their right to an independent test due to intoxication, \"the due process clause of Article I, Section 7 of the Alaska Constitution . . . requires suppression of the breath test result.\"",
-        "when": {
-          "question": "q_comprehension_barrier",
-          "op": "equals",
-          "value": "intoxication"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Gundersen v. Municipality of Anchorage",
-            "citation": "792 P.2d 673 (Alaska 1990)",
-            "court": "ak",
-            "pincite": ""
-          },
-          {
-            "type": "case",
-            "name": "Ahtuangaruak v. State",
-            "citation": "820 P.2d 310 (Alaska App. 1991)",
-            "court": "ak",
-            "pincite": "311–12"
-          }
-        ]
+      "sentences": [
+        {
+          "id": "intoxication_barrier",
+          "text": "When an arrestee fails to understand their right to an independent test due to intoxication, \"the due process clause of Article I, Section 7 of the Alaska Constitution . . . requires suppression of the breath test result.\"",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Gundersen v. Municipality of Anchorage",
+              "citation": "792 P.2d 673 (Alaska 1990)",
+              "court": "ak",
+              "pincite": ""
+            },
+            {
+              "type": "case",
+              "name": "Ahtuangaruak v. State",
+              "citation": "820 P.2d 310 (Alaska App. 1991)",
+              "court": "ak",
+              "pincite": "311–12"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "remedy_suppression_when_test_exists",
+      "when": {
+        "question": "q_breath_test_administered",
+        "op": "equals",
+        "value": "yes"
       },
-      {
-        "id": "remedy_suppression_when_test_exists",
-        "text": "Where a breath test was administered and is in evidence, the remedy for a violation of this right is suppression of that test result.",
-        "when": {
-          "question": "q_breath_test_administered",
-          "op": "equals",
-          "value": "yes"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Nelson v. State",
-            "citation": "512 P.3d 86 (Alaska App. 2022)",
-            "court": "ak",
-            "pincite": ""
-          }
-        ]
+      "sentences": [
+        {
+          "id": "remedy_suppression_when_test_exists",
+          "text": "Where a breath test was administered and is in evidence, the remedy for a violation of this right is suppression of that test result.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Nelson v. State",
+              "citation": "512 P.3d 86 (Alaska App. 2022)",
+              "court": "ak",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "remedy_presumption_when_no_test",
+      "when": {
+        "question": "q_breath_test_administered",
+        "op": "equals",
+        "value": "no"
       },
-      {
-        "id": "remedy_presumption_when_no_test",
-        "text": "Where no breath test exists to suppress, the fact-finder must instead presume that an independent test, had one been conducted, would have yielded a favorable result.",
-        "when": {
-          "question": "q_breath_test_administered",
-          "op": "equals",
-          "value": "no"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Nelson v. State",
-            "citation": "512 P.3d 86 (Alaska App. 2022)",
-            "court": "ak",
-            "pincite": "90-91"
-          },
-          {
-            "type": "case",
-            "name": "Snyder v. State",
-            "citation": "930 P.2d 1274 (Alaska 1996)",
-            "court": "ak",
-            "pincite": "1278-79"
-          }
-        ]
-      }
-    ]
-  },
+      "sentences": [
+        {
+          "id": "remedy_presumption_when_no_test",
+          "text": "Where no breath test exists to suppress, the fact-finder must instead presume that an independent test, had one been conducted, would have yielded a favorable result.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Nelson v. State",
+              "citation": "512 P.3d 86 (Alaska App. 2022)",
+              "court": "ak",
+              "pincite": "90-91"
+            },
+            {
+              "type": "case",
+              "name": "Snyder v. State",
+              "citation": "930 P.2d 1274 (Alaska 1996)",
+              "court": "ak",
+              "pincite": "1278-79"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "Document your client's actual English proficiency at the time of the advisement — an interpreter's later availability at trial doesn't cure a station-house advisement given only in English when the decision had to be made.",
     "For an intoxication-based comprehension claim, be aware of the tension: the same BAC or observations that support this claim may also support the state's case on the underlying DUI charge. Weigh how heavily to lean on this theory alongside your other defenses."

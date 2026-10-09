@@ -59,36 +59,39 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "lawful_vantage_point",
-        "text": "The plain-view doctrine permits a warrantless seizure only if the officer did not violate the Fourth Amendment in arriving at the place from which the object could be plainly viewed.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Horton v. California",
-            "citation": "496 U.S. 128 (1990)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "lawful_access",
-        "text": "The officer must also have a lawful right of access to the object itself.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Horton v. California",
-            "citation": "496 U.S. 128 (1990)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "lawful_vantage_point",
+          "text": "The plain-view doctrine permits a warrantless seizure only if the officer did not violate the Fourth Amendment in arriving at the place from which the object could be plainly viewed.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Horton v. California",
+              "citation": "496 U.S. 128 (1990)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "lawful_access",
+          "text": "The officer must also have a lawful right of access to the object itself.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Horton v. California",
+              "citation": "496 U.S. 128 (1990)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "This issue usually depends on another one: if the entry, stop, or search that put the officer there was unlawful, plain view falls with it. Make sure that underlying issue is argued too."
   ],

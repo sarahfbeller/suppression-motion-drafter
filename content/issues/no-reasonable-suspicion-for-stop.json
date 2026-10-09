@@ -52,162 +52,296 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "stop_is_seizure",
-        "text": "Stopping an automobile and detaining its occupants is a seizure under the Fourth Amendment.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Delaware v. Prouse",
-            "citation": "440 U.S. 648 (1979)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "passenger_seized",
-        "text": "A passenger is seized by a traffic stop just as the driver is, and may challenge the stop's legality.",
-        "when": {
-          "question": "q_occupant_role",
-          "op": "equals",
-          "value": "passenger"
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "stop_is_seizure",
+          "text": "Stopping an automobile and detaining its occupants is a seizure under the Fourth Amendment.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Delaware v. Prouse",
+              "citation": "440 U.S. 648 (1979)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Brendlin v. California",
-            "citation": "551 U.S. 249 (2007)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
+        {
+          "id": "particularized_basis",
+          "text": "Reasonable suspicion requires a particularized and objective basis for suspecting the particular person stopped of wrongdoing.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "United States v. Cortez",
+              "citation": "449 U.S. 411 (1981)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "passenger_seized",
+      "when": {
+        "question": "q_occupant_role",
+        "op": "equals",
+        "value": "passenger"
       },
-      {
-        "id": "traffic_basis",
-        "text": "When the stop is based on a traffic violation, the officer must have at least articulable and reasonable suspicion that the driver or an occupant is subject to seizure for a violation of law; without it, stopping the vehicle is unreasonable.",
-        "when": {
-          "question": "q_stop_type",
-          "op": "equals",
-          "value": "traffic_violation"
+      "sentences": [
+        {
+          "id": "passenger_seized",
+          "text": "A passenger is seized by a traffic stop just as the driver is, and may challenge the stop's legality.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Brendlin v. California",
+              "citation": "551 U.S. 249 (2007)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "traffic_basis",
+      "when": {
+        "question": "q_stop_type",
+        "op": "equals",
+        "value": "traffic_violation"
+      },
+      "sentences": [
+        {
+          "id": "traffic_basis",
+          "text": "When the stop is based on a traffic violation, the officer must have at least articulable and reasonable suspicion that the driver or an occupant is subject to seizure for a violation of law; without it, stopping the vehicle is unreasonable.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Delaware v. Prouse",
+              "citation": "440 U.S. 648 (1979)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "criminal_basis",
+      "when": {
+        "question": "q_stop_type",
+        "op": "equals",
+        "value": "terry_stop"
+      },
+      "sentences": [
+        {
+          "id": "criminal_basis",
+          "text": "Under the Fourth Amendment to the United States Constitution, an officer cannot stop a person without reasonable suspicion of criminal activity.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Terry v. Ohio",
+              "citation": "392 U.S. 1 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "general_basis",
+      "when": {
+        "question": "q_stop_type",
+        "op": "equals",
+        "value": "other"
+      },
+      "sentences": [
+        {
+          "id": "general_basis",
+          "text": "An officer may not stop a vehicle without reasonable suspicion that the driver or an occupant is subject to seizure for a violation of law.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Delaware v. Prouse",
+              "citation": "440 U.S. 648 (1979)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alaska_coleman_standard",
+      "applicable_courts": [
+        "ak"
+      ],
+      "sentences": [
+        {
+          "id": "alaska_goes_further",
+          "text": "The Alaska constitution goes further.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Brown v. State",
+              "citation": "182 P.3d 624 (Alaska App. 2008)",
+              "court": "ak",
+              "pincite": "626",
+              "signal": "See"
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Delaware v. Prouse",
-            "citation": "440 U.S. 648 (1979)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "criminal_basis",
-        "text": "Under the Fourth Amendment to the United States Constitution, an officer cannot stop a person without reasonable suspicion of criminal activity.",
-        "when": {
-          "question": "q_stop_type",
-          "op": "equals",
-          "value": "terry_stop"
+        {
+          "id": "coleman_standard",
+          "text": "Under *Coleman*, a police officer may only temporarily detain someone for an investigative stop if the officer “has a reasonable suspicion that imminent public danger exists or serious harm to persons or property has recently occurred.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Coleman v. State",
+              "citation": "553 P.2d 40 (Alaska 1976)",
+              "court": "ak",
+              "pincite": "46"
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Terry v. Ohio",
-            "citation": "392 U.S. 1 (1968)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "general_basis",
-        "text": "An officer may not stop a vehicle without reasonable suspicion that the driver or an occupant is subject to seizure for a violation of law.",
-        "when": {
-          "question": "q_stop_type",
-          "op": "equals",
-          "value": "other"
+        {
+          "id": "state_burden",
+          "text": "Once the constitutionality of police action is challenged, the State bears the burden of showing that the officer’s actions were reasonable.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Hays v. State",
+              "citation": "850 P.2d 651 (Alaska App. 1993)",
+              "court": "ak",
+              "pincite": "653",
+              "signal": "See"
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Delaware v. Prouse",
-            "citation": "440 U.S. 648 (1979)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "particularized_basis",
-        "text": "Reasonable suspicion requires a particularized and objective basis for suspecting the particular person stopped of wrongdoing.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "United States v. Cortez",
-            "citation": "449 U.S. 411 (1981)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "hunch_insufficient",
-        "text": "An officer's unparticularized suspicion or hunch is not enough.",
-        "when": {
-          "question": "q_stop_basis_problems",
-          "op": "includes",
-          "value": "hunch_or_generalities"
+        {
+          "id": "balancing_test",
+          "text": "Courts in Alaska use a balancing test to determine whether the officer’s suspicion was reasonable and sufficient for a stop.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "State v. Miller",
+              "citation": "207 P.3d 541 (Alaska 2009)",
+              "court": "ak",
+              "pincite": "544",
+              "signal": "See",
+              "parenthetical": {
+                "text": "discussing balancing test set forth in",
+                "authority": {
+                  "type": "case",
+                  "name": "State v. G.B.",
+                  "citation": "769 P.2d 452 (Alaska App. 1989)",
+                  "court": "ak",
+                  "pincite": "455–56"
+                }
+              }
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Terry v. Ohio",
-            "citation": "392 U.S. 1 (1968)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "high_crime_area_alone",
-        "text": "Presence in an area of expected criminal activity, standing alone, does not supply reasonable suspicion.",
-        "when": {
-          "question": "q_stop_basis_problems",
-          "op": "includes",
-          "value": "hunch_or_generalities"
+        {
+          "id": "balancing_factors",
+          "text": "Under this balancing test, courts weigh the “degree of threat to public safety and the imminence of that threat” against the “strength of the officer’s reasonable suspicion and intrusiveness of the stop.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "State v. Miller",
+              "citation": "207 P.3d 541 (Alaska 2009)",
+              "court": "ak",
+              "pincite": "544"
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Brown v. Texas",
-            "citation": "443 U.S. 47 (1979)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "anonymous_tip",
-        "text": "An anonymous tip that lacks indicia of reliability does not, by itself, supply reasonable suspicion.",
-        "when": {
-          "question": "q_stop_basis_problems",
-          "op": "includes",
-          "value": "uncorroborated_tip"
+        {
+          "id": "degree_requires_threat",
+          "kind": "argument",
+          "text": "Weighing the “degree” of the public safety threat requires that there be some public safety threat—the officer has to see some evidence of a crime or threat to public safety.",
+          "authorities": []
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Florida v. J.L.",
-            "citation": "529 U.S. 266 (2000)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+        {
+          "id": "tire_spinning_example",
+          "text": "For example, if an officer observes a car spinning its tires—not itself an offense—that is likely insufficient to tip the scale in favor of a justified stop.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Burnett v. State",
+              "citation": "264 P.3d 607 (Alaska App. 2011)",
+              "court": "ak",
+              "pincite": "611–12",
+              "signal": "See"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunch_insufficient",
+      "when": {
+        "question": "q_stop_basis_problems",
+        "op": "includes",
+        "value": "hunch_or_generalities"
+      },
+      "sentences": [
+        {
+          "id": "hunch_insufficient",
+          "text": "An officer's unparticularized suspicion or hunch is not enough.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Terry v. Ohio",
+              "citation": "392 U.S. 1 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "high_crime_area_alone",
+          "text": "Presence in an area of expected criminal activity, standing alone, does not supply reasonable suspicion.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Brown v. Texas",
+              "citation": "443 U.S. 47 (1979)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "anonymous_tip",
+      "when": {
+        "question": "q_stop_basis_problems",
+        "op": "includes",
+        "value": "uncorroborated_tip"
+      },
+      "sentences": [
+        {
+          "id": "anonymous_tip",
+          "text": "An anonymous tip that lacks indicia of reliability does not, by itself, supply reasonable suspicion.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Florida v. J.L.",
+              "citation": "529 U.S. 266 (2000)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "The stop's lawfulness is judged by what the officer knew before the stop. Facts learned afterward (smell, admissions, contraband) can't justify it retroactively.",
     "If the stop falls, everything that followed (observations, statements, search results) is potentially fruit — consider which later issues depend on it."
@@ -215,6 +349,7 @@
   "_author_notes": [
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Delaware v. Prouse, Brendlin v. California, United States v. Cortez, Terry v. Ohio, Brown v. Texas, Florida v. J.L. Unverified; pincites empty.",
     "Gated on vehicle_stop only, per the maintainer ('traffic stop'). Pedestrian stops would need their own gate or issue.",
-    "Statements vary with q_stop_type (drafted 2026-09-27 at the maintainer's request): traffic_basis for traffic stops (Prouse), criminal_basis for stops on suspicion of a crime (Terry's 'specific and articulable facts'), general_basis for 'other' (Prouse). If q_stop_type is unanswered, only the unconditional statements render."
+    "Statements vary with q_stop_type (drafted 2026-09-27 at the maintainer's request): traffic_basis for traffic stops (Prouse), criminal_basis for stops on suspicion of a crime (Terry's 'specific and articulable facts'), general_basis for 'other' (Prouse). If q_stop_type is unanswered, only the unconditional statements render.",
+    "alaska_coleman_standard was supplied by the maintainer (2026-10-08) from one of their filed motions, with its citations and pincites. Alaska only. It applies to all investigative stops (the maintainer, 2026-10-08), so it has no condition on q_stop_type."
   ]
 }

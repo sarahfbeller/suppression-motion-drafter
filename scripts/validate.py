@@ -23,13 +23,18 @@ UNCERTAIN_OPTION_IDS = {"unknown", "not_sure", "unclear"}
 
 QUESTION_TYPES = {"yes_no", "multiple_choice", "multi_select", "short_text"}
 ISSUE_KEYS = {"id", "label", "motion_heading", "status", "last_reviewed",
-              "reviewed_by", "applicable_courts", "trigger", "law_paragraph", "practice_notes"}
+              "reviewed_by", "applicable_courts", "trigger", "law_paragraphs", "practice_notes"}
 TRIGGER_KEYS = {"match_condition", "review_conditions",
                 "excluded_explanations"}
 NOTE_KEYS = {"when", "flag", "display_note"}
-STATEMENT_KEYS = {"id", "text", "when", "applicable_courts", "authorities"}
+PARAGRAPH_KEYS = {"id", "when", "applicable_courts", "sentences"}
+SENTENCE_KEYS = {"id", "text", "kind", "authorities"}
+SENTENCE_KINDS = {"rule", "argument"}
 CASE_KEYS = {"type", "name", "citation", "pincite", "court"}
 OTHER_AUTHORITY_KEYS = {"type", "name", "citation", "court"}
+OPTIONAL_AUTHORITY_KEYS = {"signal", "parenthetical"}
+PARENTHETICAL_KEYS = {"text", "authority"}
+SIGNALS = {"See", "See also", "See, e.g.,", "E.g.,", "Cf.", "See generally"}
 AUTHORITY_TYPES = {"case", "statute", "constitution", "rule"}
 QUESTION_KEYS = {"id", "type", "prompt", "options"}
 
@@ -46,6 +51,8 @@ CITATION_IN_TEXT = [
     (re.compile(r"\b(?:Alaska|Fed\.) (?:Criminal Rule|Crim\.|R\.|Const\.)"), "a rule or constitution citation"),
     (re.compile(r"§"), "a section symbol"),
 ]
+# Short case names in sentence text are marked *Name*, and must be cited in the same sentence.
+ITALIC_RE = re.compile(r"\*([^*]+)\*")
 # Questions talk to the attorney ("your client"); the motion talks to the court ("the defendant").
 DEFENDANT_RE = re.compile(r"\bdefendant", re.I)
 CLIENT_RE = re.compile(r"\bclient", re.I)
@@ -394,7 +401,7 @@ def check_condition(r, where, cond, questions):
     if qid in getattr(questions, "broken", ()):
         return False  # already reported where the question is defined
     if qid == E.FILING_COURT:
-        r.err(where, f"conditions can't use {qid} — where an issue or rule statement is the law "
+        r.err(where, f"conditions can't use {qid} — where an issue or paragraph is the law "
                      f"goes in its applicable_courts")
         return False
     q = questions.get(qid)
@@ -450,16 +457,16 @@ def space_size(qids, questions, refs=None):
     return n
 
 
-def issue_conditions(trig, statements):
+def issue_conditions(trig, paragraphs):
     return ([trig["match_condition"]] + [n["when"] for n in trig.get("review_conditions", [])]
             + [n["when"] for n in trig.get("excluded_explanations", [])]
-            + [st["when"] for st in statements if "when" in st])
+            + [p["when"] for p in paragraphs if "when" in p])
 
 
 # --------------------------------------------------------------------------- issues
 
 def check_applicable_courts(r, where, ac, courts):
-    """Shared by issues and rule statements. Returns the valid codes (empty if the list is unusable)."""
+    """Shared by issues and paragraphs. Returns the valid codes (empty if the list is unusable)."""
     if not isinstance(ac, list) or not ac:
         r.err(where, "applicable_courts must be a non-empty list")
         return []
@@ -482,7 +489,7 @@ def citable_courts(ac, courts):
 
 def check_issue(r, where, issue, config, questions, used_questions):
     if not check_keys(r, where, issue, ISSUE_KEYS, sorted(ISSUE_KEYS)):
-        if not all(k in issue for k in ("trigger", "law_paragraph", "applicable_courts")):
+        if not all(k in issue for k in ("trigger", "law_paragraphs", "applicable_courts")):
             return
     courts = config["courts"]
 
@@ -548,88 +555,49 @@ def check_issue(r, where, issue, config, questions, used_questions):
                 r.warn(nw, "display_note reads like a note to the author, but it's shown to the "
                            "attorney — move it to an '_'-prefixed field?")
 
-    # ---- law paragraph
-    lp = issue.get("law_paragraph", {})
-    check_keys(r, f"{where} law_paragraph", lp, {"rule_statements"}, ["rule_statements"])
-    statements = lp.get("rule_statements", [])
-    if not statements:
-        r.err(where, "law_paragraph has no rule_statements")
-    stmt_ids, missing_pincites, total_cases = set(), 0, 0
-    for st in statements:
-        sw = f"{where} statement {st.get('id', '?')}"
-        if not check_keys(r, sw, st, STATEMENT_KEYS, ["id", "text", "authorities"]):
+    # ---- law paragraphs
+    if "law_paragraph" in issue:
+        r.err(where, "law_paragraph (a flat list of rule_statements) was replaced by law_paragraphs: "
+                     "a list of { id, when?, applicable_courts?, sentences }")
+    paragraphs = issue.get("law_paragraphs", [])
+    if not isinstance(paragraphs, list) or not paragraphs:
+        r.err(where, "law_paragraphs must be a non-empty list")
+        paragraphs = []
+    para_ids, sentence_ids = set(), set()
+    counts = {"missing_pincites": 0, "cases": 0}
+    good_paragraphs = []
+    for para in paragraphs:
+        pw = f"{where} paragraph {para.get('id', '?') if isinstance(para, dict) else '?'}"
+        if not check_keys(r, pw, para, PARAGRAPH_KEYS, ["id", "sentences"]):
             continue
-        if not SLUG_RE.match(st["id"]):
-            r.err(sw, "id must be a lowercase slug")
-        if st["id"] in stmt_ids:
-            r.err(sw, "duplicate statement id")
-        stmt_ids.add(st["id"])
-        text = st["text"]
-        if not text:
-            r.err(sw, "empty text")
-        else:
-            what = citation_in(text)
-            if what:
-                r.err(sw, f"text embeds {what} — citations belong only in 'authorities'")
-            if CLIENT_RE.search(text):
-                r.err(sw, "text says 'client' — the motion is for the court, so say 'the defendant'")
-            if not re.search(r"[.?!][\"'”’]?$", text):
-                r.err(sw, "text must end with sentence punctuation (the citation follows it)")
-        if "when" in st:
-            ok = check_condition(r, sw + " when", st["when"], questions)
+        if not SLUG_RE.match(str(para["id"])):
+            r.err(pw, "id must be a lowercase slug")
+        if para["id"] in para_ids:
+            r.err(pw, "duplicate paragraph id")
+        para_ids.add(para["id"])
+        if "when" in para:
+            ok = check_condition(r, pw + " when", para["when"], questions)
             conds_ok &= ok
             if ok:
-                used_questions |= E.condition_questions(st["when"])
-        st_ac = ac
-        if "applicable_courts" in st:
-            st_ac = check_applicable_courts(r, sw, st["applicable_courts"], courts)
+                used_questions |= E.condition_questions(para["when"])
+        p_ac = ac
+        if "applicable_courts" in para:
+            p_ac = check_applicable_courts(r, pw, para["applicable_courts"], courts)
             if E.SCOTUS not in ac:
-                broader = [c for c in st_ac if c not in ac]
+                broader = [c for c in p_ac if c not in ac]
                 if broader:
-                    r.err(sw, f"applicable_courts has {broader}, but the issue only applies in {sorted(ac)}")
-            if st_ac and set(st_ac) == set(ac):
-                r.warn(sw, "applicable_courts is the same as the issue's — remove it; statements inherit it")
-        auths = st["authorities"]
-        if not isinstance(auths, list):
-            r.err(sw, "authorities must be a list")
+                    r.err(pw, f"applicable_courts has {broader}, but the issue only applies in {sorted(ac)}")
+            if p_ac and set(p_ac) == set(ac):
+                r.warn(pw, "applicable_courts is the same as the issue's — remove it; paragraphs inherit it")
+        sentences = para["sentences"]
+        if not isinstance(sentences, list) or not sentences:
+            r.err(pw, "sentences must be a non-empty list")
             continue
-        if not auths:
-            r.warn(sw, "has no authorities, so it never renders (it will show up as a gap in the memo)")
-        seen = set()
-        for a in auths:
-            aw = f"{sw} authority {a.get('name', '?')!r}"
-            t = a.get("type")
-            if t not in AUTHORITY_TYPES:
-                r.err(aw, f"invalid type {t!r}")
-                continue
-            check_keys(r, aw, a, CASE_KEYS if t == "case" else OTHER_AUTHORITY_KEYS,
-                       sorted(CASE_KEYS if t == "case" else OTHER_AUTHORITY_KEYS))
-            if not a.get("name"):
-                r.err(aw, "empty name")
-            court = a.get("court")
-            if court not in courts:
-                r.err(aw, f"unknown court {court!r}")
-            elif st_ac and court not in citable_courts(st_ac, courts):
-                scope = "this statement" if "applicable_courts" in st else "this issue"
-                r.err(aw, f"court {court!r} can never be cited: {scope} only applies in "
-                          f"{sorted(st_ac)}, so {court!r} is never a binding court")
-            key = (a.get("name"), court)
-            if key in seen:
-                r.err(aw, "cited twice in the same statement")
-            seen.add(key)
-            if t == "case":
-                total_cases += 1
-                if not E.CITATION_RE.match(a.get("citation", "")):
-                    r.err(aw, f"citation {a.get('citation')!r} must look like "
-                              f"'<vol> <reporter> <page> (<court> <year>)'")
-                if not isinstance(a.get("pincite", None), str):
-                    r.err(aw, "pincite must be a string (empty until researched)")
-                elif not a["pincite"]:
-                    missing_pincites += 1
-            elif a.get("citation", "") != "":
-                r.err(aw, f"{t} authorities keep citation empty — the name is the citation")
-    if missing_pincites:
-        r.warn(where, f"{missing_pincites} of {total_cases} case authorities have no pincite yet")
+        for st in sentences:
+            check_sentence(r, pw, st, p_ac, "applicable_courts" in para, courts, sentence_ids, counts)
+        good_paragraphs.append(para)
+    if counts["missing_pincites"]:
+        r.warn(where, f"{counts['missing_pincites']} of {counts['cases']} case authorities have no pincite yet")
 
     # ---- practice notes
     pn = issue.get("practice_notes", [])
@@ -644,37 +612,142 @@ def check_issue(r, where, issue, config, questions, used_questions):
                                                f"go to the attorney — move it to '_author_notes'? {note[:70]!r}")
 
     if conds_ok and match is not None:
-        refs = referenced_options(issue_conditions(trig, statements))
-        check_reachability(r, where, trig, statements, questions, refs)
-        check_every_match_has_a_statement(r, where, issue, statements, questions, courts, refs)
+        refs = referenced_options(issue_conditions(trig, good_paragraphs))
+        check_reachability(r, where, trig, good_paragraphs, questions, refs)
+        check_every_match_has_a_paragraph(r, where, issue, good_paragraphs, questions, courts, refs)
 
 
-def check_every_match_has_a_statement(r, where, issue, statements, questions, courts, refs):
+def check_sentence(r, pw, st, p_ac, narrowed, courts, sentence_ids, counts):
+    """One sentence of a paragraph. p_ac is where the paragraph is the law."""
+    sw = f"{pw} sentence {st.get('id', '?') if isinstance(st, dict) else '?'}"
+    if isinstance(st, dict) and ("when" in st or "applicable_courts" in st):
+        r.err(sw, "sentences can't have 'when' or applicable_courts — put the condition on the paragraph, "
+                  "or move the sentence to its own paragraph")
+        st = {k: v for k, v in st.items() if k not in ("when", "applicable_courts")}
+    if not check_keys(r, sw, st, SENTENCE_KEYS, ["id", "text", "authorities"]):
+        return
+    if not SLUG_RE.match(st["id"]):
+        r.err(sw, "id must be a lowercase slug")
+    if st["id"] in sentence_ids:
+        r.err(sw, "duplicate sentence id (ids are unique across the issue's paragraphs)")
+    sentence_ids.add(st["id"])
+    kind = st.get("kind", "rule")
+    if kind not in SENTENCE_KINDS:
+        r.err(sw, f"kind must be one of {sorted(SENTENCE_KINDS)}, not {kind!r}")
+    if "kind" in st and kind == "rule":
+        r.warn(sw, "kind 'rule' is the default — remove it")
+    auths = st["authorities"]
+    if not isinstance(auths, list):
+        r.err(sw, "authorities must be a list")
+        return
+    text = st["text"]
+    if not text:
+        r.err(sw, "empty text")
+    else:
+        what = citation_in(text)
+        if what:
+            r.err(sw, f"text embeds {what} — citations belong only in 'authorities' "
+                      f"(a short case name, marked *Name*, is fine)")
+        if CLIENT_RE.search(text):
+            r.err(sw, "text says 'client' — the motion is for the court, so say 'the defendant'")
+        if not re.search(r"[.?!][\"'”’]?$", text):
+            r.err(sw, "text must end with sentence punctuation (the citation follows it)")
+        if text.count("*") % 2:
+            r.err(sw, "unbalanced '*' — short case names are marked *Name*")
+        for name in ITALIC_RE.findall(text):
+            cited = [a for a in auths if isinstance(a, dict) and a.get("type") == "case" and name in a.get("name", "")]
+            if not cited:
+                r.err(sw, f"text names *{name}*, but no case cited for this sentence has that name "
+                          f"('*' marks short case names only)")
+            elif not any(a.get("court") == E.SCOTUS or list(p_ac) == [a.get("court")] for a in cited):
+                r.err(sw, f"text names *{name}*, but in some forums where this paragraph applies that case "
+                          f"isn't cited — limit the paragraph's applicable_courts to the case's court")
+    if kind == "argument":
+        if auths:
+            r.err(sw, "argument sentences have no authorities — remove them, or drop kind 'argument'")
+        return
+    if not auths:
+        r.warn(sw, "has no authorities, so it never renders (it will show up as a gap in the memo)")
+    seen = set()
+    for a in auths:
+        check_authority(r, sw, a, p_ac, narrowed, courts, counts, nested=False)
+        key = (a.get("name"), a.get("court")) if isinstance(a, dict) else None
+        if key in seen:
+            r.err(f"{sw} authority {a.get('name', '?')!r}", "cited twice in the same sentence")
+        seen.add(key)
+
+
+def check_authority(r, sw, a, p_ac, narrowed, courts, counts, nested):
+    if not isinstance(a, dict):
+        r.err(sw, "authority must be an object")
+        return
+    aw = f"{sw} authority {a.get('name', '?')!r}" + (" (in a parenthetical)" if nested else "")
+    t = a.get("type")
+    if t not in AUTHORITY_TYPES:
+        r.err(aw, f"invalid type {t!r}")
+        return
+    base = CASE_KEYS if t == "case" else OTHER_AUTHORITY_KEYS
+    check_keys(r, aw, a, base | (set() if nested else OPTIONAL_AUTHORITY_KEYS), sorted(base))
+    if not a.get("name"):
+        r.err(aw, "empty name")
+    court = a.get("court")
+    if court not in courts:
+        r.err(aw, f"unknown court {court!r}")
+    elif p_ac and court not in citable_courts(p_ac, courts):
+        scope = "this paragraph" if narrowed else "this issue"
+        r.err(aw, f"court {court!r} can never be cited: {scope} only applies in "
+                  f"{sorted(p_ac)}, so {court!r} is never a binding court")
+    if t == "case":
+        counts["cases"] += 1
+        if not E.CITATION_RE.match(a.get("citation", "")):
+            r.err(aw, f"citation {a.get('citation')!r} must look like "
+                      f"'<vol> <reporter> <page> (<court> <year>)'")
+        if not isinstance(a.get("pincite", None), str):
+            r.err(aw, "pincite must be a string (empty until researched)")
+        elif not a["pincite"]:
+            counts["missing_pincites"] += 1
+    elif a.get("citation", "") != "":
+        r.err(aw, f"{t} authorities keep citation empty — the name is the citation")
+    if "signal" in a and a["signal"] not in SIGNALS:
+        r.err(aw, f"signal {a['signal']!r} isn't one of {sorted(SIGNALS)} (no signal means direct support)")
+    if "parenthetical" in a:
+        p = a["parenthetical"]
+        if check_keys(r, aw + " parenthetical", p, PARENTHETICAL_KEYS, ["text"]):
+            if not p["text"]:
+                r.err(aw, "empty parenthetical text")
+            elif citation_in(p["text"]):
+                r.err(aw, f"parenthetical text embeds {citation_in(p['text'])} — put the case in its 'authority'")
+            if "authority" in p:
+                check_authority(r, aw, p["authority"], p_ac, narrowed, courts, counts, nested=True)
+
+
+def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, courts, refs):
     """In every forum the issue applies in, every matching set of answers must leave at least one
-    statement standing after its 'when' and applicable_courts — otherwise the issue matches but
-    produces nothing, and it isn't a research gap."""
+    paragraph with a cited sentence standing after its 'when' and applicable_courts — otherwise the
+    issue matches but produces nothing (argument alone isn't a section), and it isn't a research gap."""
     match = issue["trigger"]["match_condition"]
     qids = E.condition_questions(match)
-    for st in statements:
-        if "when" in st:
-            qids |= E.condition_questions(st["when"])
+    for p in paragraphs:
+        if "when" in p:
+            qids |= E.condition_questions(p["when"])
     if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
         return
     for code in sorted(courts):
         binding = [E.SCOTUS, code]
         if courts[code]["kind"] == "scotus" or not E.applies_in(issue["applicable_courts"], binding):
             continue
-        live = [st for st in statements if E.applies_in(E.statement_courts(issue, st), binding)]
+        live = [p for p in paragraphs if E.applies_in(E.paragraph_courts(issue, p), binding)
+                and E.has_cited(p["sentences"])]
         for a in assignments(qids, questions, refs):
-            if E.eval_condition(match, a) and not any("when" not in st or E.eval_condition(st["when"], a)
-                                                      for st in live):
-                r.err(where, f"in {courts[code]['display_name']}, the issue can match with no rule statement "
+            if E.eval_condition(match, a) and not any("when" not in p or E.eval_condition(p["when"], a)
+                                                      for p in live):
+                r.err(where, f"in {courts[code]['display_name']}, the issue can match with no paragraph of law "
                              f"left after 'when' and applicable_courts, so it would produce nothing — "
                              f"e.g. answers {a}")
                 break
 
 
-def check_reachability(r, where, trig, statements, questions, refs):
+def check_reachability(r, where, trig, paragraphs, questions, refs):
     match = trig["match_condition"]
     mq = E.condition_questions(match)
 
@@ -704,24 +777,24 @@ def check_reachability(r, where, trig, statements, questions, refs):
             r.err(f"{where} excluded_explanations[{i}] ({ex['flag']})",
                   "can never fire — whenever its 'when' is true, the issue is included")
 
-    for st in statements:
-        if "when" not in st:
+    for p in paragraphs:
+        if "when" not in p:
             continue
-        combos = explore(st["when"])
+        combos = explore(p["when"])
         if combos is None:
             continue
         fires = redundant = False
         redundant = True
         for a in combos:
             if E.eval_condition(match, a):
-                w = E.eval_condition(st["when"], a)
+                w = E.eval_condition(p["when"], a)
                 fires |= w
                 redundant &= w
         if not fires:
-            r.err(f"{where} statement {st['id']}", "'when' can never be true on an included issue, "
-                                                   "so this statement never renders")
+            r.err(f"{where} paragraph {p['id']}", "'when' can never be true on an included issue, "
+                                                  "so this paragraph never renders")
         elif redundant:
-            r.warn(f"{where} statement {st['id']}", "'when' is true whenever the issue matches — it can be removed")
+            r.warn(f"{where} paragraph {p['id']}", "'when' is true whenever the issue matches — it can be removed")
 
     # Uncertain answers ("not sure", "unknown", "unclear") must never silently decide an issue:
     # if one can exclude it, an excluded_explanation must say so; if one can include it, a review

@@ -27,7 +27,13 @@ def edit(root, rel, fn):
 
 
 def stmt(issue, sid):
-    return next(s for s in issue["law_paragraph"]["rule_statements"] if s["id"] == sid)
+    """The sentence with this id, in whichever paragraph it is."""
+    return next(s for p in issue["law_paragraphs"] for s in p["sentences"] if s["id"] == sid)
+
+
+def para(issue, sid):
+    """The paragraph containing the sentence with this id."""
+    return next(p for p in issue["law_paragraphs"] if any(s["id"] == sid for s in p["sentences"]))
 
 
 class ValidatorCatchesKnownBugs(unittest.TestCase):
@@ -79,9 +85,9 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
                 {"when": d["trigger"]["match_condition"], "flag": "impossible", "display_note": "x"})
         self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "can never fire")
 
-    def test_statement_when_that_contradicts_match(self):
+    def test_paragraph_when_that_contradicts_match(self):
         def f(d):
-            stmt(d, "dog_sniff_no_added_time")["when"] = {
+            para(d, "dog_sniff_no_added_time")["when"] = {
                 "question": "q_original_purpose_completed", "op": "equals", "value": "no"}
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "never renders")
 
@@ -150,7 +156,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             lambda d: stmt(d, "core_prolongation_rule")["authorities"][0].update({"propositions": []}),
             lambda d: stmt(d, "core_prolongation_rule")["authorities"][0].update({"jurisdiction": "federal"}),
             lambda d: stmt(d, "core_prolongation_rule").update({"citations": []}),
-            lambda d: d["law_paragraph"].update({"segments": []}),
+            lambda d: d["law_paragraphs"][0].update({"segments": []}),
         ]
         for i, fn in enumerate(cases):
             with self.subTest(case=i):
@@ -241,29 +247,29 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             d["applicable_courts"] = ["scotus", "9th_cir", "ak"]
         self.assertWarning(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "alone already covers every forum")
 
-    # ---- statement-level applicable_courts
+    # ---- paragraph-level applicable_courts
 
-    def test_statement_courts_broader_than_issue(self):
+    def test_paragraph_courts_broader_than_issue(self):
         def f(d):
-            stmt(d, "core_communication_right")["applicable_courts"] = ["9th_cir"]
+            para(d, "core_communication_right")["applicable_courts"] = ["9th_cir"]
         self.assertError(self.run_with(f"{ISSUES}/denial-of-contact-before-breath-test.json", f),
                          "but the issue only applies in")
 
-    def test_statement_courts_same_as_issue(self):
+    def test_paragraph_courts_same_as_issue(self):
         def f(d):
-            stmt(d, "dog_sniff_no_added_time")["applicable_courts"] = ["scotus"]
+            para(d, "dog_sniff_no_added_time")["applicable_courts"] = ["scotus"]
         self.assertWarning(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "same as the issue's")
 
-    def test_statement_unknown_court(self):
+    def test_paragraph_unknown_court(self):
         def f(d):
-            stmt(d, "dog_sniff_no_added_time")["applicable_courts"] = ["wa"]
+            para(d, "dog_sniff_no_added_time")["applicable_courts"] = ["wa"]
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "unknown court 'wa'")
 
-    def test_authority_not_citable_where_statement_applies(self):
-        # core_prolongation_rule cites SCOTUS and Alaska; limiting it to the Ninth Circuit strands the Alaska case.
+    def test_authority_not_citable_where_paragraph_applies(self):
+        # core_prolongation_rule cites SCOTUS and Alaska; limiting its paragraph to the Ninth Circuit strands the Alaska case.
         def f(d):
-            stmt(d, "core_prolongation_rule")["applicable_courts"] = ["9th_cir"]
-        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "this statement only applies in")
+            para(d, "core_prolongation_rule")["applicable_courts"] = ["9th_cir"]
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "this paragraph only applies in")
 
     # ---- "your client" in questions, "the defendant" in the motion
 
@@ -346,29 +352,27 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         # frisk is in plain view's event group but also used on its own here, so it can't be
         # collapsed with the others: requiring frisk AND not frisk must be caught.
         def f(d):
-            d["law_paragraph"]["rule_statements"][0]["when"] = {"all": [
+            d["law_paragraphs"][0]["when"] = {"all": [
                 {"question": "q_encounter_events", "op": "includes", "value": "frisk"},
                 {"question": "q_encounter_events", "op": "not_includes", "value": "frisk"}]}
-            for st in d["law_paragraph"]["rule_statements"][1:]:
-                st["when"] = d["law_paragraph"]["rule_statements"][0]["when"]
         self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f), "never renders")
 
     # ---- an issue that matches but produces nothing
 
-    def test_match_with_every_statement_filtered_by_when(self):
-        # Matches on none_articulated too, but every statement now needs generalized_only.
+    def test_match_with_every_paragraph_filtered_by_when(self):
+        # Matches on none_articulated too, but every paragraph now needs generalized_only.
         def f(d):
-            for st in d["law_paragraph"]["rule_statements"]:
-                st["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
+            for p in d["law_paragraphs"]:
+                p["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
         self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f),
-                         "no rule statement left")
+                         "no paragraph of law left")
 
-    def test_match_with_every_statement_limited_to_another_forum(self):
+    def test_match_with_every_paragraph_limited_to_another_forum(self):
         def f(d):
-            for st in d["law_paragraph"]["rule_statements"]:
-                st["applicable_courts"] = ["ak"]
+            for p in d["law_paragraphs"]:
+                p["applicable_courts"] = ["ak"]
         self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f),
-                         "in Ninth Circuit, the issue can match with no rule statement left")
+                         "in Ninth Circuit, the issue can match with no paragraph of law left")
 
     # ---- config, file layout, and question bank
 
@@ -426,7 +430,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_condition_on_filing_court(self):
         def f(d):
-            stmt(d, "core_prolongation_rule")["when"] = {"question": "q_filing_court", "op": "equals", "value": "ak"}
+            para(d, "core_prolongation_rule")["when"] = {"question": "q_filing_court", "op": "equals", "value": "ak"}
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "conditions can't use q_filing_court")
 
     def test_duplicate_option_id(self):
@@ -440,6 +444,92 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             q = next(q for q in qs if q["id"] == "q_occupant_role")
             q["options"][0] = "Driver"
         self.assertError(self.run_with("content/questions/vehicle-occupants.json", f), "exactly {id, label}")
+
+    # ---- paragraphs (replaced the flat rule_statements list)
+
+    def test_old_law_paragraph_reintroduced(self):
+        def f(d):
+            d["law_paragraph"] = {"rule_statements": d["law_paragraphs"][0]["sentences"]}
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "was replaced by law_paragraphs")
+
+    def test_condition_on_a_sentence(self):
+        for field, value in (("when", {"question": "q_independent_suspicion", "op": "equals", "value": "yes"}),
+                             ("applicable_courts", ["ak"])):
+            with self.subTest(field=field):
+                self.setUp()
+                r = self.run_with(f"{ISSUES}/prolonged-stop.json",
+                                  lambda d: stmt(d, "core_prolongation_rule").update({field: value}))
+                self.assertError(r, "put the condition on the paragraph")
+
+    def test_duplicate_sentence_id_across_paragraphs(self):
+        def f(d):
+            stmt(d, "dog_sniff_no_added_time")["id"] = "core_prolongation_rule"
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "duplicate sentence id")
+
+    def test_argument_sentence_with_authority(self):
+        def f(d):
+            stmt(d, "core_prolongation_rule")["kind"] = "argument"
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "argument sentences have no authorities")
+
+    def test_argument_sentence_is_not_a_gap(self):
+        def f(d):
+            d["law_paragraphs"][0]["sentences"].append(
+                {"id": "reasoning", "kind": "argument", "text": "That is what happened here.", "authorities": []})
+        r = self.run_with(f"{ISSUES}/prolonged-stop.json", f)
+        self.assertEqual(r.errors, [], "\n".join(r.errors))
+        self.assertFalse(any("reasoning" in w for w in r.warnings), "\n".join(r.warnings))
+
+    def test_application_paragraph_of_only_argument_is_fine(self):
+        def f(d):
+            d["law_paragraphs"].append({"id": "application", "sentences": [
+                {"id": "reasoning", "kind": "argument", "text": "That is what happened here.", "authorities": []}]})
+        r = self.run_with(f"{ISSUES}/prolonged-stop.json", f)
+        self.assertEqual(r.errors, [], "\n".join(r.errors))
+
+    def test_match_leaving_only_argument(self):
+        # Every paragraph of law needs generalized_only; an unconditional argument paragraph isn't enough.
+        def f(d):
+            for p in d["law_paragraphs"]:
+                p["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
+            d["law_paragraphs"].append({"id": "application", "sentences": [
+                {"id": "reasoning", "kind": "argument", "text": "That is what happened here.", "authorities": []}]})
+        self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f),
+                         "no paragraph of law left")
+
+    def test_unknown_signal(self):
+        def f(d):
+            stmt(d, "core_prolongation_rule")["authorities"][0]["signal"] = "see"
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "signal 'see' isn't one of")
+
+    def test_parenthetical_authority_checked(self):
+        def f(d):
+            stmt(d, "core_prolongation_rule")["authorities"][0]["parenthetical"] = {
+                "text": "citing", "authority": {"type": "case", "name": "Example v. Case",
+                                                "citation": "575 U.S. 348", "pincite": "", "court": "scotus"}}
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "must look like")
+
+    def test_case_in_parenthetical_text(self):
+        def f(d):
+            stmt(d, "core_prolongation_rule")["authorities"][0]["parenthetical"] = {
+                "text": "discussing Terry v. Ohio"}
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "put the case in its 'authority'")
+
+    def test_short_case_name_must_be_cited_in_the_sentence(self):
+        def f(d):
+            stmt(d, "dog_sniff_no_added_time")["text"] = "Under *Terry*, a dog sniff must not add time."
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "no case cited for this sentence has that name")
+
+    def test_short_case_name_of_a_cited_case(self):
+        r = V.validate(ROOT)  # alaska_coleman_standard says "Under *Coleman*," and cites Coleman v. State.
+        self.assertFalse(any("Coleman" in e for e in r.errors), "\n".join(r.errors))
+
+    def test_short_case_name_not_cited_in_every_forum(self):
+        # In a paragraph that applies everywhere, naming an Alaska case leaves the name uncited in federal court.
+        def f(d):
+            p = next(p for p in d["law_paragraphs"] if p["id"] == "alaska_coleman_standard")
+            del p["applicable_courts"]
+        self.assertError(self.run_with(f"{ISSUES}/no-reasonable-suspicion-for-stop.json", f),
+                         "that case isn't cited")
 
     # ---- unknown-answer policy
 

@@ -47,83 +47,91 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "core_prolongation_rule",
-        "text": "A traffic stop becomes unlawful if it is prolonged beyond the time reasonably required to complete the mission of the stop.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Rodriguez v. United States",
-            "citation": "575 U.S. 348 (2015)",
-            "court": "scotus",
-            "pincite": ""
-          },
-          {
-            "type": "case",
-            "name": "Simmons v. State",
-            "citation": "435 P.3d 975 (Alaska App. 2018)",
-            "court": "ak",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "authority_ends_at_mission_completion",
-        "text": "Authority for the seizure ends when tasks tied to the traffic infraction are, or reasonably should have been, completed, and an officer may not extend an otherwise-completed stop, even briefly, to conduct a dog sniff or other unrelated investigation absent independent reasonable suspicion.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Rodriguez v. United States",
-            "citation": "575 U.S. 348 (2015)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "dog_sniff_no_added_time",
-        "text": "A dog sniff is permissible only if it does not add time to the stop.",
-        "when": {
-          "any": [
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "core_prolongation_rule",
+          "text": "A traffic stop becomes unlawful if it is prolonged beyond the time reasonably required to complete the mission of the stop.",
+          "authorities": [
             {
-              "question": "q_extension_event",
-              "op": "includes",
-              "value": "canine_sniff"
+              "type": "case",
+              "name": "Rodriguez v. United States",
+              "citation": "575 U.S. 348 (2015)",
+              "court": "scotus",
+              "pincite": ""
             },
             {
-              "question": "q_extension_event",
-              "op": "includes",
-              "value": "wait_for_backup_or_k9"
+              "type": "case",
+              "name": "Simmons v. State",
+              "citation": "435 P.3d 975 (Alaska App. 2018)",
+              "court": "ak",
+              "pincite": ""
             }
           ]
         },
-        "authorities": [
+        {
+          "id": "authority_ends_at_mission_completion",
+          "text": "Authority for the seizure ends when tasks tied to the traffic infraction are, or reasonably should have been, completed, and an officer may not extend an otherwise-completed stop, even briefly, to conduct a dog sniff or other unrelated investigation absent independent reasonable suspicion.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Rodriguez v. United States",
+              "citation": "575 U.S. 348 (2015)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "independent_suspicion_exception",
+          "text": "Where an officer develops reasonable, articulable suspicion of additional criminal activity during the stop's original mission, a brief extension to investigate that suspicion may be justified; the burden is on the government to establish that suspicion arose before, not after, the original mission concluded.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Rodriguez v. United States",
+              "citation": "575 U.S. 348 (2015)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dog_sniff_no_added_time",
+      "when": {
+        "any": [
           {
-            "type": "case",
-            "name": "Illinois v. Caballes",
-            "citation": "543 U.S. 405 (2005)",
-            "court": "scotus",
-            "pincite": ""
+            "question": "q_extension_event",
+            "op": "includes",
+            "value": "canine_sniff"
+          },
+          {
+            "question": "q_extension_event",
+            "op": "includes",
+            "value": "wait_for_backup_or_k9"
           }
         ]
       },
-      {
-        "id": "independent_suspicion_exception",
-        "text": "Where an officer develops reasonable, articulable suspicion of additional criminal activity during the stop's original mission, a brief extension to investigate that suspicion may be justified; the burden is on the government to establish that suspicion arose before, not after, the original mission concluded.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Rodriguez v. United States",
-            "citation": "575 U.S. 348 (2015)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+      "sentences": [
+        {
+          "id": "dog_sniff_no_added_time",
+          "text": "A dog sniff is permissible only if it does not add time to the stop.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Illinois v. Caballes",
+              "citation": "543 U.S. 405 (2005)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.",
     "Get the CAD and any bodycam/dashcam timestamps in discovery early — this issue depends on minute-by-minute sequencing.",

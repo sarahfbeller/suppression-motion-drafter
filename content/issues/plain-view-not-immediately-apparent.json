@@ -59,36 +59,39 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "immediately_apparent",
-        "text": "A warrantless seizure of an item in plain view is permitted only if the item's incriminating character is immediately apparent.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Horton v. California",
-            "citation": "496 U.S. 128 (1990)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "probable_cause_required",
-        "text": "That requires probable cause to believe the item is contraband or evidence of a crime, without any further search.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Arizona v. Hicks",
-            "citation": "480 U.S. 321 (1987)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "immediately_apparent",
+          "text": "A warrantless seizure of an item in plain view is permitted only if the item's incriminating character is immediately apparent.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Horton v. California",
+              "citation": "496 U.S. 128 (1990)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "probable_cause_required",
+          "text": "That requires probable cause to believe the item is contraband or evidence of a crime, without any further search.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Arizona v. Hicks",
+              "citation": "480 U.S. 321 (1987)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "Look for any step the officer took before being sure what the item was — a field test, a closer look, a question to your client. Each one suggests the character wasn't immediately apparent."
   ],

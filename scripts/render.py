@@ -24,14 +24,61 @@ def roman(n):
 
 
 def authority(a):
+    """One authority in full, with its parenthetical but without its signal."""
     c = E.citation_parts(a)
-    return f"*{c['name']}*, {c['rest']}" if c["italic"] else c["name"]
+    out = f"*{c['name']}*, {c['rest']}" if c["italic"] else c["name"]
+    return out + parenthetical(a)
 
 
-def paragraph(statements):
-    """Markdown puts citations inline: each statement's text, then its authorities joined by '; '."""
-    return " ".join(st["text"] + " " + "; ".join(authority(a) for a in st["authorities"]) + "."
-                    for st in statements)
+def parenthetical(a):
+    p = a.get("parenthetical")
+    if not p:
+        return ""
+    inner = p["text"] + (" " + authority(p["authority"]) if p.get("authority") else "")
+    return f" ({inner})"
+
+
+def citation(authorities, previous):
+    """A citation sentence for one rule sentence's authorities, without the final period.
+
+    previous is the sole authority of the preceding citation in this section (or None); a repeat
+    of it becomes Id. A signal is printed when it changes, capitalized only at the start.
+    """
+    parts, last_signal = [], None
+    for i, a in enumerate(authorities):
+        short = E.id_form(a, previous) if i == 0 and len(authorities) == 1 else None
+        if short is None:
+            text = authority(a)
+        else:
+            text = ("*Id.*" + (f" at {short}" if short else "") + parenthetical(a))
+        signal = a.get("signal", "")
+        if signal and signal != last_signal:
+            s = signal if i == 0 else signal[0].lower() + signal[1:]
+            if short is not None:
+                text = text.replace("*Id.*", "*id.*")
+            text = f"*{s}* {text}"
+        last_signal = signal
+        parts.append(text)
+    return "; ".join(parts)
+
+
+def section(paragraphs):
+    """Markdown puts citations inline: each sentence's text, then its citation sentence.
+
+    Id. never reaches back into an earlier section, since the attorney may reorder sections.
+    """
+    out, previous = [], None
+    for para in paragraphs:
+        sentences = []
+        for st in para["sentences"]:
+            if not st["authorities"]:
+                sentences.append(st["text"])
+                continue
+            cite = citation(st["authorities"], previous)
+            sentences.append(st["text"] + " " + cite + ("" if cite.rstrip("*").endswith(".") else "."))
+            previous = st["authorities"][0] if len(st["authorities"]) == 1 else None
+        out.append(" ".join(sentences))
+    return "\n\n".join(out)
 
 
 def render_motion(result):
@@ -39,7 +86,7 @@ def render_motion(result):
         return "No suppression issues were identified for these facts. See the attorney memo.\n"
     lines = ["## ARGUMENT", ""]
     for i, entry in enumerate(result["included"], 1):
-        lines += [f"### {roman(i)}. {entry['issue']['motion_heading']}", "", paragraph(entry["statements"]), ""]
+        lines += [f"### {roman(i)}. {entry['issue']['motion_heading']}", "", section(entry["paragraphs"]), ""]
     return "\n".join(lines)
 
 
@@ -79,10 +126,10 @@ def render_memo(result, config):
     for e in result["no_paragraph"]:
         lines += [f"### {e['issue']['label']} (not in motion)", ""]
         if e["gaps"]:
-            lines += ["The facts match this issue, but no rule statement has authority available for this "
+            lines += ["The facts match this issue, but no sentence of its law has authority available for this "
                       "forum, so no paragraph could be generated. Research needed before this can be argued.", ""]
         else:
-            lines += ["The facts match this issue, but none of its rule statements apply to these facts, so "
+            lines += ["The facts match this issue, but none of its paragraphs apply to these facts, so "
                       "no paragraph could be generated. This is a problem with the issue's content, not "
                       "missing research — tell the maintainer.", ""]
 

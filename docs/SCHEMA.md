@@ -26,8 +26,8 @@ Its option ids are the state and circuit court codes. The courts whose authority
 case are `scotus` plus that answer, so circuit authority is never cited in a state-court motion,
 and state authority never in a federal one.
 
-It's the one question the engine reads directly. Conditions can't use it: where an issue or rule
-statement is the law goes in its `applicable_courts`.
+It's the one question the engine reads directly. Conditions can't use it: where an issue or
+paragraph is the law goes in its `applicable_courts`.
 
 ## Encounter events
 
@@ -83,7 +83,7 @@ Questions hold content only. Ordering, branching, and skip logic belong to the d
 | `status`, `last_reviewed`, `reviewed_by` | See review status. |
 | `applicable_courts` | Where the issue exists at all (see below). |
 | `trigger` | `{ match_condition, review_conditions?, excluded_explanations? }` |
-| `law_paragraph` | `{ rule_statements: [...] }` |
+| `law_paragraphs` | The motion text: an ordered list of paragraphs (see below). |
 | `practice_notes` | Tips for the attorney. Memo only. |
 
 **Order in the motion.** `config.motion_order` maps each phase of the encounter, in chronological
@@ -136,60 +136,95 @@ Values are option ids, never labels.
 If a leaf's question is unanswered, the leaf is false for every op, including the negative ones.
 A condition can only be satisfied by answers the attorney actually gave.
 
-## Rule statements
+## Paragraphs and sentences
 
-`law_paragraph.rule_statements` is an ordered list of `{ id, text, when?, applicable_courts?, authorities }`.
+`law_paragraphs` is an ordered list of `{ id, when?, applicable_courts?, sentences }`. A paragraph
+is the unit that's included or left out: its sentences have no conditions of their own, so a
+sentence that leans on the one before it ("Under this test…", *Id.*, "For example…") never loses it.
 
-- `text`: one proposition (a sentence, two at most). Never a case name or citation, even
-  mid-sentence. May be a direct quotation. Ends with sentence punctuation.
-- `when`: optional condition. Use it for facts that change which propositions belong in the
-  motion, and to keep propositions that help the prosecution out unless the facts make them relevant.
-- `applicable_courts`: optional; where this proposition is the law. Same meaning as the issue's
-  field, and defaults to it. Use it only to narrow: an Alaska-only proposition inside a
-  `["scotus"]` issue gets `["ak"]`. It can't list a court the issue doesn't apply in, and every
-  authority must be citable there (SCOTUS authority always is).
-- `authorities`: each one supports exactly this statement's text.
+- `when`: optional condition. Use it for facts that change what belongs in the motion, and to keep
+  propositions that help the prosecution out unless the facts make them relevant. A sentence that
+  only belongs on some facts goes in its own paragraph.
+- `applicable_courts`: optional; where this paragraph is the law. Same meaning as the issue's
+  field, and defaults to it. Use it only to narrow: an Alaska-only paragraph inside a `["scotus"]`
+  issue gets `["ak"]`. It can't list a court the issue doesn't apply in, and every authority must
+  be citable there (SCOTUS authority always is). Marking a paragraph as applying only in some
+  courts is a legal judgment that it isn't the law elsewhere, and is reviewed like the rest.
+- `sentences`: an ordered, non-empty list of `{ id, text, kind?, authorities }`. Sentence ids are
+  unique across the whole issue.
 
-For each statement whose `when` is absent or true:
+A sentence:
 
-- It doesn't apply in this forum: skipped silently.
-- It applies, and at least one authority is for one of the case's courts: rendered.
-- It applies, but no authority is for the case's courts: dropped from the motion and listed in the
-  memo as a gap, because research is missing.
+- `text`: one proposition (a sentence, two at most). May be a direct quotation. Ends with sentence
+  punctuation. No citations: never a full case name, reporter citation, statute, or *Id.* A short
+  case name is allowed when marked `*Name*` (it renders in italics), and the case must be cited
+  for that same sentence, by an authority citable everywhere the paragraph applies. `*` is used
+  for nothing else.
+- `kind`: `"argument"` for reasoning that needs no citation; its `authorities` must be empty.
+  Omitted, the sentence states law and needs authority.
+- `authorities`: each one supports exactly this sentence's text.
 
-Marking a proposition as applying only in some courts is a legal judgment that it isn't the law
-elsewhere, and is reviewed like the rest of the statement.
+For each paragraph whose `when` is absent or true and that applies in this forum:
+
+- A cited sentence with at least one authority for the case's courts is rendered.
+- A cited sentence with no authority for the case's courts is dropped from the motion and listed
+  in the memo as a gap, because research is missing.
+- An argument sentence is always rendered, so a paragraph made only of argument (such as an
+  application paragraph after the rule paragraphs) is always rendered.
+- A paragraph that has cited sentences but lost all of them as gaps isn't rendered, since its
+  argument would rest on nothing.
+
+An issue needs at least one cited sentence in the motion to be a section; argument alone isn't
+one. The validator checks that every match leaves a paragraph with a cited sentence.
+
+A paragraph that doesn't apply in this forum is skipped silently.
 
 ## Authorities
 
-`{ type, name, citation, pincite, court }`. `type` is `case`, `statute`, `constitution`, or `rule`.
+`{ type, name, citation, pincite, court, signal?, parenthetical? }`. `type` is `case`, `statute`,
+`constitution`, or `rule`.
 
 - Cases: `citation` is `'<volume> <reporter> <first page> (<court> <year>)'`. `pincite` is
-  required; it's the pinpoint for this statement's proposition, and empty until researched.
+  required; it's the pinpoint for this sentence's proposition, and empty until researched.
 - Everything else: `citation` is `""` (the name is the citation) and there is no `pincite`.
 - `court` is a code from `config.courts`: whose law this is, not which court decided it.
+- `signal`: optional; one of `See`, `See also`, `See, e.g.,`, `E.g.,`, `Cf.`, `See generally`,
+  written as at the start of a citation sentence. Omitted, the authority directly supports the
+  sentence.
+- `parenthetical`: optional; `{ text, authority? }`. `text` has no citations; a case it refers to
+  goes in `authority` (a full authority without its own signal or parenthetical), which is checked
+  like any other and printed after the text.
 
 A case cites as *Name*, `<volume reporter page>, <pincite> (<court year>)`, with the pincite left
-out when empty; anything else cites as its name. A statement's authorities are ordered Supreme
-Court, then circuit, then state. Short forms (*Id.*) and signals (*See*) aren't supported yet.
+out when empty; anything else cites as its name. A sentence's authorities are ordered Supreme
+Court, then circuit, then state. A signal is printed when it changes from the previous authority
+in the same citation sentence, lowercased after the first.
 
-The engine returns each surviving statement as its text plus its ordered authorities, never a
-finished string, so each renderer decides where citations go. The markdown reference renderer
-puts them inline after the statement, joined with `; `. The planned .docx output will put each
-statement's authorities in a footnote.
+**Short forms.** Authors always write the full authority; the renderer decides when it prints as
+*Id.* A citation becomes *Id.* (or *Id.* at `<pincite>`) when the citation just before it, in the
+same motion section, was to that one authority alone. Never after a citation to several
+authorities, never to a case cited inside a parenthetical, and never when this citation has no
+pincite but the previous one did. *Id.* doesn't reach into an earlier section, since attorneys
+reorder sections. Other short forms (short case names in citations) aren't supported yet.
+
+The engine returns each rendered paragraph as its sentences, and each sentence as its text plus
+its ordered authorities, never a finished string, so each renderer decides where citations go.
+The markdown reference renderer puts them inline after the sentence, joined with `; `, with a
+blank line between paragraphs. The planned .docx output will put each sentence's authorities in a
+footnote.
 
 ## Review status
 
 - `unreviewed`: the default for every new or edited issue. `last_reviewed` and `reviewed_by` are empty.
-- `reviewed`: a lawyer has confirmed the rule statements and authorities are accurate and complete
+- `reviewed`: a lawyer has confirmed the motion text and authorities are accurate and complete
   for every in-scope court the issue applies to. `last_reviewed` (YYYY-MM-DD) and `reviewed_by` are filled in.
 
-Any change to `motion_heading`, `applicable_courts`, `trigger`, `law_paragraph`, or
+Any change to `motion_heading`, `applicable_courts`, `trigger`, `law_paragraphs`, or
 `practice_notes` sets the status back to `unreviewed`. Not enforced by tooling yet.
 
 ## Who reads what
 
-- **The court (motion):** `motion_heading`, rule statement `text`, authorities.
+- **The court (motion):** `motion_heading`, sentence `text`, authorities.
 - **The attorney (memo):** `practice_notes`, and the `display_note` of review conditions and
   excluded explanations.
 - **The maintainer:** `_`-prefixed fields, `flag`.
@@ -200,7 +235,7 @@ themselves while deciding what to file? Memo. Is it about the state of the file?
 ## Output
 
 **Motion:** an "ARGUMENT" heading, then one numbered section per included issue (I, II, III…) with
-its `motion_heading` and law paragraph. Nothing else. If no issue produced a paragraph, a single
+its `motion_heading` and law paragraphs. Nothing else. If no issue produced a paragraph, a single
 line says so.
 
 **Memo** (never filed):
@@ -208,8 +243,8 @@ line says so.
 1. Case settings: forum, and whose authority was cited.
 2. Included issues, numbered to match the motion: label; an unreviewed-content flag; a coverage
    note when a SCOTUS-grounded section cites no circuit or state authority; gaps; review notes that
-   fired; practice notes. An issue that matched but had every statement dropped is listed here as
-   "not in motion," with a note saying whether research is needed (its statements were gaps) or its
-   content is broken (no statement applied). The validator rejects content that can produce the
+   fired; practice notes. An issue that matched but rendered no paragraph is listed here as
+   "not in motion," with a note saying whether research is needed (its sentences were gaps) or its
+   content is broken (no paragraph applied). The validator rejects content that can produce the
    second case, when the answer space is small enough to check.
 3. Issues considered but not included: excluded explanations that fired.

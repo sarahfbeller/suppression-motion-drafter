@@ -11,13 +11,12 @@
 **Check before filing:**
 
 - This section's legal content has not yet been reviewed by an attorney. Check every proposition and citation before filing.
-- It's unclear whether the officer developed independent reasonable suspicion during the original-purpose tasks. If it turns out suspicion did arise then, the extension may be independently justified and this issue could be weaker than presented — confirm the timeline (dispatch log, body-cam) before relying on this issue as written.
+- It's unclear whether the officer developed independent reasonable suspicion during the original-purpose tasks. If it turns out suspicion did arise then, the extension may be independently justified and this issue could be weaker than presented — confirm the timeline (CAD, body-cam) before relying on this issue as written.
 
 **Practice notes:**
 
 - Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
-- Get the dispatch log and any body-cam/dash-cam timestamps in discovery early — this issue lives and dies on minute-by-minute sequencing.
-- Pin down the officer's own testimony on when each original-purpose task was completed; officers sometimes pad task completion time in reports to avoid a Rodriguez problem.
+- Get the CAD and any bodycam/dashcam timestamps in discovery early — this issue depends on minute-by-minute sequencing.
 - If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later.
 
 ### II. Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)
@@ -25,12 +24,6 @@
 **Check before filing:**
 
 - This section's legal content has not yet been reviewed by an attorney. Check every proposition and citation before filing.
-
-**Practice notes:**
-
-- This is an Alaska statutory/due-process right (AS 12.25.150(b)), not a Fourth Amendment claim, and not the same as federal Miranda right-to-counsel doctrine — Miranda governs counsel during interrogation; this governs contact before a testing decision. Don't conflate the two in briefing.
-- If the request was to contact a relative or friend rather than an attorney, pin down and document the stated purpose of that request as early as possible — under Zsupnik, whether the purpose was defense-related is what determines whether suppression is even available.
-- Get the booking/custody video and any phone or dispatch logs — these claims turn on the specific timeline: when the request was made, when (if ever) contact occurred, and how much time was given relative to what was actually needed.
 
 ### III. Comprehension Barrier Preventing Knowing Understanding of Right to Independent Test
 
@@ -42,7 +35,6 @@
 
 - Document your client's actual English proficiency at the time of the advisement — an interpreter's later availability at trial doesn't cure a station-house advisement given only in English when the decision had to be made.
 - For an intoxication-based comprehension claim, be aware of the tension: the same BAC or observations that support this claim may also support the state's case on the underlying DUI charge. Weigh how heavily to lean on this theory alongside your other defenses.
-- This is closely related to, but distinct from, the failure-to-advise issue — here the advisement was procedurally proper, but the defendant's ability to receive it wasn't. Don't conflate the two in briefing; they rest on different facts.
 
 ## Issues considered but not included
 

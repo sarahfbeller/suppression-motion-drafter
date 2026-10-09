@@ -34,67 +34,75 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "due_process_bar",
-        "text": "The Due Process Clause forbids the use of an involuntary statement, regardless of whether Miranda was followed.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Mincey v. Arizona",
-            "citation": "437 U.S. 385 (1978)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "totality",
-        "text": "Whether a statement was voluntary is judged from the totality of the circumstances.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Arizona v. Fulminante",
-            "citation": "499 U.S. 279 (1991)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "credible_threat",
-        "text": "A confession obtained through a credible threat of violence is coerced.",
-        "when": {
-          "question": "q_coercion",
-          "op": "includes",
-          "value": "threats_or_force"
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "due_process_bar",
+          "text": "The Due Process Clause forbids the use of an involuntary statement, regardless of whether Miranda was followed.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Mincey v. Arizona",
+              "citation": "437 U.S. 385 (1978)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Arizona v. Fulminante",
-            "citation": "499 U.S. 279 (1991)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
+        {
+          "id": "totality",
+          "text": "Whether a statement was voluntary is judged from the totality of the circumstances.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Arizona v. Fulminante",
+              "citation": "499 U.S. 279 (1991)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "no_impeachment",
+          "text": "An involuntary statement cannot be used for any purpose, including impeachment.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Mincey v. Arizona",
+              "citation": "437 U.S. 385 (1978)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "credible_threat",
+      "when": {
+        "question": "q_coercion",
+        "op": "includes",
+        "value": "threats_or_force"
       },
-      {
-        "id": "no_impeachment",
-        "text": "An involuntary statement cannot be used for any purpose, including impeachment.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Mincey v. Arizona",
-            "citation": "437 U.S. 385 (1978)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+      "sentences": [
+        {
+          "id": "credible_threat",
+          "text": "A confession obtained through a credible threat of violence is coerced.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Arizona v. Fulminante",
+              "citation": "499 U.S. 279 (1991)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "Unlike Miranda, this doesn't require custody — it applies to any statement to police. Raise it alongside any Miranda issue, since an involuntary statement is excluded even for impeachment.",
     "Build the record on your client's vulnerabilities (age, education, mental health, intoxication, injury) as well as police conduct; both go into the totality."

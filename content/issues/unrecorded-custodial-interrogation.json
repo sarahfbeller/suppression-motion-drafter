@@ -73,20 +73,23 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "recording_required",
-        "text": "A custodial interrogation conducted in a place of detention must be electronically recorded when recording is feasible.",
-        "authorities": []
-      },
-      {
-        "id": "unexcused_failure_suppression",
-        "text": "An unexcused failure to record requires suppression of the unrecorded statements.",
-        "authorities": []
-      }
-    ]
-  },
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "recording_required",
+          "text": "A custodial interrogation conducted in a place of detention must be electronically recorded when recording is feasible.",
+          "authorities": []
+        },
+        {
+          "id": "unexcused_failure_suppression",
+          "text": "An unexcused failure to record requires suppression of the unrecorded statements.",
+          "authorities": []
+        }
+      ]
+    }
+  ],
   "practice_notes": [],
   "_author_notes": [
     "Alaska-only issue added at the maintainer's request (Stephan). Both statements were written from general knowledge and have no authorities: Alaska citations aren't covered by the Supreme Court citation policy. Unverified; add Stephan and later cases, and check that the statements (feasibility, the remedy, and whether suppression is limited to the unrecorded portion) match Alaska law."

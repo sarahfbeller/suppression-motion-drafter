@@ -48,110 +48,108 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "armed_and_dangerous_required",
-        "text": "An officer may frisk a person only where there is reasonable, articulable suspicion that the particular person is armed and dangerous.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Terry v. Ohio",
-            "citation": "392 U.S. 1 (1968)",
-            "court": "scotus",
-            "pincite": ""
-          },
-          {
-            "type": "case",
-            "name": "Ybarra v. Illinois",
-            "citation": "444 U.S. 85 (1979)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "suspicion_directed_at_person",
-        "text": "The suspicion must be directed at the person frisked; suspicion of others nearby, or of the place, does not justify a frisk.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Ybarra v. Illinois",
-            "citation": "444 U.S. 85 (1979)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "passenger_standard",
-        "text": "The same standard applies to a passenger during a traffic stop: the officer must reasonably suspect that the passenger is armed and dangerous.",
-        "when": {
-          "question": "q_occupant_role",
-          "op": "equals",
-          "value": "passenger"
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "armed_and_dangerous_required",
+          "text": "An officer may frisk a person only where there is reasonable, articulable suspicion that the particular person is armed and dangerous.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Terry v. Ohio",
+              "citation": "392 U.S. 1 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            },
+            {
+              "type": "case",
+              "name": "Ybarra v. Illinois",
+              "citation": "444 U.S. 85 (1979)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Arizona v. Johnson",
-            "citation": "555 U.S. 323 (2009)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "mere_presence_insufficient",
-        "text": "A passenger frisk during a traffic stop requires more than the passenger's mere presence in the vehicle.",
-        "when": {
-          "question": "q_occupant_role",
-          "op": "equals",
-          "value": "passenger"
+        {
+          "id": "suspicion_directed_at_person",
+          "text": "The suspicion must be directed at the person frisked; suspicion of others nearby, or of the place, does not justify a frisk.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Ybarra v. Illinois",
+              "citation": "444 U.S. 85 (1979)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Arizona v. Johnson",
-            "citation": "555 U.S. 323 (2009)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
+        {
+          "id": "hunch_insufficient",
+          "text": "An officer's unparticularized suspicion or hunch is not enough.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Terry v. Ohio",
+              "citation": "392 U.S. 1 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "passenger_standard",
+      "when": {
+        "question": "q_occupant_role",
+        "op": "equals",
+        "value": "passenger"
       },
-      {
-        "id": "general_officer_safety_insufficient",
-        "text": "General officer-safety concerns tied to the stop itself, without something specific to the passenger being frisked, do not satisfy this standard.",
-        "when": {
-          "question": "q_occupant_role",
-          "op": "equals",
-          "value": "passenger"
+      "sentences": [
+        {
+          "id": "passenger_standard",
+          "text": "The same standard applies to a passenger during a traffic stop: the officer must reasonably suspect that the passenger is armed and dangerous.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Arizona v. Johnson",
+              "citation": "555 U.S. 323 (2009)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Arizona v. Johnson",
-            "citation": "555 U.S. 323 (2009)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "hunch_insufficient",
-        "text": "An officer's unparticularized suspicion or hunch is not enough.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Terry v. Ohio",
-            "citation": "392 U.S. 1 (1968)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+        {
+          "id": "mere_presence_insufficient",
+          "text": "A passenger frisk during a traffic stop requires more than the passenger's mere presence in the vehicle.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Arizona v. Johnson",
+              "citation": "555 U.S. 323 (2009)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "general_officer_safety_insufficient",
+          "text": "General officer-safety concerns tied to the stop itself, without something specific to the passenger being frisked, do not satisfy this standard.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Arizona v. Johnson",
+              "citation": "555 U.S. 323 (2009)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "If your client was a passenger and was also asked for ID and that added time to the stop, that may raise a separate timing issue independent of the frisk itself.",
     "A passenger has standing to challenge the stop itself and any search of their own person (Brendlin v. California, 551 U.S. 249 (2007)), but standing to challenge a search of the vehicle's contents is analyzed separately — don't assume one covers the other."

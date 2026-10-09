@@ -68,49 +68,52 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "heavy_burden",
-        "text": "The prosecution bears a heavy burden to show that the person knowingly and intelligently waived the privilege against self-incrimination and the right to counsel.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Miranda v. Arizona",
-            "citation": "384 U.S. 436 (1966)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "waiver_requirements",
-        "text": "A valid waiver must be voluntary — the product of a free and deliberate choice rather than intimidation, coercion, or deception — and made with full awareness of both the nature of the right being abandoned and the consequences of abandoning it.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Moran v. Burbine",
-            "citation": "475 U.S. 412 (1986)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "custody_defined",
-        "text": "A person is in custody when there is a formal arrest or a restraint on freedom of movement of the degree associated with a formal arrest.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Stansbury v. California",
-            "citation": "511 U.S. 318 (1994)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "heavy_burden",
+          "text": "The prosecution bears a heavy burden to show that the person knowingly and intelligently waived the privilege against self-incrimination and the right to counsel.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Miranda v. Arizona",
+              "citation": "384 U.S. 436 (1966)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "waiver_requirements",
+          "text": "A valid waiver must be voluntary — the product of a free and deliberate choice rather than intimidation, coercion, or deception — and made with full awareness of both the nature of the right being abandoned and the consequences of abandoning it.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Moran v. Burbine",
+              "citation": "475 U.S. 412 (1986)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "custody_defined",
+          "text": "A person is in custody when there is a formal arrest or a restraint on freedom of movement of the degree associated with a formal arrest.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Stansbury v. California",
+              "citation": "511 U.S. 318 (1994)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "Document anything bearing on your client's ability to understand: primary language, reading level, intoxication (booking observations, test results), injuries, mental-health history, age.",
     "Expect the prosecution to argue an implied waiver from your client's answering questions after warnings; the argument is strongest where understanding was genuinely impaired."

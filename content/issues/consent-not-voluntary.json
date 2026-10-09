@@ -55,85 +55,98 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "burden_on_prosecution",
-        "text": "When the prosecution relies on consent to justify a warrantless search, it bears the burden of proving that the consent was freely and voluntarily given.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Bumper v. North Carolina",
-            "citation": "391 U.S. 543 (1968)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "totality",
-        "text": "Whether consent was voluntary is determined from the totality of all the circumstances.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Schneckloth v. Bustamonte",
-            "citation": "412 U.S. 218 (1973)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "no_coercion",
-        "text": "Consent is not voluntary if it was the product of duress or coercion, express or implied.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Schneckloth v. Bustamonte",
-            "citation": "412 U.S. 218 (1973)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "claim_of_authority",
-        "text": "Consent given in submission to a claim of lawful authority to search is not voluntary.",
-        "when": {
-          "question": "q_consent_circumstances",
-          "op": "includes",
-          "value": "claim_of_authority"
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "burden_on_prosecution",
+          "text": "When the prosecution relies on consent to justify a warrantless search, it bears the burden of proving that the consent was freely and voluntarily given.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Bumper v. North Carolina",
+              "citation": "391 U.S. 543 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Bumper v. North Carolina",
-            "citation": "391 U.S. 543 (1968)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "knowledge_of_right",
-        "text": "Whether the person knew of the right to refuse is a factor in the voluntariness analysis.",
-        "when": {
-          "question": "q_consent_circumstances",
-          "op": "includes",
-          "value": "not_told_could_refuse"
+        {
+          "id": "totality",
+          "text": "Whether consent was voluntary is determined from the totality of all the circumstances.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Schneckloth v. Bustamonte",
+              "citation": "412 U.S. 218 (1973)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Schneckloth v. Bustamonte",
-            "citation": "412 U.S. 218 (1973)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+        {
+          "id": "no_coercion",
+          "text": "Consent is not voluntary if it was the product of duress or coercion, express or implied.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Schneckloth v. Bustamonte",
+              "citation": "412 U.S. 218 (1973)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "claim_of_authority",
+      "when": {
+        "question": "q_consent_circumstances",
+        "op": "includes",
+        "value": "claim_of_authority"
+      },
+      "sentences": [
+        {
+          "id": "claim_of_authority",
+          "text": "Consent given in submission to a claim of lawful authority to search is not voluntary.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Bumper v. North Carolina",
+              "citation": "391 U.S. 543 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "knowledge_of_right",
+      "when": {
+        "question": "q_consent_circumstances",
+        "op": "includes",
+        "value": "not_told_could_refuse"
+      },
+      "sentences": [
+        {
+          "id": "knowledge_of_right",
+          "text": "Whether the person knew of the right to refuse is a factor in the voluntariness analysis.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Schneckloth v. Bustamonte",
+              "citation": "412 U.S. 218 (1973)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "List every circumstance of the request, including how many officers, where they stood, whether weapons were visible, the exact words used, and whether your client had been told they were free to go.",
     "If consent followed an unlawful stop or detention, argue it's also tainted as fruit of that illegality — a separate argument from voluntariness."

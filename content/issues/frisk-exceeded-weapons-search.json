@@ -44,54 +44,62 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "limited_to_weapons",
-        "text": "A frisk must be confined in scope to an intrusion reasonably designed to discover weapons that could be used to assault the officer.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Terry v. Ohio",
-            "citation": "392 U.S. 1 (1968)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "reaching_in_without_weapon",
-        "text": "Reaching into a person's pockets without first feeling anything that might be a weapon is not a permissible protective search.",
-        "when": {
-          "question": "q_frisk_conduct",
-          "op": "includes",
-          "value": "reached_in_without_weapon_feel"
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "limited_to_weapons",
+          "text": "A frisk must be confined in scope to an intrusion reasonably designed to discover weapons that could be used to assault the officer.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Terry v. Ohio",
+              "citation": "392 U.S. 1 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Sibron v. New York",
-            "citation": "392 U.S. 40 (1968)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
+        {
+          "id": "beyond_scope_suppressed",
+          "text": "If a protective search goes beyond what is necessary to determine whether the person is armed, it is no longer valid, and its fruits must be suppressed.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Minnesota v. Dickerson",
+              "citation": "508 U.S. 366 (1993)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reaching_in_without_weapon",
+      "when": {
+        "question": "q_frisk_conduct",
+        "op": "includes",
+        "value": "reached_in_without_weapon_feel"
       },
-      {
-        "id": "beyond_scope_suppressed",
-        "text": "If a protective search goes beyond what is necessary to determine whether the person is armed, it is no longer valid, and its fruits must be suppressed.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Minnesota v. Dickerson",
-            "citation": "508 U.S. 366 (1993)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+      "sentences": [
+        {
+          "id": "reaching_in_without_weapon",
+          "text": "Reaching into a person's pockets without first feeling anything that might be a weapon is not a permissible protective search.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Sibron v. New York",
+              "citation": "392 U.S. 40 (1968)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [],
   "_author_notes": [
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Terry v. Ohio, Sibron v. New York, Minnesota v. Dickerson. Unverified; pincites empty.",

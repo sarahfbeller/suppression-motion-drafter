@@ -35,49 +35,52 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "immediately_apparent_required",
-        "text": "An officer conducting a lawful frisk may seize an object without a warrant only if its incriminating character is immediately apparent from the lawful pat-down itself.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Minnesota v. Dickerson",
-            "citation": "508 U.S. 366 (1993)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "manipulation_is_a_search",
-        "text": "Once the officer has concluded that an object is not a weapon, continued squeezing, sliding, or manipulating of it to determine what it is exceeds the scope of a lawful frisk and is an unconstitutional search.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Minnesota v. Dickerson",
-            "citation": "508 U.S. 366 (1993)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "fruits_suppressed",
-        "text": "Evidence obtained through a search that exceeds the lawful scope of a frisk must be suppressed.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Minnesota v. Dickerson",
-            "citation": "508 U.S. 366 (1993)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "immediately_apparent_required",
+          "text": "An officer conducting a lawful frisk may seize an object without a warrant only if its incriminating character is immediately apparent from the lawful pat-down itself.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Minnesota v. Dickerson",
+              "citation": "508 U.S. 366 (1993)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "manipulation_is_a_search",
+          "text": "Once the officer has concluded that an object is not a weapon, continued squeezing, sliding, or manipulating of it to determine what it is exceeds the scope of a lawful frisk and is an unconstitutional search.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Minnesota v. Dickerson",
+              "citation": "508 U.S. 366 (1993)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        },
+        {
+          "id": "fruits_suppressed",
+          "text": "Evidence obtained through a search that exceeds the lawful scope of a frisk must be suppressed.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Minnesota v. Dickerson",
+              "citation": "508 U.S. 366 (1993)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "The officer's report often gives the game away — phrases like 'I manipulated the object' or 'I felt what I believed, based on training, to be narcotics' after ruling out a weapon are exactly the Dickerson fact pattern."
   ],

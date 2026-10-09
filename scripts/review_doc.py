@@ -104,16 +104,20 @@ def issue_section(n, issue, phase, config, questions, groups):
            "### Included when", ""]
     out += condition_lines(trig["match_condition"], questions, groups) + [""]
 
-    out += ["### Rule statements (motion text, in order)", ""]
-    for st in issue["law_paragraph"]["rule_statements"]:
-        cites = "; ".join(R.authority(a) + (f" [{courts[a['court']]['display_name']}]" if a["court"] != E.SCOTUS else "")
-                          for a in st["authorities"])
-        out.append(f"- `{st['id']}`: {st['text']}")
-        if "applicable_courts" in st:
-            out.append(f"  - *Only in:* {', '.join(courts[c]['display_name'] for c in st['applicable_courts'])}")
-        if "when" in st:
-            out.append(f"  - *Only when:* {when_inline(st['when'], questions, groups)}")
-        out.append(f"  - *Cites:* {cites}" if cites else "  - *Cites:* **none — shows as a gap in the memo**")
+    out += ["### Motion text (paragraphs, in order)", ""]
+    for para in issue["law_paragraphs"]:
+        out.append(f"- **Paragraph `{para['id']}`**")
+        if "applicable_courts" in para:
+            out.append(f"  - *Only in:* {', '.join(courts[c]['display_name'] for c in para['applicable_courts'])}")
+        if "when" in para:
+            out.append(f"  - *Only when:* {when_inline(para['when'], questions, groups)}")
+        for st in para["sentences"]:
+            out.append(f"  - `{st['id']}`: {st['text']}")
+            if st.get("kind") == "argument":
+                out.append("    - *Argument — no citation needed*")
+                continue
+            cites = "; ".join(cite_text(a, courts) for a in st["authorities"])
+            out.append(f"    - *Cites:* {cites}" if cites else "    - *Cites:* **none — shows as a gap in the memo**")
     out.append("")
 
     for kind, title in (("review_conditions", "Memo: review notes (when included)"),
@@ -131,6 +135,13 @@ def issue_section(n, issue, phase, config, questions, groups):
     if issue.get("_author_notes"):
         out += ["### Author notes (never rendered)", ""] + [f"- {p}" for p in issue["_author_notes"]] + [""]
     return out
+
+
+def cite_text(a, courts):
+    """One authority as the motion cites it in full, plus its court when that isn't the Supreme Court."""
+    signal = f"*{a['signal']}* " if a.get("signal") else ""
+    where = f" [{courts[a['court']]['display_name']}]" if a["court"] != E.SCOTUS else ""
+    return signal + R.authority(a) + where
 
 
 def option_uses(cond, out):
@@ -173,7 +184,7 @@ def build(root):
         trig = expanded["trigger"]
         conds = ([trig["match_condition"]] + [n["when"] for n in trig.get("review_conditions", [])]
                  + [n["when"] for n in trig.get("excluded_explanations", [])]
-                 + [st["when"] for st in expanded["law_paragraph"]["rule_statements"] if "when" in st])
+                 + [p["when"] for p in expanded["law_paragraphs"] if "when" in p])
         for c in conds:
             option_uses(c, used_options)
             for qid in E.condition_questions(c):

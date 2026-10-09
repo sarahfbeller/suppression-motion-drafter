@@ -69,95 +69,118 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "limited_scope",
-        "text": "A search incident to a lawful arrest may extend only to the arrestee's person and the area within the arrestee's immediate control — the area from which the arrestee might gain possession of a weapon or destructible evidence.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Chimel v. California",
-            "citation": "395 U.S. 752 (1969)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "limited_scope",
+          "text": "A search incident to a lawful arrest may extend only to the arrestee's person and the area within the arrestee's immediate control — the area from which the arrestee might gain possession of a weapon or destructible evidence.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Chimel v. California",
+              "citation": "395 U.S. 752 (1969)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "other_rooms_and_closed_areas",
+      "when": {
+        "question": "q_sita_problems",
+        "op": "includes",
+        "value": "beyond_immediate_control"
       },
-      {
-        "id": "other_rooms_and_closed_areas",
-        "text": "That justification does not extend to searching rooms other than the one in which the arrest occurs, or closed or concealed areas in that room.",
-        "when": {
-          "question": "q_sita_problems",
-          "op": "includes",
-          "value": "beyond_immediate_control"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Chimel v. California",
-            "citation": "395 U.S. 752 (1969)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
+      "sentences": [
+        {
+          "id": "other_rooms_and_closed_areas",
+          "text": "That justification does not extend to searching rooms other than the one in which the arrest occurs, or closed or concealed areas in that room.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Chimel v. California",
+              "citation": "395 U.S. 752 (1969)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vehicle",
+      "when": {
+        "question": "q_sita_problems",
+        "op": "includes",
+        "value": "vehicle_after_secured"
       },
-      {
-        "id": "vehicle",
-        "text": "Police may search a vehicle incident to a recent occupant's arrest only if the arrestee is unsecured and within reaching distance of the passenger compartment at the time of the search, or it is reasonable to believe the vehicle contains evidence of the offense of arrest.",
-        "when": {
-          "question": "q_sita_problems",
-          "op": "includes",
-          "value": "vehicle_after_secured"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Arizona v. Gant",
-            "citation": "556 U.S. 332 (2009)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
+      "sentences": [
+        {
+          "id": "vehicle",
+          "text": "Police may search a vehicle incident to a recent occupant's arrest only if the arrestee is unsecured and within reaching distance of the passenger compartment at the time of the search, or it is reasonable to believe the vehicle contains evidence of the offense of arrest.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Arizona v. Gant",
+              "citation": "556 U.S. 332 (2009)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cell_phone",
+      "when": {
+        "question": "q_sita_problems",
+        "op": "includes",
+        "value": "cell_phone_data"
       },
-      {
-        "id": "cell_phone",
-        "text": "Police generally must obtain a warrant before searching the data on a cell phone seized incident to arrest.",
-        "when": {
-          "question": "q_sita_problems",
-          "op": "includes",
-          "value": "cell_phone_data"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Riley v. California",
-            "citation": "573 U.S. 373 (2014)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
+      "sentences": [
+        {
+          "id": "cell_phone",
+          "text": "Police generally must obtain a warrant before searching the data on a cell phone seized incident to arrest.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Riley v. California",
+              "citation": "573 U.S. 373 (2014)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "remote_in_time_or_place",
+      "when": {
+        "question": "q_sita_problems",
+        "op": "includes",
+        "value": "remote_in_time_or_place"
       },
-      {
-        "id": "remote_in_time_or_place",
-        "text": "A search that is remote in time or place from the arrest is not incident to the arrest.",
-        "when": {
-          "question": "q_sita_problems",
-          "op": "includes",
-          "value": "remote_in_time_or_place"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Preston v. United States",
-            "citation": "376 U.S. 364 (1964)",
-            "court": "scotus",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+      "sentences": [
+        {
+          "id": "remote_in_time_or_place",
+          "text": "A search that is remote in time or place from the arrest is not incident to the arrest.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Preston v. United States",
+              "citation": "376 U.S. 364 (1964)",
+              "court": "scotus",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [
     "A search incident to arrest requires a lawful arrest — if the arrest itself lacked probable cause, argue that too; this issue assumes the arrest was lawful."
   ],

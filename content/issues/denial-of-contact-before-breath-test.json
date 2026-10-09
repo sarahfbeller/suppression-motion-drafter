@@ -123,95 +123,113 @@
       }
     ]
   },
-  "law_paragraph": {
-    "rule_statements": [
-      {
-        "id": "core_communication_right",
-        "text": "A person has the right to telephone or otherwise communicate with an attorney and any relative or friend immediately after arrest.",
-        "authorities": [
-          {
-            "type": "statute",
-            "name": "AS 12.25.150(b)",
-            "citation": "",
-            "court": "ak"
-          },
-          {
-            "type": "rule",
-            "name": "Alaska Criminal Rule 5(b)",
-            "citation": "",
-            "court": "ak"
-          }
-        ]
-      },
-      {
-        "id": "attorney_contact_before_test_decision",
-        "text": "This right requires police to give a person arrested for driving under the influence a reasonable opportunity to contact an attorney by phone before being required to decide whether to submit to a breath test, and violation of this right requires suppression of the test results.",
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Copelin v. State",
-            "citation": "659 P.2d 1206 (Alaska 1983)",
-            "court": "ak",
-            "pincite": ""
-          }
-        ]
-      },
-      {
-        "id": "extends_to_relative_or_friend",
-        "text": "This right extends to requests to contact a relative or friend when the request served a purpose related to the defense process such as obtaining advice on whether to take the test.",
-        "when": {
-          "question": "q_contact_requested",
-          "op": "includes",
-          "value": "relative_or_friend"
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "core_communication_right",
+          "text": "A person has the right to telephone or otherwise communicate with an attorney and any relative or friend immediately after arrest.",
+          "authorities": [
+            {
+              "type": "statute",
+              "name": "AS 12.25.150(b)",
+              "citation": "",
+              "court": "ak"
+            },
+            {
+              "type": "rule",
+              "name": "Alaska Criminal Rule 5(b)",
+              "citation": "",
+              "court": "ak"
+            }
+          ]
         },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Zsupnik v. State",
-            "citation": "789 P.2d 357 (Alaska 1990)",
-            "court": "ak",
-            "pincite": ""
-          }
-        ]
+        {
+          "id": "attorney_contact_before_test_decision",
+          "text": "This right requires police to give a person arrested for driving under the influence a reasonable opportunity to contact an attorney by phone before being required to decide whether to submit to a breath test, and violation of this right requires suppression of the test results.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Copelin v. State",
+              "citation": "659 P.2d 1206 (Alaska 1983)",
+              "court": "ak",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "extends_to_relative_or_friend",
+      "when": {
+        "question": "q_contact_requested",
+        "op": "includes",
+        "value": "relative_or_friend"
       },
-      {
-        "id": "private_communication",
-        "text": "Police must make a reasonable effort to allow the arrested person to communicate privately.",
-        "when": {
-          "question": "q_contact_outcome",
-          "op": "equals",
-          "value": "no_privacy"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Farrell v. Municipality of Anchorage",
-            "citation": "682 P.2d 1128 (Alaska App. 1984)",
-            "court": "ak",
-            "pincite": ""
-          }
-        ]
+      "sentences": [
+        {
+          "id": "extends_to_relative_or_friend",
+          "text": "This right extends to requests to contact a relative or friend when the request served a purpose related to the defense process such as obtaining advice on whether to take the test.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Zsupnik v. State",
+              "citation": "789 P.2d 357 (Alaska 1990)",
+              "court": "ak",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "private_communication",
+      "when": {
+        "question": "q_contact_outcome",
+        "op": "equals",
+        "value": "no_privacy"
       },
-      {
-        "id": "reasonable_time",
-        "text": "The right is not absolute and does not permit indefinite delay; what counts as a reasonable opportunity is balanced against the state's need to administer the test in a timely manner.",
-        "when": {
-          "question": "q_contact_outcome",
-          "op": "equals",
-          "value": "unreasonable_time"
-        },
-        "authorities": [
-          {
-            "type": "case",
-            "name": "Municipality of Anchorage v. Marrs",
-            "citation": "694 P.2d 1163 (Alaska App. 1985)",
-            "court": "ak",
-            "pincite": ""
-          }
-        ]
-      }
-    ]
-  },
+      "sentences": [
+        {
+          "id": "private_communication",
+          "text": "Police must make a reasonable effort to allow the arrested person to communicate privately.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Farrell v. Municipality of Anchorage",
+              "citation": "682 P.2d 1128 (Alaska App. 1984)",
+              "court": "ak",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reasonable_time",
+      "when": {
+        "question": "q_contact_outcome",
+        "op": "equals",
+        "value": "unreasonable_time"
+      },
+      "sentences": [
+        {
+          "id": "reasonable_time",
+          "text": "The right is not absolute and does not permit indefinite delay; what counts as a reasonable opportunity is balanced against the state's need to administer the test in a timely manner.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Municipality of Anchorage v. Marrs",
+              "citation": "694 P.2d 1163 (Alaska App. 1985)",
+              "court": "ak",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "practice_notes": [],
   "_author_notes": [
     "private_communication is new wording for Farrell's proposition (previously summarized as 'police must make reasonable effort to accommodate private consultation'). Verify against the opinion."

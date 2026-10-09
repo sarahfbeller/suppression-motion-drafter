@@ -16,69 +16,159 @@ STATE = {"q_filing_court": "ak"}
 FEDERAL = {"q_filing_court": "9th_cir"}
 
 
-class StatementApplicableCourts(unittest.TestCase):
+def case(name, pincite="", **extra):
+    return {"type": "case", "name": name, "citation": "1 P.3d 1 (Alaska 2000)", "pincite": pincite,
+            "court": "ak", **extra}
+
+
+class ParagraphApplicableCourts(unittest.TestCase):
     def setUp(self):
         self.config, _questions, issues = E.load_repo(ROOT)
         issue = next(i for i in issues if i["id"] == "prolonged-stop")
         self.issue = copy.deepcopy(issue)
-        # A statement with only Alaska authority, first without and then with applicable_courts.
+        # A sentence with only Alaska authority, in a paragraph first without and then with applicable_courts.
         self.st = {"id": "alaska_only", "text": "An Alaska-only proposition.",
                    "authorities": [{"type": "statute", "name": "Example statute", "citation": "", "court": "ak"}]}
-        self.issue["law_paragraph"]["rule_statements"] = [self.st]
+        self.para = {"id": "p", "sentences": [self.st]}
+        self.issue["law_paragraphs"] = [self.para]
 
     def render(self, answers):
-        """(markdown paragraph, statements, gaps)"""
-        statements, gaps = E.law_paragraph(self.issue, answers, E.binding_courts(answers), self.config)
-        return R.paragraph(statements), statements, gaps
+        """(markdown section, paragraphs, gaps)"""
+        paragraphs, gaps = E.law_paragraphs(self.issue, answers, E.binding_courts(answers), self.config)
+        return R.section(paragraphs), paragraphs, gaps
 
     def test_without_field_it_is_a_gap_in_federal_court(self):
-        text, _statements, gaps = self.render(FEDERAL)
+        text, _paragraphs, gaps = self.render(FEDERAL)
         self.assertEqual(text, "")
         self.assertEqual(gaps, [self.st["text"]])
 
     def test_limited_to_alaska_it_is_skipped_silently_in_federal_court(self):
-        self.st["applicable_courts"] = ["ak"]
-        text, _statements, gaps = self.render(FEDERAL)
+        self.para["applicable_courts"] = ["ak"]
+        text, _paragraphs, gaps = self.render(FEDERAL)
         self.assertEqual((text, gaps), ("", []))
 
     def test_limited_to_alaska_it_renders_in_state_court(self):
-        self.st["applicable_courts"] = ["ak"]
-        text, _statements, gaps = self.render(STATE)
+        self.para["applicable_courts"] = ["ak"]
+        text, _paragraphs, gaps = self.render(STATE)
         self.assertIn("An Alaska-only proposition. Example statute.", text)
         self.assertEqual(gaps, [])
 
     def test_applicable_but_unsupported_is_still_a_gap(self):
-        self.st["applicable_courts"] = ["9th_cir"]
+        self.para["applicable_courts"] = ["9th_cir"]
         self.assertEqual(self.render(FEDERAL)[2], [self.st["text"]])
         self.assertEqual(self.render(STATE)[2], [])
 
 
-class StructuredStatements(unittest.TestCase):
-    """The engine returns each statement's text and authorities separately, so a renderer can put
+class Paragraphs(unittest.TestCase):
+    def setUp(self):
+        self.config, _questions, issues = E.load_repo(ROOT)
+        self.issue = copy.deepcopy(next(i for i in issues if i["id"] == "prolonged-stop"))
+
+    def render(self, *paragraphs, answers=STATE):
+        self.issue["law_paragraphs"] = list(paragraphs)
+        result, gaps = E.law_paragraphs(self.issue, answers, E.binding_courts(answers), self.config)
+        return R.section(result), gaps
+
+    def test_paragraphs_are_separated(self):
+        text, _ = self.render({"id": "a", "sentences": [{"id": "x", "text": "One.", "authorities": [case("A v. B")]}]},
+                              {"id": "b", "sentences": [{"id": "y", "text": "Two.", "authorities": [case("C v. D")]}]})
+        self.assertEqual(text, "One. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\nTwo. *C v. D*, 1 P.3d 1 (Alaska 2000).")
+
+    def test_when_gates_the_whole_paragraph(self):
+        para = {"id": "a", "when": {"question": "q_independent_suspicion", "op": "equals", "value": "yes"},
+                "sentences": [{"id": "x", "text": "One.", "authorities": [case("A v. B")]}]}
+        self.assertEqual(self.render(para, answers={**STATE, "q_independent_suspicion": "no"}), ("", []))
+        self.assertIn("One.", self.render(para, answers={**STATE, "q_independent_suspicion": "yes"})[0])
+
+    def test_argument_sentence_renders_without_citation_and_is_not_a_gap(self):
+        text, gaps = self.render({"id": "a", "sentences": [
+            {"id": "x", "text": "Rule.", "authorities": [case("A v. B")]},
+            {"id": "y", "kind": "argument", "text": "So it follows.", "authorities": []}]})
+        self.assertEqual(text, "Rule. *A v. B*, 1 P.3d 1 (Alaska 2000). So it follows.")
+        self.assertEqual(gaps, [])
+
+    def test_argument_only_paragraph_renders(self):
+        text, gaps = self.render({"id": "a", "sentences": [{"id": "x", "text": "Rule.", "authorities": [case("A v. B")]}]},
+                                 {"id": "b", "sentences": [{"id": "y", "kind": "argument", "text": "Applied.", "authorities": []}]})
+        self.assertEqual(text, "Rule. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\nApplied.")
+        self.assertEqual(gaps, [])
+
+    def test_mixed_paragraph_whose_law_was_all_dropped_does_not_render(self):
+        text, gaps = self.render({"id": "a", "sentences": [
+            {"id": "x", "text": "Rule.", "authorities": []},
+            {"id": "y", "kind": "argument", "text": "So it follows.", "authorities": []}]})
+        self.assertEqual((text, gaps), ("", ["Rule."]))
+
+
+class Citations(unittest.TestCase):
+    """Signals, parentheticals, and Id., as the markdown renderer prints them."""
+
+    def cite(self, *sentences):
+        return R.section([{"id": "p", "sentences": [
+            {"id": f"s{i}", "text": f"S{i}.", "kind": "rule", "authorities": auths}
+            for i, auths in enumerate(sentences)]}])
+
+    def test_signal(self):
+        self.assertEqual(self.cite([case("A v. B", "5", signal="See")]), "S0. *See* *A v. B*, 1 P.3d 1, 5 (Alaska 2000).")
+
+    def test_later_signal_is_lowercase_and_not_repeated(self):
+        text = self.cite([case("A v. B", signal="See"), case("C v. D", signal="See"), case("E v. F", signal="See also")])
+        self.assertIn("*See* *A v. B*, 1 P.3d 1 (Alaska 2000); *C v. D*, 1 P.3d 1 (Alaska 2000); *see also* *E v. F*", text)
+
+    def test_parenthetical_with_a_case(self):
+        a = case("A v. B", "5", parenthetical={"text": "discussing the test set forth in", "authority": case("C v. D", "7")})
+        self.assertEqual(self.cite([a]), "S0. *A v. B*, 1 P.3d 1, 5 (Alaska 2000) "
+                                         "(discussing the test set forth in *C v. D*, 1 P.3d 1, 7 (Alaska 2000)).")
+
+    def test_id_same_page(self):
+        self.assertEqual(self.cite([case("A v. B", "5")], [case("A v. B", "5")]),
+                         "S0. *A v. B*, 1 P.3d 1, 5 (Alaska 2000). S1. *Id.*")
+
+    def test_id_at_another_page_with_signal(self):
+        self.assertTrue(self.cite([case("A v. B", "5")], [case("A v. B", "6", signal="See")])
+                        .endswith("S1. *See* *id.* at 6."))
+
+    def test_no_id_after_a_string_cite_or_another_case(self):
+        text = self.cite([case("A v. B", "5"), case("C v. D")], [case("A v. B", "5")])
+        self.assertNotIn("Id.", text)
+
+    def test_id_never_refers_to_a_parenthetical(self):
+        a = case("A v. B", "5", parenthetical={"text": "citing", "authority": case("C v. D", "7")})
+        self.assertNotIn("Id.", self.cite([a], [case("C v. D", "7")]))
+
+    def test_no_id_when_the_pinpoint_is_missing(self):
+        self.assertNotIn("Id.", self.cite([case("A v. B", "5")], [case("A v. B", "")]))
+
+
+class StructuredSentences(unittest.TestCase):
+    """The engine returns each sentence's text and authorities separately, so a renderer can put
     citations inline or in footnotes."""
 
     def setUp(self):
         self.config, _questions, issues = E.load_repo(ROOT)
         self.issue = copy.deepcopy(next(i for i in issues if i["id"] == "prolonged-stop"))
-        self.issue["law_paragraph"]["rule_statements"] = [{
+        self.issue["law_paragraphs"] = [{"id": "p", "sentences": [{
             "id": "mixed", "text": "A proposition.",
             "authorities": [
                 {"type": "statute", "name": "Example statute", "citation": "", "court": "ak"},
                 {"type": "case", "name": "Example v. Case", "citation": "1 U.S. 1 (2000)",
                  "pincite": "5", "court": "scotus"},
-            ]}]
+            ]}]}]
 
-    def test_statement_keeps_text_and_ordered_authorities_apart(self):
-        statements, _gaps = E.law_paragraph(self.issue, STATE, E.binding_courts(STATE), self.config)
-        self.assertEqual([st["text"] for st in statements], ["A proposition."])
-        self.assertEqual([a["court"] for a in statements[0]["authorities"]], ["scotus", "ak"])
+    def sentences(self, answers):
+        paragraphs, _gaps = E.law_paragraphs(self.issue, answers, E.binding_courts(answers), self.config)
+        return paragraphs[0]["sentences"]
+
+    def test_sentence_keeps_text_and_ordered_authorities_apart(self):
+        sentences = self.sentences(STATE)
+        self.assertEqual([st["text"] for st in sentences], ["A proposition."])
+        self.assertEqual([a["court"] for a in sentences[0]["authorities"]], ["scotus", "ak"])
 
     def test_authorities_filtered_to_forum(self):
-        statements, _gaps = E.law_paragraph(self.issue, FEDERAL, E.binding_courts(FEDERAL), self.config)
-        self.assertEqual([a["court"] for a in statements[0]["authorities"]], ["scotus"])
+        self.assertEqual([a["court"] for a in self.sentences(FEDERAL)[0]["authorities"]], ["scotus"])
 
     def test_citation_parts_leave_markup_to_the_renderer(self):
-        case, statute = self.issue["law_paragraph"]["rule_statements"][0]["authorities"][1::-1]
+        case, statute = self.issue["law_paragraphs"][0]["sentences"][0]["authorities"][1::-1]
         self.assertEqual(E.citation_parts(case), {"name": "Example v. Case", "italic": True, "rest": "1 U.S. 1, 5 (2000)"})
         self.assertEqual(E.citation_parts(statute), {"name": "Example statute", "italic": False, "rest": ""})
 
@@ -119,17 +209,26 @@ class MatchedButNoParagraph(unittest.TestCase):
         self.assertEqual(len(result["no_paragraph"]), 1)
         return R.render_memo(result, self.config)
 
-    def test_every_statement_a_gap_says_research_needed(self):
-        for st in self.issue["law_paragraph"]["rule_statements"]:
-            st["authorities"] = []
+    def test_every_sentence_a_gap_says_research_needed(self):
+        for p in self.issue["law_paragraphs"]:
+            for st in p["sentences"]:
+                st["authorities"] = []
         self.assertIn("Research needed", self.memo())
 
-    def test_every_statement_filtered_says_content_problem(self):
-        for st in self.issue["law_paragraph"]["rule_statements"]:
-            st["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
+    def test_every_paragraph_filtered_says_content_problem(self):
+        for p in self.issue["law_paragraphs"]:
+            p["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
         memo = self.memo()
         self.assertIn("problem with the issue's content", memo)
         self.assertNotIn("Research needed", memo)
+
+    def test_argument_alone_is_not_a_section(self):
+        for p in self.issue["law_paragraphs"]:
+            for st in p["sentences"]:
+                st["authorities"] = []
+        self.issue["law_paragraphs"].append({"id": "application", "sentences": [
+            {"id": "reasoning", "kind": "argument", "text": "That is what happened here.", "authorities": []}]})
+        self.assertIn("Research needed", self.memo())
 
 
 if __name__ == "__main__":

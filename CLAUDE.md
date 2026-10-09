@@ -18,7 +18,7 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
 ## Legal content: hard rules
 
 - **Never fabricate or guess a citation, pincite, or holding.** If you aren't sure a case
-  says something, don't attach it. Leave the authority off the rule statement and record
+  says something, don't attach it. Leave the authority off the sentence and record
   the gap in `_author_notes`. A missing citation is safe; a plausible wrong one is not.
 - **No placeholder text in content.** If something is unknown, leave it out or leave the
   field empty. Never write prose that could be mistaken for real content at a glance.
@@ -40,7 +40,7 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
 
 ## Who reads what
 
-- **Motion text** (the court): `motion_heading`, rule statement `text`, authorities.
+- **Motion text** (the court): `motion_heading`, sentence `text`, authorities.
 - **Memo text** (the attorney): `practice_notes`, `review_conditions` and
   `excluded_explanations` display notes.
 - **Author notes** (the maintainer): any `_`-prefixed field. Never rendered. Notes about
@@ -57,10 +57,11 @@ call per sentence).
 - The question bank is content only. All ordering, branching, and skip logic belongs to
   the decision tree (not yet built). Never put flow logic on a question.
 - Don't hand-maintain a field the code can derive from structure; it will drift.
-- One proposition per rule statement. Citations live only in `authorities`, never in `text`.
+- Motion text is paragraphs of sentences. One proposition per sentence. Citations live only in
+  `authorities`, never in `text` (a short case name marked `*Name*` is fine).
 - Conditions reference option ids, never labels. Never change an id that conditions use.
-- Use a rule statement's `when` to keep propositions that help the prosecution out of the
-  motion unless the facts make them relevant.
+- Conditions go on paragraphs, never sentences. Use a paragraph's `when` to keep propositions
+  that help the prosecution out of the motion unless the facts make them relevant.
 
 ## Workflow
 
@@ -77,6 +78,6 @@ call per sentence).
 
 - Decision tree: the top layer exists (`q_encounter_events`; every issue requires an event).
   Still to build: the derived part that picks the next question from the answers so far.
-- Output should be formatted .docx for both the motion and the memo, with each rule
-  statement's citations in a footnote. Likely front-end work; the engine already returns
-  statement text and authorities separately.
+- Output should be formatted .docx for both the motion and the memo, with each
+  sentence's citations in a footnote. Likely front-end work; the engine already returns
+  sentence text and authorities separately.
