@@ -36,7 +36,8 @@
       "search-incident-to-arrest-exceeded-scope",
       "plain-view-not-lawfully-present",
       "plain-view-not-immediately-apparent",
-      "plain-view-object-moved"
+      "plain-view-object-moved",
+      "inventory-search-before-bail"
     ],
     "interrogation": [
       "miranda-warnings-inadequate",

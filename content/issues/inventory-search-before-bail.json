@@ -1,0 +1,233 @@
+{
+  "id": "inventory-search-before-bail",
+  "label": "Pre-Incarceration Inventory Search Before an Opportunity to Post Bail (Zehrung)",
+  "motion_heading": "The Pre-Incarceration Inventory Search Was Unconstitutional Because {client} Was Not Given the Opportunity to Post Bail",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "ak"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "arrest"
+        },
+        {
+          "event_group": "any_search"
+        },
+        {
+          "question": "q_booking_search",
+          "op": "in",
+          "value": [
+            "yes",
+            "not_sure"
+          ]
+        },
+        {
+          "question": "q_bail_established",
+          "op": "in",
+          "value": [
+            "yes",
+            "not_sure"
+          ]
+        },
+        {
+          "question": "q_bail_opportunity",
+          "op": "in",
+          "value": [
+            "no",
+            "not_sure"
+          ]
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_booking_search",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "booking_search_unknown",
+        "display_note": "You aren't sure yet whether your client or their belongings were searched at the jail or during booking. This section was drafted anyway; confirm from the booking records and property inventory before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_bail_established",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "bail_unknown",
+        "display_note": "You aren't sure yet whether there was an established bail your client could have posted when brought to jail. This section was drafted anyway; check the warrant, the bail schedule, and the booking sheet before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_bail_opportunity",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "bail_opportunity_unknown",
+        "display_note": "You aren't sure yet whether your client had a chance to post bail, or to call someone who could, before the search. This section was drafted anyway; compare the booking timeline with the time of the search before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "inventory_purposes",
+          "text": "Under Alaska law, a pre-incarceration inventory search of an arrestee is justified to prevent the entry of contraband into the jail, protect the arrestee’s property, and protect the jail against claims of lost or damaged property.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Zehrung v. State",
+              "citation": "569 P.2d 189 (Alaska 1977)",
+              "court": "ak",
+              "pincite": "193 n.10"
+            }
+          ]
+        },
+        {
+          "id": "unconstitutional_if_bail_available",
+          "text": "However, such a search is unconstitutional if an arrestee is not going to be incarcerated because they can immediately post bail.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Zehrung v. State",
+              "citation": "569 P.2d 189 (Alaska 1977)",
+              "court": "ak",
+              "pincite": "193"
+            }
+          ]
+        },
+        {
+          "id": "zehrung_facts",
+          "text": "In *Zehrung*, the defendant had been booked on a misdemeanor warrant and failure to pay a $25 fine, and could have posted bail almost immediately.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Zehrung v. State",
+              "citation": "569 P.2d 189 (Alaska 1977)",
+              "court": "ak",
+              "pincite": "191"
+            }
+          ]
+        },
+        {
+          "id": "zehrung_search",
+          "text": "However, officers searched the defendant’s possessions prior to him posting bail, finding evidence that led to him being charged with sexual assault.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Zehrung v. State",
+              "citation": "569 P.2d 189 (Alaska 1977)",
+              "court": "ak",
+              "pincite": "193"
+            }
+          ]
+        },
+        {
+          "id": "zehrung_holding",
+          "text": "The court found the search unconstitutional, concluding that if someone is able to post an established bail when brought to jail, they should be allowed to do so rather than be subject to a pre-incarceration inventory search.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Zehrung v. State",
+              "citation": "569 P.2d 189 (Alaska 1977)",
+              "court": "ak",
+              "pincite": "194–95"
+            }
+          ]
+        },
+        {
+          "id": "call_to_post_bail",
+          "text": "Even if someone does not have enough money on their immediate person, they should be allowed to make a call to get in touch with someone who can post the bail.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Zehrung v. State",
+              "citation": "569 P.2d 189 (Alaska 1977)",
+              "court": "ak",
+              "pincite": "195"
+            }
+          ]
+        },
+        {
+          "id": "gray_applies_zehrung",
+          "text": "In *Gray*, the Court of Appeals relied on *Zehrung* to find unconstitutional a search of an arrestee’s property prior to the arrestee having an opportunity to post a $500 bail.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Gray v. State",
+              "citation": "798 P.2d 346 (Alaska App. 1990)",
+              "court": "ak",
+              "pincite": "350"
+            }
+          ]
+        },
+        {
+          "id": "gray_routine_search",
+          "text": "Police booked the defendant at Mat-Su Pretrial, where employees routinely conducted this type of search almost immediately upon entrance to the facility.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Gray v. State",
+              "citation": "798 P.2d 346 (Alaska App. 1990)",
+              "court": "ak",
+              "pincite": "350"
+            }
+          ]
+        },
+        {
+          "id": "routine_not_permissible",
+          "text": "The fact it was routine, however, did not make it permissible.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Gray v. State",
+              "citation": "798 P.2d 346 (Alaska App. 1990)",
+              "court": "ak",
+              "pincite": "350"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "application",
+      "when": {
+        "all": [
+          {
+            "question": "q_bail_established",
+            "op": "equals",
+            "value": "yes"
+          },
+          {
+            "question": "q_bail_opportunity",
+            "op": "equals",
+            "value": "no"
+          }
+        ]
+      },
+      "sentences": [
+        {
+          "id": "bail_not_offered",
+          "kind": "argument",
+          "authorities": [],
+          "text": "{client} had an established bail and was not given an opportunity to post it, or to call someone who could post it, before the search."
+        }
+      ]
+    }
+  ],
+  "practice_notes": [],
+  "_author_notes": [
+    "Created 2026-10-08 at the maintainer's request. Text and citations supplied by the maintainer (Zehrung at 193 n.10, 193, 191, 193, 194–95, 195; Gray at 350). Alaska only. Kept as one paragraph, as given; '194-95' written with an en dash like the other pincites.",
+    "The three questions (q_booking_search, q_bail_established, q_bail_opportunity) were drafted by me from the Zehrung/Gray rule: an established bail the arrestee could post when brought in, and no chance to post it or call someone before the search. Check that they capture the test. Gated on the arrest event plus any search event, since booking searches aren't their own encounter event.",
+    "application: generated sentence added at the maintainer's request, 2026-10-08. Prints only on definite answers (an established bail: yes; a chance to post it: no), not on 'not sure'."
+  ]
+}

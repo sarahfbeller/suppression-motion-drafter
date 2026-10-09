@@ -1,0 +1,59 @@
+[
+  {
+    "id": "q_booking_search",
+    "type": "multiple_choice",
+    "prompt": "Did police or jail staff search your client or their belongings at the jail or during booking?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure"
+      }
+    ]
+  },
+  {
+    "id": "q_bail_established",
+    "type": "multiple_choice",
+    "prompt": "When your client was brought to jail, was there an established bail they could have posted (for example, set on the warrant or by a bail schedule)?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure"
+      }
+    ]
+  },
+  {
+    "id": "q_bail_opportunity",
+    "type": "multiple_choice",
+    "prompt": "Before that search, was your client given a chance to post bail, or to call someone who could post it?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure"
+      }
+    ]
+  }
+]
