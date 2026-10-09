@@ -69,6 +69,13 @@
               "citation": "447 U.S. 649 (1980)",
               "court": "scotus",
               "pincite": ""
+            },
+            {
+              "type": "case",
+              "name": "Baxter v. State",
+              "citation": "77 P.3d 19 (Alaska App. 2003)",
+              "court": "ak",
+              "pincite": "27"
             }
           ]
         },
@@ -122,6 +129,7 @@
   ],
   "_author_notes": [
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Walter v. United States, Florida v. Jimeno. Unverified; pincites empty.",
-    "withdrawal has no authority: I'm not certain of a Supreme Court case holding that consent can be withdrawn mid-search, so it's left as a gap. Ninth Circuit and Alaska authority not researched."
+    "withdrawal has no authority: I'm not certain of a Supreme Court case holding that consent can be withdrawn mid-search, so it's left as a gap. Ninth Circuit and Alaska authority not researched.",
+    "Baxter v. State (Alaska parallel citation on limited_by_authorization, at 27) supplied by the maintainer, 2026-10-08."
   ]
 }
