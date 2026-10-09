@@ -17,13 +17,37 @@
           "value": "vehicle_stop"
         },
         {
-          "question": "q_original_purpose_completed",
-          "op": "equals",
-          "value": "yes"
-        },
-        {
-          "question": "q_extension_event",
-          "op": "not_empty"
+          "any": [
+            {
+              "question": "q_extension_event",
+              "op": "not_empty"
+            },
+            {
+              "all": [
+                {
+                  "question": "q_occupant_role",
+                  "op": "equals",
+                  "value": "passenger"
+                },
+                {
+                  "question": "q_passenger_id_requested",
+                  "op": "in",
+                  "value": [
+                    "yes",
+                    "not_sure"
+                  ]
+                },
+                {
+                  "question": "q_passenger_records_check",
+                  "op": "in",
+                  "value": [
+                    "yes",
+                    "not_sure"
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "question": "q_independent_suspicion",
@@ -44,6 +68,24 @@
         },
         "flag": "independent_suspicion_uncertain",
         "display_note": "It's unclear whether the officer developed independent reasonable suspicion during the original-purpose tasks. If it turns out suspicion did arise then, the extension may be independently justified and this issue could be weaker than presented — confirm the timeline (CAD, body-cam) before relying on this issue as written."
+      },
+      {
+        "when": {
+          "question": "q_passenger_id_requested",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "passenger_id_request_uncertain",
+        "display_note": "You aren't sure yet whether police asked your client for identification. The Perozzo argument was drafted anyway; confirm from body-cam or the report before filing, or cut it."
+      },
+      {
+        "when": {
+          "question": "q_passenger_records_check",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "passenger_records_check_uncertain",
+        "display_note": "You aren't sure yet whether police ran a warrants or records check on your client. The Perozzo argument was drafted anyway; check dispatch/CAD records before filing, or cut it."
       }
     ]
   },
@@ -72,6 +114,19 @@
           ]
         },
         {
+          "id": "least_intrusive_means",
+          "text": "Similarly, the investigative methods employed should be the least intrusive means reasonably available to verify or dispel the officer's suspicion in a short amount of time.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Florida v. Royer",
+              "citation": "460 U.S. 491 (1983)",
+              "court": "scotus",
+              "pincite": "500"
+            }
+          ]
+        },
+        {
           "id": "authority_ends_at_mission_completion",
           "text": "Authority for the seizure ends when tasks tied to the traffic infraction are, or reasonably should have been, completed, and an officer may not extend an otherwise-completed stop, even briefly, to conduct a dog sniff or other unrelated investigation absent independent reasonable suspicion.",
           "authorities": [
@@ -94,6 +149,52 @@
               "citation": "575 U.S. 348 (2015)",
               "court": "scotus",
               "pincite": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "passenger_identification",
+      "applicable_courts": [
+        "ak"
+      ],
+      "when": {
+        "all": [
+          {
+            "question": "q_occupant_role",
+            "op": "equals",
+            "value": "passenger"
+          },
+          {
+            "question": "q_passenger_id_requested",
+            "op": "in",
+            "value": [
+              "yes",
+              "not_sure"
+            ]
+          },
+          {
+            "question": "q_passenger_records_check",
+            "op": "in",
+            "value": [
+              "yes",
+              "not_sure"
+            ]
+          }
+        ]
+      },
+      "sentences": [
+        {
+          "id": "passenger_id_warrants_check",
+          "text": "“We [] conclude that the request for a passenger's identification is a significant event under the Alaska Constitution — and that an officer is precluded from requesting a passenger's identification and then using that identification to run a warrants check when the officer's request is unrelated to the basis for the stop and the officer has no other case-specific justification for doing so. A routine identification and warrants check on a passenger, without any basis for doing so, runs the risk of ‘turning a routine traffic stop into a “fishing expedition for criminal activity unrelated to the stop” ’ — and thus systematically infringing on Alaskans’ right to privacy.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Perozzo v. State",
+              "citation": "493 P.3d 233 (Alaska App. 2021)",
+              "court": "ak",
+              "pincite": "242"
             }
           ]
         }
@@ -136,5 +237,11 @@
     "Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.",
     "Get the CAD and any bodycam/dashcam timestamps in discovery early — this issue depends on minute-by-minute sequencing.",
     "If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later."
+  ],
+  "_author_notes": [
+    "Timing redesign 2026-10-08 (the maintainer): Rodriguez forbids adding time with unrelated inquiries whenever they happen, not only after the stop's tasks are done. q_original_purpose_completed was removed, and q_extension_event and q_independent_suspicion were reworded to drop the before/after framing.",
+    "passenger_identification: text and citation supplied by the maintainer (2026-10-08). Perozzo is a prolongation case: an unnecessary passenger ID and warrants check is one way of unlawfully prolonging the stop. Alaska only (no federal authority yet). Two open items: the quote needs its quoting parenthetical for the 'fishing expedition' language (the maintainer will supply it); and 'We [] conclude' is kept exactly as given, but the empty brackets look like a lost omission marker. Inner quotation marks were alternated (double outside, then single, then double) because the passage is now itself a quotation.",
+    "Perozzo's 'no other case-specific justification' is covered by q_independent_suspicion, which the match already requires to be no or not_sure.",
+    "least_intrusive_means: text and citation (Royer at 500) supplied by the maintainer, 2026-10-08. Verify: as I recall, the part of Royer containing this passage was a plurality opinion (four Justices). Not checked against the opinion."
   ]
 }

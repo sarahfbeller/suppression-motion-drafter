@@ -18,5 +18,43 @@
     "id": "q_passenger_ordered_out",
     "type": "yes_no",
     "prompt": "Was your client ordered to exit the vehicle?"
+  },
+  {
+    "id": "q_passenger_id_requested",
+    "type": "multiple_choice",
+    "prompt": "Did police ask your client, as a passenger, for identification?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure"
+      }
+    ]
+  },
+  {
+    "id": "q_passenger_records_check",
+    "type": "multiple_choice",
+    "prompt": "Did police use that identification to run a warrants check or other records check on your client?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure"
+      }
+    ]
   }
 ]

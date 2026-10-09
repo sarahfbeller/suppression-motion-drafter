@@ -10,7 +10,6 @@
       "warrant"
     ],
     "q_stop_type": "traffic_violation",
-    "q_original_purpose_completed": "yes",
     "q_extension_event": [
       "canine_sniff",
       "unrelated_questioning"

@@ -88,7 +88,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_paragraph_when_that_contradicts_match(self):
         def f(d):
             para(d, "dog_sniff_no_added_time")["when"] = {
-                "question": "q_original_purpose_completed", "op": "equals", "value": "no"}
+                "question": "q_independent_suspicion", "op": "equals", "value": "yes"}
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "never renders")
 
     def test_match_condition_that_is_never_true(self):
@@ -296,7 +296,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_issue_without_event_gate(self):
         def f(d):
             d["trigger"]["match_condition"]["all"] = [
-                c for c in d["trigger"]["match_condition"]["all"] if c["question"] != "q_encounter_events"]
+                c for c in d["trigger"]["match_condition"]["all"] if c.get("question") != "q_encounter_events"]
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "must require an encounter event")
 
     def test_event_gate_as_any(self):
@@ -308,7 +308,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertFalse(any("encounter event" in e for e in r.errors), "\n".join(r.errors))
 
     def test_superseded_questions_are_gone(self):
-        for qid in ("q_warrant_used", "q_passenger_frisked"):
+        for qid in ("q_warrant_used", "q_passenger_frisked", "q_original_purpose_completed"):
             with self.subTest(qid=qid):
                 self.setUp()
                 def f(d):
