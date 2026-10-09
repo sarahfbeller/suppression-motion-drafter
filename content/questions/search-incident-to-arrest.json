@@ -21,6 +21,29 @@
         "label": "The search happened well after the arrest, or somewhere else"
       },
       {
+        "id": "closed_container",
+        "label": "Police opened a closed container (a bag, purse, box, or a car's console or other compartment)"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
+      }
+    ]
+  },
+  {
+    "id": "q_container_use",
+    "type": "multi_select",
+    "prompt": "When police searched the container, what did they know about how it was used? Select all that apply; leave blank if neither.",
+    "options": [
+      {
+        "id": "generally_used",
+        "label": "It's a kind of container generally used to hold things kept in a pocket or purse (e.g. a purse, wallet, or car console)"
+      },
+      {
+        "id": "actually_used",
+        "label": "Your client was actually using it to hold things like money or a phone"
+      },
+      {
         "id": "not_sure",
         "label": "Not sure yet"
       }

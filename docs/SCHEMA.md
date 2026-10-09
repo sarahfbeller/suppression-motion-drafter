@@ -190,11 +190,9 @@ sentence that leans on the one before it ("Under this test…", *Id.*, "For exam
 A sentence:
 
 - `text`: one proposition (a sentence, two at most). May be a direct quotation. Ends with sentence
-  punctuation. No citations: never a full case name, reporter citation, statute, or *Id.* A short
-  case name is allowed when marked `*Name*` (it renders in italics). The case must be cited for
-  that same sentence, earlier in the same paragraph, or in an earlier paragraph of the issue that
-  has no `when` (so it always prints first, as with "*Miranda* warnings"), and be cited in every
-  forum where this paragraph applies. `*` is used for nothing else.
+  punctuation. No citations: never a full case name, reporter citation, statute, or *Id.* Italics
+  are marked `*like this*`, for a short case name ("Under *Coleman*,") or emphasis in a quotation.
+  The validator doesn't check that an italicized short name is cited; that's on the author.
 - `kind`: `"argument"` for reasoning that needs no citation, including anything about this
   client (client tokens are allowed only here); its `authorities` must be empty.
   Omitted, the sentence states law and needs authority.

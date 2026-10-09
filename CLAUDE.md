@@ -61,7 +61,7 @@ call per sentence).
   the decision tree (not yet built). Never put flow logic on a question.
 - Don't hand-maintain a field the code can derive from structure; it will drift.
 - Motion text is paragraphs of sentences. One proposition per sentence. Citations live only in
-  `authorities`, never in `text` (a short case name marked `*Name*` is fine).
+  `authorities`, never in `text` (a short case name in italics, `*Name*`, is fine).
 - Conditions reference option ids, never labels. Never change an id that conditions use.
 - Conditions go on paragraphs, never sentences. Use a paragraph's `when` to keep propositions
   that help the prosecution out of the motion unless the facts make them relevant.

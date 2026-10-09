@@ -526,52 +526,6 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
                 "text": "discussing Terry v. Ohio"}
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "put the case in its 'authority'")
 
-    def test_short_case_name_must_be_cited_in_the_sentence(self):
-        def f(d):
-            stmt(d, "dog_sniff_no_added_time")["text"] = "Under *Terry*, a dog sniff must not add time."
-        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "no case with that name is cited")
-
-    def test_short_case_name_of_a_cited_case(self):
-        r = V.validate(ROOT)  # alaska_coleman_standard says "Under *Coleman*," and cites Coleman v. State.
-        self.assertFalse(any("Coleman" in e for e in r.errors), "\n".join(r.errors))
-
-    def test_short_case_name_cited_earlier_in_the_issue(self):
-        # "*Miranda* warnings": Miranda v. Arizona is cited by an earlier, always-printed paragraph.
-        def f(d):
-            d["law_paragraphs"].append({"id": "later", "sentences": [
-                {"id": "named", "text": "Statements taken without *Miranda* warnings are suppressed.",
-                 "authorities": [{"type": "constitution", "name": "U.S. Const. amend. V", "citation": "", "court": "scotus"}]}]})
-        r = self.run_with(f"{ISSUES}/miranda-warnings-inadequate.json", f)
-        self.assertFalse(any("Miranda" in e for e in r.errors), "\n".join(r.errors))
-
-    def test_short_case_name_cited_earlier_in_the_same_paragraph(self):
-        def f(d):
-            d["law_paragraphs"].append({"id": "later", "sentences": [
-                {"id": "cited", "text": "Warnings must be given.",
-                 "authorities": [{"type": "case", "name": "Florida v. Powell", "citation": "559 U.S. 50 (2010)",
-                                  "pincite": "", "court": "scotus"}]},
-                {"id": "named", "kind": "argument", "text": "*Powell* controls.", "authorities": []}]})
-        r = self.run_with(f"{ISSUES}/miranda-warnings-inadequate.json", f)
-        self.assertFalse(any("Powell" in e for e in r.errors), "\n".join(r.errors))
-
-    def test_short_case_name_cited_only_in_a_conditional_paragraph(self):
-        # Florida v. Powell is cited only when warnings were incomplete, so it may not have printed.
-        def f(d):
-            d["law_paragraphs"].append({"id": "later", "sentences": [
-                {"id": "named", "text": "Under *Powell*, the warnings fell short.",
-                 "authorities": [{"type": "constitution", "name": "U.S. Const. amend. V", "citation": "", "court": "scotus"}]}]})
-        self.assertError(self.run_with(f"{ISSUES}/miranda-warnings-inadequate.json", f), "no case with that name is cited")
-
-    def test_short_case_name_not_cited_in_every_forum(self):
-        # In a paragraph that applies everywhere, naming an Alaska case leaves the name uncited in federal court.
-        def f(d):
-            p = next(p for p in d["law_paragraphs"] if p["id"] == "alaska_coleman_standard")
-            del p["applicable_courts"]
-        self.assertError(self.run_with(f"{ISSUES}/no-reasonable-suspicion-for-stop.json", f),
-                         "that case isn't cited")
-
-    # ---- fill-ins
-
     def add_paragraph(self, para):
         return self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d["law_paragraphs"].append(para))
 
@@ -640,6 +594,11 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         def f(qs):
             next(q for q in qs if q["id"] == "q_client_pronouns")["options"].append({"id": "ze_zir", "label": "Ze/zir"})
         self.assertError(self.run_with("content/questions/case-setup.json", f), "exactly the options")
+
+    def test_unbalanced_italics(self):
+        def f(d):
+            stmt(d, "dog_sniff_no_added_time")["text"] = "Under *Caballes, a dog sniff must not add time."
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "unbalanced '*'")
 
     # ---- unknown-answer policy
 
