@@ -15,6 +15,29 @@
     ]
   },
   {
+    "id": "q_client_pronouns",
+    "type": "multiple_choice",
+    "prompt": "What pronouns should the motion use for your client?",
+    "options": [
+      {
+        "id": "he_him",
+        "label": "He/him"
+      },
+      {
+        "id": "she_her",
+        "label": "She/her"
+      },
+      {
+        "id": "they_them",
+        "label": "They/them"
+      },
+      {
+        "id": "no_pronouns",
+        "label": "No pronouns — repeat your client's name"
+      }
+    ]
+  },
+  {
     "id": "q_encounter_events",
     "type": "multi_select",
     "prompt": "What happened during the encounter? Select all that apply.",

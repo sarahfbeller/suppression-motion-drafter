@@ -21,6 +21,26 @@ SCOTUS = "scotus"
 FILING_COURT = "q_filing_court"  # answer is the state or circuit court code whose law binds, besides SCOTUS
 ENCOUNTER_EVENTS = "q_encounter_events"  # what happened in the encounter; every issue requires one of these
 
+CLIENT_PRONOUNS = "q_client_pronouns"  # which pronouns the motion uses for the client; read only by the engine
+
+# The motion never contains the client's name: {client} prints as this marker, and the attorney
+# fills it in with find and replace. Pronoun and verb tokens print to match the pronoun answer.
+NAME_MARKER = "[Client]"
+PRONOUN_FORMS = {  # token -> form for he_him, she_her, they_them, no_pronouns
+    "they": ("he", "she", "they", NAME_MARKER),
+    "them": ("him", "her", "them", NAME_MARKER),
+    "their": ("his", "her", "their", NAME_MARKER + "'s"),
+    "themself": ("himself", "herself", "themself", NAME_MARKER),
+}
+VERB_FORMS = {  # agree with {they}: singular for he, she, and the name; plural for they
+    "were": ("was", "was", "were", "was"),
+    "are": ("is", "is", "are", "is"),
+    "have": ("has", "has", "have", "has"),
+    "do": ("does", "does", "do", "does"),
+}
+PRONOUN_OPTIONS = ("he_him", "she_her", "they_them", "no_pronouns")
+TOKEN_RE = re.compile(r"\{([A-Za-z]+)\}")
+
 # '<volume> <reporter> <first page> (<court> <year>)'
 CITATION_RE = re.compile(r"^(?P<base>\d+ .+? \d+) (?P<paren>\([^()]*\d{4}\))$")
 
@@ -184,6 +204,31 @@ def citation_parts(a):
     return {"name": a["name"], "italic": True, "rest": cite}
 
 
+def token_word(name):
+    """The base token a {name} stands for ('They' -> 'they'), or None if it isn't one."""
+    base = name[0].lower() + name[1:]
+    if name == "client":
+        return name
+    if base in PRONOUN_FORMS or base in VERB_FORMS:
+        return base
+    return None
+
+
+def fill_client(text, pronouns):
+    """Replace {client}, pronoun, and verb tokens. pronouns is a q_client_pronouns answer, or None
+    (unanswered), which repeats the name marker instead of guessing."""
+    col = PRONOUN_OPTIONS.index(pronouns) if pronouns in PRONOUN_OPTIONS else PRONOUN_OPTIONS.index("no_pronouns")
+
+    def sub(m):
+        name = m.group(1)
+        base = token_word(name)
+        if base == "client":
+            return NAME_MARKER
+        word = (PRONOUN_FORMS.get(base) or VERB_FORMS[base])[col]
+        return word[0].upper() + word[1:] if name[0].isupper() else word
+    return TOKEN_RE.sub(sub, text)
+
+
 def same_source(a, b):
     return all(a.get(k) == b.get(k) for k in ("type", "name", "citation", "court"))
 
@@ -228,7 +273,8 @@ def law_paragraphs(issue, answers, courts, config):
             if kind != "argument" and not auths:
                 gaps.append(st["text"])
                 continue
-            sentences.append({"id": st["id"], "text": st["text"], "kind": kind, "authorities": auths})
+            sentences.append({"id": st["id"], "text": fill_client(st["text"], answers.get(CLIENT_PRONOUNS)),
+                              "kind": kind, "authorities": auths})
         had_cited = any(st.get("kind", "rule") != "argument" for st in para["sentences"])
         if sentences and (not had_cited or has_cited(sentences)):
             paragraphs.append({"id": para["id"], "sentences": sentences})
@@ -246,7 +292,8 @@ def evaluate_session(config, issues, session):
     answers = session.get("answers", {})
     courts = binding_courts(answers)
     specific = courts[1]
-    result = {"courts": courts, "included": [], "no_paragraph": [], "near_misses": []}
+    result = {"courts": courts, "pronouns": answers.get(CLIENT_PRONOUNS),
+              "included": [], "no_paragraph": [], "near_misses": []}
 
     for issue in issues:
         if not applies_in(issue["applicable_courts"], courts):
@@ -257,6 +304,7 @@ def evaluate_session(config, issues, session):
             cited_courts = {a["court"] for p in paragraphs for st in p["sentences"] for a in st["authorities"]}
             entry = {
                 "issue": issue,
+                "heading": fill_client(issue["motion_heading"], answers.get(CLIENT_PRONOUNS)),
                 "paragraphs": paragraphs,
                 "review_notes": [rc["display_note"] for rc in trig.get("review_conditions", [])
                                  if eval_condition(rc["when"], answers)],

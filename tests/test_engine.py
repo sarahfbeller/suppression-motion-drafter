@@ -173,6 +173,37 @@ class StructuredSentences(unittest.TestCase):
         self.assertEqual(E.citation_parts(statute), {"name": "Example statute", "italic": False, "rest": ""})
 
 
+class ClientTokens(unittest.TestCase):
+    TEXT = "{They} {were} told {their} rights by {client}'s lawyer, and {they} {do} not deny it."
+
+    def test_each_pronoun_choice(self):
+        expected = {
+            "he_him": "He was told his rights by [Client]'s lawyer, and he does not deny it.",
+            "she_her": "She was told her rights by [Client]'s lawyer, and she does not deny it.",
+            "they_them": "They were told their rights by [Client]'s lawyer, and they do not deny it.",
+            "no_pronouns": "[Client] was told [Client]'s rights by [Client]'s lawyer, and [Client] does not deny it.",
+        }
+        for pronouns, text in expected.items():
+            with self.subTest(pronouns=pronouns):
+                self.assertEqual(E.fill_client(self.TEXT, pronouns), text)
+
+    def test_unanswered_repeats_the_name_instead_of_guessing(self):
+        self.assertEqual(E.fill_client(self.TEXT, None), E.fill_client(self.TEXT, "no_pronouns"))
+
+    def test_heading_and_memo_count(self):
+        config, _questions, issues = E.load_repo(ROOT)
+        issue = next(i for i in issues if i["id"] == "frisk-without-reasonable-suspicion")
+        answers = {**FEDERAL, "q_client_pronouns": "she_her", "q_encounter_events": ["vehicle_stop", "frisk"],
+                   "q_occupant_role": "driver", "q_frisk_suspicion_basis": "none_articulated"}
+        result = E.evaluate_session(config, [issue], {"answers": answers})
+        motion = R.render_motion(result)
+        self.assertIn("The Frisk of [Client] Was Not Supported by Reasonable Suspicion That She Was Armed", motion)
+        memo = R.render_memo(result, config, motion)
+        self.assertIn("the motion says [Client] in 1 place. Replace each one with your client's name the way you "
+                      "want it to appear in the motion, e.g. \"Mr. Smith\" or \"Smith\".", memo)
+        self.assertIn("**Pronouns for your client:** she/her.", memo)
+
+
 class EventGroups(unittest.TestCase):
     def setUp(self):
         self.config, _questions, self.issues = E.load_repo(ROOT)

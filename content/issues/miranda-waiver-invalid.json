@@ -1,7 +1,7 @@
 {
   "id": "miranda-waiver-invalid",
   "label": "Miranda Waiver Was Not Knowing, Intelligent, and Voluntary",
-  "motion_heading": "The Defendant Did Not Knowingly, Intelligently, and Voluntarily Waive the Miranda Rights",
+  "motion_heading": "{client} Did Not Knowingly, Intelligently, and Voluntarily Waive the Miranda Rights",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",

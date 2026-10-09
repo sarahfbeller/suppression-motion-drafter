@@ -1,7 +1,7 @@
 {
   "id": "denial-of-contact-before-breath-test",
   "label": "Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)",
-  "motion_heading": "The Breath Test Must Be Suppressed Because the Defendant Was Denied the Statutory Right to Consult Before Deciding Whether to Submit to a Breath Test",
+  "motion_heading": "The Breath Test Must Be Suppressed Because {client} Was Denied the Statutory Right to Consult Before Deciding Whether to Submit to a Breath Test",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",

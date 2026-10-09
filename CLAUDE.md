@@ -47,8 +47,10 @@ Current scope: U.S. Supreme Court, the Ninth Circuit, and Alaska. Nothing else.
   the state of the file — what's unverified, why something is structured a certain way —
   go here, never in `practice_notes`.
 
-Wording: questions say "your client" (enforced by the validator). The motion says "the
-defendant" (also enforced). Memo notes say "your client" when the sentence is about this
+Wording: questions say "your client" (enforced by the validator). The motion never names the
+client: headings and argument sentences use `{client}` and pronoun tokens, which print as
+"[Client]" for the attorney to fill in (enforced; see `docs/SCHEMA.md`). Rule sentences may say
+"a defendant" or "the defendant" for general statements of law. Memo notes say "your client" when the sentence is about this
 client's case, and "the defendant" for general statements of law (not enforced — a judgment
 call per sentence).
 

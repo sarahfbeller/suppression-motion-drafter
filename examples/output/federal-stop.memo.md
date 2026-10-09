@@ -4,6 +4,10 @@
 
 **Forum:** Federal court (Ninth Circuit). **Authority cited:** U.S. Supreme Court and Ninth Circuit.
 
+**Pronouns for your client:** he/him.
+
+**Fill in your client's name:** the motion says [Client] in 1 place. Replace each one with your client's name the way you want it to appear in the motion, e.g. "Mr. Smith" or "Smith". Find and replace works, including for possessives ([Client]'s).
+
 ## Issues included in the motion
 
 ### I. Stop Prolonged Beyond Its Original Purpose

@@ -160,13 +160,15 @@ def question_section(rel, qids, questions, used_by, used_options):
     for qid in qids:
         q = questions[qid]
         out.append(f"- **`{qid}`** ({q['type'].replace('_', ' ')}): {q['prompt']}")
-        engine_read = qid == E.FILING_COURT
+        engine_read = qid in (E.FILING_COURT, E.CLIENT_PRONOUNS)
         for o in q.get("options", []):
             unused = "" if engine_read or (qid, o["id"]) in used_options else " *(no issue uses this option)*"
             out.append(f"  - `{o['id']}`: {o['label']}{unused}")
         users = sorted(used_by.get(qid, []))
         if qid == E.FILING_COURT:
             out.append("  - *Used by:* the engine (sets which courts' authority is cited)")
+        elif qid == E.CLIENT_PRONOUNS:
+            out.append("  - *Used by:* the engine (sets how pronoun tokens print in the motion)")
         else:
             out.append(f"  - *Used by:* {', '.join(users) if users else '**no issue**'}")
     return out + [""]

@@ -86,11 +86,15 @@ def render_motion(result):
         return "No suppression issues were identified for these facts. See the attorney memo.\n"
     lines = ["## ARGUMENT", ""]
     for i, entry in enumerate(result["included"], 1):
-        lines += [f"### {roman(i)}. {entry['issue']['motion_heading']}", "", section(entry["paragraphs"]), ""]
+        lines += [f"### {roman(i)}. {entry['heading']}", "", section(entry["paragraphs"]), ""]
     return "\n".join(lines)
 
 
-def render_memo(result, config):
+PRONOUN_LABELS = {"he_him": "he/him", "she_her": "she/her", "they_them": "they/them",
+                  "no_pronouns": "none (the motion repeats your client's name)"}
+
+
+def render_memo(result, config, motion=""):
     courts = config["courts"]
     specific = result["courts"][1]
     forum = "State court" if courts[specific]["kind"] == "state" else "Federal court"
@@ -100,6 +104,14 @@ def render_memo(result, config):
     lines = ["# Attorney memo: suppression issues", "",
              "*For the attorney only. Do not file.*", "",
              f"**Forum:** {forum} ({specific_name}). **Authority cited:** {cited}.", ""]
+    pronouns = PRONOUN_LABELS.get(result["pronouns"], "not answered, so the motion repeats your client's name")
+    lines += [f"**Pronouns for your client:** {pronouns}.", ""]
+    n = motion.count(E.NAME_MARKER)
+    if n:
+        lines += [f"**Fill in your client's name:** the motion says {E.NAME_MARKER} in {n} "
+                  f"{'place' if n == 1 else 'places'}. Replace each one with your client's name the way you "
+                  f"want it to appear in the motion, e.g. \"Mr. Smith\" or \"Smith\". Find and replace "
+                  f"works, including for possessives ({E.NAME_MARKER}'s).", ""]
 
     lines += ["## Issues included in the motion", ""]
     if not result["included"] and not result["no_paragraph"]:
@@ -156,8 +168,8 @@ def main(argv):
         session = E.load_json(session_path)
         result = E.evaluate_session(config, issues, session)
         name = os.path.splitext(os.path.basename(session_path))[0]
-        for suffix, text in (("motion", render_motion(result)),
-                             ("memo", render_memo(result, config))):
+        motion = render_motion(result)
+        for suffix, text in (("motion", motion), ("memo", render_memo(result, config, motion))):
             path = os.path.join(out_dir, f"{name}.{suffix}.md")
             with open(path, "w", encoding="utf-8") as f:
                 f.write(text)

@@ -29,6 +29,39 @@ and state authority never in a federal one.
 It's the one question the engine reads directly. Conditions can't use it: where an issue or
 paragraph is the law goes in its `applicable_courts`.
 
+## Client name and pronouns
+
+The motion never contains the client's name, so attorneys don't have to enter it. Motion
+headings and argument sentences refer to the client with tokens:
+
+| Token | he/him | she/her | they/them | no pronouns (or unanswered) |
+|---|---|---|---|---|
+| `{client}` | [Client] | [Client] | [Client] | [Client] |
+| `{they}` | he | she | they | [Client] |
+| `{them}` | him | her | them | [Client] |
+| `{their}` | his | her | their | [Client]'s |
+| `{themself}` | himself | herself | themself | [Client] |
+| `{were}` `{are}` `{have}` `{do}` | was, is, has, does | same | were, are, have, do | was, is, has, does |
+
+`[Client]` is left in the motion for the attorney to replace with find and replace (a possessive
+`[Client]'s` comes out right); the memo says how many places there are and asks the attorney to replace each with the name as it should appear in the motion (e.g. "Mr. Smith" or "Smith"). A capitalized token
+(`{They}`, `{Were}`) prints capitalized, for a sentence start or a heading.
+
+`q_client_pronouns` (in `content/questions/case-setup.json`) picks the column. Like
+`q_filing_court`, only the engine reads it; conditions can't use it. Unanswered, the motion repeats
+`[Client]` rather than guess.
+
+The validator enforces:
+
+- Tokens appear only in motion headings and argument sentences. Rule sentences state general law
+  ("a person", "an arrestee", "a defendant").
+- "the defendant" isn't used in a heading or argument sentence; write `{client}`.
+- Only known tokens; a stray `{` or `}` is an error.
+- A verb token comes right after `{they}`/`{They}`, and an agreeing verb right after `{they}` is a
+  token (`{They} {were}`, never `{They} were`). After `{client}`, write the singular verb. A
+  present-tense verb ending in -s after `{they}` gets a warning: rephrase with `{client}` as the
+  subject.
+
 ## Encounter events
 
 `q_encounter_events` (in `content/questions/case-setup.json`) is a multi-select checklist of what
@@ -79,7 +112,7 @@ Questions hold content only. Ordering, branching, and skip logic belong to the d
 |---|---|
 | `id` | Lowercase slug, same as the file name. |
 | `label` | Memo name for the issue; may include case names. |
-| `motion_heading` | Court-facing argument heading. Advocacy, no citations. |
+| `motion_heading` | Court-facing argument heading. Advocacy, no citations. Refers to the client with tokens (see above). |
 | `status`, `last_reviewed`, `reviewed_by` | See review status. |
 | `applicable_courts` | Where the issue exists at all (see below). |
 | `trigger` | `{ match_condition, review_conditions?, excluded_explanations? }` |
@@ -160,7 +193,8 @@ A sentence:
   case name is allowed when marked `*Name*` (it renders in italics), and the case must be cited
   for that same sentence, by an authority citable everywhere the paragraph applies. `*` is used
   for nothing else.
-- `kind`: `"argument"` for reasoning that needs no citation; its `authorities` must be empty.
+- `kind`: `"argument"` for reasoning that needs no citation, including anything about this
+  client (client tokens are allowed only here); its `authorities` must be empty.
   Omitted, the sentence states law and needs authority.
 - `authorities`: each one supports exactly this sentence's text.
 

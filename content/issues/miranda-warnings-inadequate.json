@@ -1,7 +1,7 @@
 {
   "id": "miranda-warnings-inadequate",
   "label": "Miranda Warnings Were Missing, Incomplete, or Inadequate",
-  "motion_heading": "The Defendant's Statements Must Be Suppressed Because Adequate Miranda Warnings Were Not Given",
+  "motion_heading": "{client}'s Statements Must Be Suppressed Because Adequate Miranda Warnings Were Not Given",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",

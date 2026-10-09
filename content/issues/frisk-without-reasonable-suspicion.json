@@ -1,7 +1,7 @@
 {
   "id": "frisk-without-reasonable-suspicion",
   "label": "Frisk Without Reasonable Suspicion That the Person Was Armed and Dangerous",
-  "motion_heading": "The Frisk of the Defendant Was Not Supported by Reasonable Suspicion That the Defendant Was Armed and Dangerous",
+  "motion_heading": "The Frisk of {client} Was Not Supported by Reasonable Suspicion That {They} {Were} Armed and Dangerous",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",

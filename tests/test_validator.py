@@ -289,7 +289,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         for i, fn in enumerate(cases):
             with self.subTest(case=i):
                 self.setUp()
-                self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", fn), "say 'the defendant'")
+                self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", fn), "write {client}")
 
     # ---- encounter events
 
@@ -530,6 +530,55 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             del p["applicable_courts"]
         self.assertError(self.run_with(f"{ISSUES}/no-reasonable-suspicion-for-stop.json", f),
                          "that case isn't cited")
+
+    # ---- client tokens (the motion never names the client)
+
+    def heading(self, h):
+        return self.run_with(f"{ISSUES}/prolonged-stop.json", lambda d: d.update({"motion_heading": h}))
+
+    def test_the_defendant_in_heading(self):
+        self.assertError(self.heading("The Stop of the Defendant Was Prolonged"), "write {client}")
+
+    def test_the_defendant_fine_in_rule_sentence(self):
+        r = V.validate(ROOT)  # franks_hearing_standard: "A defendant is entitled to..."
+        self.assertFalse(any("defendant" in e for e in r.errors), "\n".join(r.errors))
+
+    def test_the_defendant_in_argument_sentence(self):
+        def f(d):
+            d["law_paragraphs"].append({"id": "application", "sentences": [
+                {"id": "applied", "kind": "argument", "text": "The defendant was held too long.", "authorities": []}]})
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "only for rule sentences")
+
+    def test_unknown_token(self):
+        for h in ("{Client} Was Held Too Long", "{his} Stop Was Prolonged", "The {client Stop"):
+            with self.subTest(heading=h):
+                self.setUp()
+                self.assertError(self.heading(h), "unknown token")
+
+    def test_verb_needs_a_token_after_they(self):
+        self.assertError(self.heading("The Stop Was Prolonged After {They} Were Cited"), "write {were}")
+
+    def test_verb_token_not_after_they(self):
+        self.assertError(self.heading("{client} {Were} Held Too Long"), "must come right after {they}")
+
+    def test_good_tokens(self):
+        r = self.heading("The Stop Was Prolonged After {They} {Were} Cited and {Their} License Returned")
+        self.assertEqual(r.errors, [], "\n".join(r.errors))
+
+    def test_token_in_rule_sentence(self):
+        def f(d):
+            stmt(d, "core_prolongation_rule")["text"] = "{client} was held too long."
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "in a rule sentence")
+
+    def test_condition_on_client_pronouns(self):
+        def f(d):
+            para(d, "core_prolongation_rule")["when"] = {"question": "q_client_pronouns", "op": "equals", "value": "he_him"}
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "conditions can't use q_client_pronouns")
+
+    def test_pronoun_options_fixed(self):
+        def f(qs):
+            next(q for q in qs if q["id"] == "q_client_pronouns")["options"].append({"id": "ze_zir", "label": "Ze/zir"})
+        self.assertError(self.run_with("content/questions/case-setup.json", f), "exactly the options")
 
     # ---- unknown-answer policy
 

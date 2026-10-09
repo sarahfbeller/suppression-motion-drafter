@@ -4,6 +4,10 @@
 
 **Forum:** State court (Alaska). **Authority cited:** U.S. Supreme Court and Alaska.
 
+**Pronouns for your client:** not answered, so the motion repeats your client's name.
+
+**Fill in your client's name:** the motion says [Client] in 2 places. Replace each one with your client's name the way you want it to appear in the motion, e.g. "Mr. Smith" or "Smith". Find and replace works, including for possessives ([Client]'s).
+
 ## Issues included in the motion
 
 ### I. Stop Prolonged Beyond Its Original Purpose

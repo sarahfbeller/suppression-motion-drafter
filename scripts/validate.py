@@ -53,8 +53,13 @@ CITATION_IN_TEXT = [
 ]
 # Short case names in sentence text are marked *Name*, and must be cited in the same sentence.
 ITALIC_RE = re.compile(r"\*([^*]+)\*")
-# Questions talk to the attorney ("your client"); the motion talks to the court ("the defendant").
+# Questions talk to the attorney ("your client"). The motion names the client only through {client}
+# and pronoun tokens; "the defendant" is fine in a rule sentence stating general law.
 DEFENDANT_RE = re.compile(r"\bdefendant", re.I)
+THE_DEFENDANT_RE = re.compile(r"\bthe defendant", re.I)
+BRACE_RE = re.compile(r"\{[^{}]*\}|[{}]")
+AGREEING_VERBS = {"was": "were", "were": "were", "is": "are", "are": "are", "has": "have",
+                  "have": "have", "does": "do", "do": "do"}
 CLIENT_RE = re.compile(r"\bclient", re.I)
 PLACEHOLDER_RE = re.compile(r"\b(?:PLACEHOLDER|FILL_IN|TODO|TBD|XXX)\b")
 AUTHOR_NOTE_RE = re.compile(
@@ -122,6 +127,36 @@ def citation_in(text):
     return None
 
 
+def check_tokens(r, where, text, allowed):
+    """Client tokens in motion text. Returns text with tokens removed, for the other text checks."""
+    for m in BRACE_RE.finditer(text):
+        t = m.group(0)
+        name = t[1:-1] if len(t) > 2 else ""
+        if not E.TOKEN_RE.fullmatch(t) or E.token_word(name) is None:
+            r.err(where, f"unknown token {t!r} — tokens are {{client}}, {{they}} {{them}} {{their}} "
+                         f"{{themself}}, and after {{they}}: {{were}} {{are}} {{have}} {{do}} "
+                         f"(capitalize the pronoun and verb tokens for a sentence start or heading)")
+            continue
+        if not allowed:
+            r.err(where, f"{t} in a rule sentence — rule sentences state general law; put sentences about "
+                         f"this client in an argument sentence")
+    words = re.findall(r"\{[A-Za-z]+\}|[A-Za-z']+", text)
+    for prev, word in zip([None] + words, words):
+        pt = E.token_word(prev[1:-1]) if prev and prev.startswith("{") else None
+        wt = E.token_word(word[1:-1]) if word.startswith("{") else None
+        if wt in E.VERB_FORMS and pt != "they":
+            r.err(where, f"{word} must come right after {{they}} or {{They}} — it agrees with that pronoun "
+                         f"(after {{client}}, write the singular verb)")
+        if pt == "they" and not word.startswith("{"):
+            if word.lower() in AGREEING_VERBS:
+                r.err(where, f"{prev} {word}: write {{{AGREEING_VERBS[word.lower()]}}} so the verb agrees "
+                             f"(it prints 'was' or 'were' to match, etc.)")
+            elif re.fullmatch(r"[a-z]+[^s]s", word):
+                r.warn(where, f"{prev} {word}: if '{word}' is a present-tense verb it won't agree with "
+                              f"'they' — rephrase with {{client}} as the subject")
+    return E.TOKEN_RE.sub(lambda m: "X", text)
+
+
 # --------------------------------------------------------------------------- config
 
 
@@ -181,6 +216,18 @@ def check_config(r, root):
             r.err(where, f"content/issues/{iid}.json isn't in motion_order — add it where it belongs in the motion")
 
     return c
+
+
+def check_client_pronouns(r, questions):
+    """Read only by the engine: its option ids are the pronoun sets fill_client knows."""
+    where = f"question {E.CLIENT_PRONOUNS}"
+    q = questions.get(E.CLIENT_PRONOUNS)
+    if q is None:
+        if E.CLIENT_PRONOUNS not in questions.broken:
+            r.err(where, "missing — the engine needs it to print pronoun tokens")
+        return
+    if q["type"] != "multiple_choice" or sorted(o["id"] for o in q["options"]) != sorted(E.PRONOUN_OPTIONS):
+        r.err(where, f"must be multiple_choice with exactly the options {list(E.PRONOUN_OPTIONS)}")
 
 
 def check_encounter_events(r, questions):
@@ -404,6 +451,9 @@ def check_condition(r, where, cond, questions):
         r.err(where, f"conditions can't use {qid} — where an issue or paragraph is the law "
                      f"goes in its applicable_courts")
         return False
+    if qid == E.CLIENT_PRONOUNS:
+        r.err(where, f"conditions can't use {qid} — it only decides how pronoun tokens print")
+        return False
     q = questions.get(qid)
     if q is None:
         r.err(where, f"references unknown question {qid!r}")
@@ -500,10 +550,14 @@ def check_issue(r, where, issue, config, questions, used_questions):
     heading = issue.get("motion_heading", "")
     if not heading:
         r.err(where, "empty motion_heading")
-    elif citation_in(heading):
-        r.err(where, f"motion_heading contains {citation_in(heading)}")
-    if CLIENT_RE.search(heading):
-        r.err(where, "motion_heading says 'client' — the motion is for the court, so say 'the defendant'")
+    else:
+        if citation_in(heading):
+            r.err(where, f"motion_heading contains {citation_in(heading)}")
+        plain = check_tokens(r, f"{where} motion_heading", heading, allowed=True)
+        if CLIENT_RE.search(plain):
+            r.err(where, "motion_heading says 'client' — write {client}, which prints as a name to fill in")
+        if THE_DEFENDANT_RE.search(plain):
+            r.err(where, "motion_heading says 'the defendant' — write {client} (or a pronoun token) instead")
 
     status = issue.get("status")
     if status not in ("unreviewed", "reviewed"):
@@ -648,8 +702,12 @@ def check_sentence(r, pw, st, p_ac, narrowed, courts, sentence_ids, counts):
         if what:
             r.err(sw, f"text embeds {what} — citations belong only in 'authorities' "
                       f"(a short case name, marked *Name*, is fine)")
-        if CLIENT_RE.search(text):
-            r.err(sw, "text says 'client' — the motion is for the court, so say 'the defendant'")
+        plain = check_tokens(r, sw, text, allowed=st.get("kind") == "argument")
+        if CLIENT_RE.search(plain):
+            r.err(sw, "text says 'client' — write {client}, which prints as a name to fill in")
+        if st.get("kind") == "argument" and THE_DEFENDANT_RE.search(plain):
+            r.err(sw, "argument sentence says 'the defendant' — write {client} (or a pronoun token); "
+                      "'the defendant' is only for rule sentences stating general law")
         if not re.search(r"[.?!][\"'”’]?$", text):
             r.err(sw, "text must end with sentence punctuation (the citation follows it)")
         if text.count("*") % 2:
@@ -880,6 +938,7 @@ def validate(root):
     questions = check_questions(r, root)
     check_filing_court(r, questions, config)
     check_encounter_events(r, questions)
+    check_client_pronouns(r, questions)
     check_event_groups(r, questions, config)
     groups_used = set()
     used = set()
@@ -906,7 +965,7 @@ def validate(root):
     for name in sorted(set(config["event_groups"]) - groups_used):
         r.warn("content/config.json event_groups", f"group {name!r} isn't used by any issue")
     for qid, q in sorted(questions.items()):
-        if qid not in used and qid != E.FILING_COURT:
+        if qid not in used and qid not in (E.FILING_COURT, E.CLIENT_PRONOUNS):
             if q["type"] == "short_text":
                 r.warn(f"question {qid}", "short_text answer is collected but nothing uses it yet")
             else:

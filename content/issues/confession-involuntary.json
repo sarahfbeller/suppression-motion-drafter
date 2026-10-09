@@ -1,7 +1,7 @@
 {
   "id": "confession-involuntary",
   "label": "Confession Involuntary Under Due Process (Independent of Miranda)",
-  "motion_heading": "The Defendant's Statements Were Involuntary and Their Use Would Violate Due Process",
+  "motion_heading": "{client}'s Statements Were Involuntary and Their Use Would Violate Due Process",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",

@@ -1,7 +1,7 @@
 {
   "id": "independent-test-advisement-failure",
   "label": "Failure to Clearly and Expressly Advise of Right to an Independent Chemical Test",
-  "motion_heading": "The Breath Test Must Be Suppressed Because the Defendant Was Not Properly Advised of the Right to an Independent Chemical Test",
+  "motion_heading": "The Breath Test Must Be Suppressed Because {client} Was Not Properly Advised of the Right to an Independent Chemical Test",
   "status": "unreviewed",
   "last_reviewed": "",
   "reviewed_by": "",

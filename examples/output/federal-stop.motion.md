@@ -6,7 +6,7 @@ A traffic stop becomes unlawful if it is prolonged beyond the time reasonably re
 
 A dog sniff is permissible only if it does not add time to the stop. *Illinois v. Caballes*, 543 U.S. 405 (2005).
 
-### II. The Frisk of the Defendant Was Not Supported by Reasonable Suspicion That the Defendant Was Armed and Dangerous
+### II. The Frisk of [Client] Was Not Supported by Reasonable Suspicion That He Was Armed and Dangerous
 
 An officer may frisk a person only where there is reasonable, articulable suspicion that the particular person is armed and dangerous. *Terry v. Ohio*, 392 U.S. 1 (1968); *Ybarra v. Illinois*, 444 U.S. 85 (1979). The suspicion must be directed at the person frisked; suspicion of others nearby, or of the place, does not justify a frisk. *Ybarra v. Illinois*, 444 U.S. 85 (1979). An officer's unparticularized suspicion or hunch is not enough. *Terry v. Ohio*, 392 U.S. 1 (1968).
 
