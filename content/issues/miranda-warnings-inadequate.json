@@ -89,7 +89,54 @@
               "pincite": ""
             }
           ]
+        }
+      ]
+    },
+    {
+      "id": "alaska_right_to_silence",
+      "applicable_courts": [
+        "ak"
+      ],
+      "sentences": [
+        {
+          "id": "violates_both_constitutions",
+          "text": "Statements made pursuant to custodial interrogation without benefit of *Miranda* warnings violate the right to remain silent under both the United States and Alaska constitutions.",
+          "authorities": [
+            {
+              "type": "constitution",
+              "name": "Alaska Const. art. I, § 9",
+              "citation": "",
+              "court": "ak",
+              "signal": "See"
+            },
+            {
+              "type": "constitution",
+              "name": "U.S. Const. amend. V",
+              "citation": "",
+              "court": "scotus",
+              "signal": "See"
+            }
+          ]
         },
+        {
+          "id": "must_be_suppressed",
+          "text": "Those statements must be suppressed.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Munson v. State",
+              "citation": "123 P.3d 1042 (Alaska 2005)",
+              "court": "ak",
+              "pincite": "1048",
+              "signal": "See"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "custody_and_interrogation",
+      "sentences": [
         {
           "id": "custody_defined",
           "text": "A person is in custody when there is a formal arrest or a restraint on freedom of movement of the degree associated with a formal arrest.",
@@ -147,6 +194,7 @@
   ],
   "_author_notes": [
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Stansbury v. California, Rhode Island v. Innis, Florida v. Powell. Unverified; pincites empty.",
-    "The 'question-first' (midstream warnings) point is only a practice note, not a rule statement: the leading Supreme Court case is a plurality, and I'm not certain enough of the controlling rule to state it."
+    "The 'question-first' (midstream warnings) point is only a practice note, not a rule statement: the leading Supreme Court case is a plurality, and I'm not certain enough of the controlling rule to state it.",
+    "alaska_right_to_silence: text and citations supplied by the maintainer, 2026-10-08. Placed right after the first Miranda sentence, which split the old 'main' paragraph: custody_and_interrogation holds its other two sentences. Citations put in Bluebook form and the text reordered to 'United States and Alaska constitutions' to match the citation order (the engine cites Supreme Court authority first), both at the maintainer's request."
   ]
 }

@@ -620,6 +620,7 @@ def check_issue(r, where, issue, config, questions, used_questions):
     para_ids, sentence_ids = set(), set()
     counts = {"missing_pincites": 0, "cases": 0}
     good_paragraphs = []
+    earlier = []  # (case authority, its paragraph's courts) from earlier unconditional paragraphs
     for para in paragraphs:
         pw = f"{where} paragraph {para.get('id', '?') if isinstance(para, dict) else '?'}"
         if not check_keys(r, pw, para, PARAGRAPH_KEYS, ["id"]):
@@ -656,8 +657,11 @@ def check_issue(r, where, issue, config, questions, used_questions):
             r.err(pw, "sentences must be a non-empty list")
             continue
         for st in sentences:
-            check_sentence(r, pw, st, p_ac, "applicable_courts" in para, courts, sentence_ids, counts)
+            check_sentence(r, pw, st, p_ac, "applicable_courts" in para, courts, sentence_ids, counts, earlier)
         good_paragraphs.append(para)
+        if "when" not in para:  # always prints where it applies, so later sentences can name its cases
+            earlier += [(a, p_ac) for st in sentences if isinstance(st, dict)
+                        for a in st.get("authorities", []) if isinstance(a, dict) and a.get("type") == "case"]
     if counts["missing_pincites"]:
         r.warn(where, f"{counts['missing_pincites']} of {counts['cases']} case authorities have no pincite yet")
 
@@ -692,7 +696,7 @@ def check_fill_in(r, pw, text):
         r.err(pw, "fill_in must end with sentence punctuation")
 
 
-def check_sentence(r, pw, st, p_ac, narrowed, courts, sentence_ids, counts):
+def check_sentence(r, pw, st, p_ac, narrowed, courts, sentence_ids, counts, earlier=()):
     """One sentence of a paragraph. p_ac is where the paragraph is the law."""
     sw = f"{pw} sentence {st.get('id', '?') if isinstance(st, dict) else '?'}"
     if isinstance(st, dict) and ("when" in st or "applicable_courts" in st):
@@ -734,11 +738,12 @@ def check_sentence(r, pw, st, p_ac, narrowed, courts, sentence_ids, counts):
         if text.count("*") % 2:
             r.err(sw, "unbalanced '*' — short case names are marked *Name*")
         for name in ITALIC_RE.findall(text):
-            cited = [a for a in auths if isinstance(a, dict) and a.get("type") == "case" and name in a.get("name", "")]
+            here = [(a, p_ac) for a in auths if isinstance(a, dict) and a.get("type") == "case"]
+            cited = [(a, ac) for a, ac in list(earlier) + here if name in a.get("name", "")]
             if not cited:
-                r.err(sw, f"text names *{name}*, but no case cited for this sentence has that name "
-                          f"('*' marks short case names only)")
-            elif not any(a.get("court") == E.SCOTUS or list(p_ac) == [a.get("court")] for a in cited):
+                r.err(sw, f"text names *{name}*, but no case with that name is cited for this sentence or "
+                          f"earlier in the issue in a paragraph that always prints ('*' marks short case names only)")
+            elif not any(citable_everywhere(a, ac, p_ac) for a, ac in cited):
                 r.err(sw, f"text names *{name}*, but in some forums where this paragraph applies that case "
                           f"isn't cited — limit the paragraph's applicable_courts to the case's court")
     if kind == "argument":
@@ -754,6 +759,12 @@ def check_sentence(r, pw, st, p_ac, narrowed, courts, sentence_ids, counts):
         if key in seen:
             r.err(f"{sw} authority {a.get('name', '?')!r}", "cited twice in the same sentence")
         seen.add(key)
+
+
+def citable_everywhere(a, cited_ac, p_ac):
+    """Whether authority a, in a paragraph applying in cited_ac, is cited in every forum where p_ac applies."""
+    covers = E.SCOTUS in cited_ac or set(p_ac) <= set(cited_ac)
+    return covers and (a.get("court") == E.SCOTUS or list(p_ac) == [a.get("court")])
 
 
 def check_authority(r, sw, a, p_ac, narrowed, courts, counts, nested):

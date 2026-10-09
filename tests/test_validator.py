@@ -517,11 +517,28 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_short_case_name_must_be_cited_in_the_sentence(self):
         def f(d):
             stmt(d, "dog_sniff_no_added_time")["text"] = "Under *Terry*, a dog sniff must not add time."
-        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "no case cited for this sentence has that name")
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "no case with that name is cited")
 
     def test_short_case_name_of_a_cited_case(self):
         r = V.validate(ROOT)  # alaska_coleman_standard says "Under *Coleman*," and cites Coleman v. State.
         self.assertFalse(any("Coleman" in e for e in r.errors), "\n".join(r.errors))
+
+    def test_short_case_name_cited_earlier_in_the_issue(self):
+        # "*Miranda* warnings": Miranda v. Arizona is cited by an earlier, always-printed paragraph.
+        def f(d):
+            d["law_paragraphs"].append({"id": "later", "sentences": [
+                {"id": "named", "text": "Statements taken without *Miranda* warnings are suppressed.",
+                 "authorities": [{"type": "constitution", "name": "U.S. Const. amend. V", "citation": "", "court": "scotus"}]}]})
+        r = self.run_with(f"{ISSUES}/miranda-warnings-inadequate.json", f)
+        self.assertFalse(any("Miranda" in e for e in r.errors), "\n".join(r.errors))
+
+    def test_short_case_name_cited_only_in_a_conditional_paragraph(self):
+        # Florida v. Powell is cited only when warnings were incomplete, so it may not have printed.
+        def f(d):
+            d["law_paragraphs"].append({"id": "later", "sentences": [
+                {"id": "named", "text": "Under *Powell*, the warnings fell short.",
+                 "authorities": [{"type": "constitution", "name": "U.S. Const. amend. V", "citation": "", "court": "scotus"}]}]})
+        self.assertError(self.run_with(f"{ISSUES}/miranda-warnings-inadequate.json", f), "no case with that name is cited")
 
     def test_short_case_name_not_cited_in_every_forum(self):
         # In a paragraph that applies everywhere, naming an Alaska case leaves the name uncited in federal court.

@@ -191,9 +191,10 @@ A sentence:
 
 - `text`: one proposition (a sentence, two at most). May be a direct quotation. Ends with sentence
   punctuation. No citations: never a full case name, reporter citation, statute, or *Id.* A short
-  case name is allowed when marked `*Name*` (it renders in italics), and the case must be cited
-  for that same sentence, by an authority citable everywhere the paragraph applies. `*` is used
-  for nothing else.
+  case name is allowed when marked `*Name*` (it renders in italics). The case must be cited for
+  that same sentence, or in an earlier paragraph of the issue that has no `when` (so it always
+  prints first, as with "*Miranda* warnings"), and be cited in every forum where this paragraph
+  applies. `*` is used for nothing else.
 - `kind`: `"argument"` for reasoning that needs no citation, including anything about this
   client (client tokens are allowed only here); its `authorities` must be empty.
   Omitted, the sentence states law and needs authority.
