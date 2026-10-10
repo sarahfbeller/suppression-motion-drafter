@@ -6,7 +6,7 @@ Usage (from the repo root):
 
 Each question is asked only if its answer can still change the output (see next_question in
 engine.py). Answer by number; for a checklist, give numbers separated by commas, or press Enter
-for none. Type ? to leave a question unanswered (the filing court must be answered).
+for none. Every question needs an answer.
 --resume starts from a saved session's answers; --save writes the session when you finish.
 """
 import json
@@ -25,18 +25,16 @@ def options_of(q):
 
 
 def ask(q, read=input, write=print):
-    """Ask one question until the reply is valid. Returns the answer (None for '?')."""
+    """Ask one question until the reply is valid. Returns the answer."""
     opts = options_of(q)
     multi = q["type"] == "multi_select"
     write("")
     write(q["prompt"])
     for n, (_, label) in enumerate(opts, 1):
         write(f"  {n}. {label}")
-    hint = "numbers separated by commas, Enter for none, ? to skip" if multi else "a number, or ? to skip"
+    hint = "numbers separated by commas, or Enter for none" if multi else "a number"
     while True:
         reply = read(f"[{hint}] > ").strip()
-        if reply == "?":
-            return None
         if q["type"] == "short_text":
             return reply
         if multi and reply == "":
@@ -70,7 +68,7 @@ def main(argv):
         answers = run(root, answers)
     except (EOFError, KeyboardInterrupt):
         print("\nInterview stopped before it finished; the output below uses the answers so far.")
-        if answers.get(E.FILING_COURT) is None:
+        if E.FILING_COURT not in answers:
             print("No filing court yet, so there's nothing to render.")
             return 1
     config, _questions, issues = E.load_repo(root)

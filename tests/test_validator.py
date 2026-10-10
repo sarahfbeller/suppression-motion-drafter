@@ -321,7 +321,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertFalse(any("encounter event" in e for e in r.errors), "\n".join(r.errors))
 
     def test_superseded_questions_are_gone(self):
-        for qid in ("q_warrant_used", "q_passenger_frisked", "q_original_purpose_completed"):
+        for qid in ("q_warrant_used", "q_passenger_frisked", "q_original_purpose_completed", "q_breath_test_administered"):
             with self.subTest(qid=qid):
                 self.setUp()
                 def f(d):
@@ -438,6 +438,10 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
                 self.setUp()
                 r = self.run_with("examples/sessions/state-dui.json", lambda s: s.update({field: value}))
                 self.assertError(r, "unknown field")
+
+    def test_null_answer_in_session(self):
+        r = self.run_with("examples/sessions/state-dui.json", lambda s: s["answers"].update({"q_client_pronouns": None}))
+        self.assertError(r, "every question asked gets a real answer")
 
     def test_session_without_filing_court(self):
         r = self.run_with("examples/sessions/state-dui.json", lambda s: s["answers"].pop("q_filing_court"))

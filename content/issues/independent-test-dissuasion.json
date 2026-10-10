@@ -17,7 +17,7 @@
           "value": "breath_test"
         },
         {
-          "question": "q_breath_test_administered",
+          "question": "q_breath_test_completed",
           "op": "equals",
           "value": "yes"
         },
@@ -80,7 +80,7 @@
   "practice_notes": [],
   "_author_notes": [
     "Created 2026-10-09 at the maintainer's request. The maintainer supplied the rule (the breath test is suppressed if the officer dissuaded the arrestee from getting an independent test) and the three cases. The sentence's wording is mine, from that summary; pincites are empty. Verify the wording against each case, and add pincites (and a signal, if any case supports it only indirectly).",
-    "Gated on q_breath_test_administered = yes, since the remedy is suppressing the breath test result; if no test was completed there's nothing to suppress. Whether another remedy applies then (like the Nelson/Snyder presumption in the advisement issue) wasn't supplied, so it isn't covered.",
+    "Gated on q_breath_test_completed = yes, since the remedy is suppressing the breath test result; if no test was completed there's nothing to suppress. Whether another remedy applies then (like the Nelson/Snyder presumption in the advisement issue) wasn't supplied, so it isn't covered.",
     "q_independent_test_dissuaded was drafted by me."
   ]
 }

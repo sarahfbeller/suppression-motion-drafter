@@ -19,7 +19,7 @@
     ],
     "q_contact_purpose": "defense_related",
     "q_contact_outcome": "denied_outright",
-    "q_breath_test_administered": "yes",
+    "q_breath_test_completed": "yes",
     "q_independent_test_advisement": "clear_advisement",
     "q_independent_test_type_limited": "yes",
     "q_comprehension_barrier": "language"

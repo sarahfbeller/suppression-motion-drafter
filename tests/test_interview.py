@@ -71,11 +71,15 @@ class InterviewDetails(unittest.TestCase):
         self.config, self.questions, self.issues = E.load_repo(ROOT)
 
     def interview(self, answers):
+        """Interview, answering every question after the given ones with its first option (or nothing
+        checked, for a checklist)."""
         answers = dict(answers)
         asked = []
         while (qid := E.next_question(self.issues, answers)) is not None:
             asked.append(qid)
-            answers[qid] = None  # the attorney doesn't answer anything after the top
+            q = self.questions[qid]
+            answers[qid] = ([] if q["type"] == "multi_select" else
+                            "yes" if q["type"] == "yes_no" else q["options"][0]["id"])
         return asked
 
     def test_no_vehicle_question_after_a_pedestrian_frisk(self):
@@ -83,16 +87,6 @@ class InterviewDetails(unittest.TestCase):
                                 "q_encounter_events": ["pedestrian_stop", "frisk"],
                                 "q_frisk_suspicion_basis": "none_articulated"})
         self.assertNotIn("q_occupant_role", asked)
-
-    def test_unanswered_question_is_not_asked_again(self):
-        # None means asked but not answered; the interview moves on and ends.
-        asked = self.interview({"q_filing_court": "ak", "q_client_pronouns": None,
-                                "q_encounter_events": ["vehicle_stop", "frisk", "arrest", "breath_test"]})
-        self.assertEqual(len(asked), len(set(asked)))
-
-    def test_filing_court_must_be_answered(self):
-        answers = {"q_filing_court": None, "q_client_pronouns": "he_him", "q_encounter_events": []}
-        self.assertEqual(E.next_question(self.issues, answers), "q_filing_court")
 
     def test_no_events_means_a_short_interview(self):
         self.assertEqual(self.interview({"q_filing_court": "9th_cir", "q_client_pronouns": "he_him",
@@ -114,13 +108,14 @@ class CommandLineInterviewer(unittest.TestCase):
         self.assertEqual(answers, {"q_filing_court": "9th_cir", "q_client_pronouns": "no_pronouns",
                                    "q_encounter_events": []})
 
-    def test_invalid_reply_is_asked_again_and_question_mark_skips(self):
+    def test_invalid_reply_is_asked_again(self):
         import interview as I
         q = {"id": "q_x", "type": "multiple_choice", "prompt": "Pick one",
              "options": [{"id": "a", "label": "A"}, {"id": "b", "label": "B"}]}
         replies = iter(["7", "x", "2"])
         self.assertEqual(I.ask(q, read=lambda _p: next(replies), write=lambda _m: None), "b")
-        self.assertIsNone(I.ask(q, read=lambda _p: "?", write=lambda _m: None))
+        replies = iter(["?", "1"])  # there's no skip
+        self.assertEqual(I.ask(q, read=lambda _p: next(replies), write=lambda _m: None), "a")
 
 
 if __name__ == "__main__":

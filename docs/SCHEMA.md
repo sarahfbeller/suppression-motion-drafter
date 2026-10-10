@@ -87,9 +87,9 @@ every member is an encounter event and warns about groups no issue uses.
 ## Case session
 
 A case session is `{ answers }`: question id → answer (see question types). It must answer
-`q_filing_court`. A question the interview didn't ask is absent; `null` means it was asked but the
-attorney didn't answer. Both render the same way: every condition leaf on that question is false.
-`q_filing_court` can't be `null`.
+`q_filing_court`. A question the interview didn't ask is absent, and every condition leaf on it is
+false. Every question that was asked has a real answer: there's no "skip", and the validator rejects
+`null`. Where the attorney may not know, the question offers "not sure".
 
 ## The interview (decision tree)
 

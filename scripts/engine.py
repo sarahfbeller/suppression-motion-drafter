@@ -89,15 +89,14 @@ def ordered_issues(config, issues):
 def eval_condition(cond, answers):
     """Evaluate a condition against answers (question id -> option id / list of ids).
 
-    A leaf whose question is unanswered is always false, for every op. That includes a question
-    that was asked but has no answer (None): the attorney couldn't or didn't answer it.
+    A leaf whose question is unanswered is always false, for every op.
     """
     if "all" in cond:
         return all(eval_condition(c, answers) for c in cond["all"])
     if "any" in cond:
         return any(eval_condition(c, answers) for c in cond["any"])
     qid = cond["question"]
-    if answers.get(qid) is None:
+    if qid not in answers:
         return False
     a, op, v = answers[qid], cond["op"], cond.get("value")
     if op == "equals":
@@ -331,7 +330,7 @@ def has_cited(sentences):
 # The top of the interview is hand-written (TOP_QUESTIONS); everything after it is derived from the
 # issues' conditions. A question is asked only if it appears in a condition that is still undecided
 # and still matters to the output. Answers so far are the only state: an absent question hasn't been
-# asked yet, and None means asked but not answered.
+# asked yet. Every question asked gets a real answer (there's no "skip").
 
 TOP_QUESTIONS = (FILING_COURT, CLIENT_PRONOUNS, ENCOUNTER_EVENTS)
 
@@ -400,8 +399,6 @@ def next_question(issues, answers):
     for qid in TOP_QUESTIONS:
         if qid not in answers:
             return qid
-    if answers[FILING_COURT] is None:
-        return FILING_COURT  # the one question that must have an answer: it decides whose law applies
     courts = binding_courts(answers)
     for issue in issues:
         for qid in issue_open_questions(issue, answers, courts):

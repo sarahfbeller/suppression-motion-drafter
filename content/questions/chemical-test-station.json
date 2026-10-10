@@ -57,7 +57,7 @@
     ]
   },
   {
-    "id": "q_breath_test_administered",
+    "id": "q_breath_test_completed",
     "type": "yes_no",
     "prompt": "Was a breath test successfully completed (as opposed to being refused or not administered)?"
   },

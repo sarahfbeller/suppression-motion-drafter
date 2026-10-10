@@ -1,7 +1,6 @@
 """Simulated interviews, for testing the decision tree and for the interview audit report.
 
-A simulated case is a complete set of answers, every question answered (some with None, meaning the
-attorney didn't answer). An interview asks next_question() repeatedly, answering from that set, until
+A simulated case is a complete set of answers, every question answered. An interview asks next_question() repeatedly, answering from that set, until
 the tree says it's done. Standard library only.
 """
 import random
@@ -19,7 +18,7 @@ def random_answers(questions, rng, events=()):
             answers[qid] = [o["id"] for o in q["options"] if rng.random() < 0.25]
         else:
             ids = ["yes", "no"] if q["type"] == "yes_no" else [o["id"] for o in q["options"]]
-            answers[qid] = None if rng.random() < 0.08 else rng.choice(ids)
+            answers[qid] = rng.choice(ids)
     answers[E.FILING_COURT] = rng.choice([o["id"] for o in questions[E.FILING_COURT]["options"]])
     picked = set(answers[E.ENCOUNTER_EVENTS]) | set(events)
     answers[E.ENCOUNTER_EVENTS] = [o["id"] for o in questions[E.ENCOUNTER_EVENTS]["options"] if o["id"] in picked]

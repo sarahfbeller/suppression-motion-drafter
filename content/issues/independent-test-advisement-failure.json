@@ -108,7 +108,7 @@
     {
       "id": "remedy_suppression_when_test_exists",
       "when": {
-        "question": "q_breath_test_administered",
+        "question": "q_breath_test_completed",
         "op": "equals",
         "value": "yes"
       },
@@ -131,7 +131,7 @@
     {
       "id": "remedy_presumption_when_no_test",
       "when": {
-        "question": "q_breath_test_administered",
+        "question": "q_breath_test_completed",
         "op": "equals",
         "value": "no"
       },
