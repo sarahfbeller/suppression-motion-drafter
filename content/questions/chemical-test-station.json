@@ -107,5 +107,24 @@
         "label": "No"
       }
     ]
+  },
+  {
+    "id": "q_independent_test_dissuaded",
+    "type": "multiple_choice",
+    "prompt": "Did the officer say or do anything that discouraged your client from getting an independent chemical test?",
+    "options": [
+      {
+        "id": "yes",
+        "label": "Yes"
+      },
+      {
+        "id": "no",
+        "label": "No"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure"
+      }
+    ]
   }
 ]

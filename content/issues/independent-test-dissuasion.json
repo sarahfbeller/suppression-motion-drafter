@@ -1,0 +1,86 @@
+{
+  "id": "independent-test-dissuasion",
+  "label": "Officer Dissuaded the Arrestee From Obtaining an Independent Chemical Test",
+  "motion_heading": "The Breath Test Must Be Suppressed Because the Officer Dissuaded {client} From Obtaining an Independent Chemical Test",
+  "status": "unreviewed",
+  "last_reviewed": "",
+  "reviewed_by": "",
+  "applicable_courts": [
+    "ak"
+  ],
+  "trigger": {
+    "match_condition": {
+      "all": [
+        {
+          "question": "q_encounter_events",
+          "op": "includes",
+          "value": "breath_test"
+        },
+        {
+          "question": "q_breath_test_administered",
+          "op": "equals",
+          "value": "yes"
+        },
+        {
+          "question": "q_independent_test_dissuaded",
+          "op": "in",
+          "value": [
+            "yes",
+            "not_sure"
+          ]
+        }
+      ]
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_independent_test_dissuaded",
+          "op": "equals",
+          "value": "not_sure"
+        },
+        "flag": "dissuasion_unknown",
+        "display_note": "You aren't sure yet whether the officer discouraged your client from getting an independent test. This section was drafted anyway; review the station video and audio for exactly what was said about the independent test before filing, or cut this section."
+      }
+    ]
+  },
+  "law_paragraphs": [
+    {
+      "id": "main",
+      "sentences": [
+        {
+          "id": "dissuasion_requires_suppression",
+          "text": "When an officer dissuades an arrestee from obtaining an independent chemical test, the breath test result must be suppressed.",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "MacLeod v. State",
+              "citation": "28 P.3d 943 (Alaska App. 2001)",
+              "court": "ak",
+              "pincite": ""
+            },
+            {
+              "type": "case",
+              "name": "Hernandez v. State",
+              "citation": "28 P.3d 315 (Alaska App. 2001)",
+              "court": "ak",
+              "pincite": ""
+            },
+            {
+              "type": "case",
+              "name": "Lau v. State",
+              "citation": "896 P.2d 825 (Alaska App. 1995)",
+              "court": "ak",
+              "pincite": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "practice_notes": [],
+  "_author_notes": [
+    "Created 2026-10-09 at the maintainer's request. The maintainer supplied the rule (the breath test is suppressed if the officer dissuaded the arrestee from getting an independent test) and the three cases. The sentence's wording is mine, from that summary; pincites are empty. Verify the wording against each case, and add pincites (and a signal, if any case supports it only indirectly).",
+    "Gated on q_breath_test_administered = yes, since the remedy is suppressing the breath test result; if no test was completed there's nothing to suppress. Whether another remedy applies then (like the Nelson/Snyder presumption in the advisement issue) wasn't supplied, so it isn't covered.",
+    "q_independent_test_dissuaded was drafted by me."
+  ]
+}

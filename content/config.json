@@ -49,7 +49,8 @@
     "post-arrest-testing": [
       "denial-of-contact-before-breath-test",
       "independent-test-advisement-failure",
-      "independent-test-comprehension-barrier"
+      "independent-test-comprehension-barrier",
+      "independent-test-dissuasion"
     ]
   },
   "event_groups": {
