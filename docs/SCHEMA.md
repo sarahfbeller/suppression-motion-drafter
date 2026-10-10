@@ -136,9 +136,10 @@ issue is skipped entirely: nothing about it is rendered.
   (see above).
 - `review_conditions`: `[{ when, flag, display_note }]`. For an included issue, each note whose
   `when` is true goes in the memo under that issue.
-- `excluded_explanations`: same shape. For an issue that didn't match, each note whose `when` is
-  true goes in the memo's "considered but not included" section. These are checked for every
-  unmatched issue.
+- `excluded_explanations`: same shape. For an issue that didn't match but whose encounter event
+  did happen (its event gate is true), each note whose `when` is true goes in the memo's
+  "considered but not included" section. With no such event there's no near miss to explain. The
+  validator reports a note that can never fire this way.
 
 **Uncertain answers never decide an issue silently.** This covers `unknown`, `not_sure`, and
 `unclear` options on single-choice questions, and the same options checked alone on a checklist

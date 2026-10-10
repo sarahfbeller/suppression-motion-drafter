@@ -266,16 +266,8 @@ def check_event_groups(r, questions, config):
                 r.err(where, f"group {name!r}: {m!r} isn't an option of {E.ENCOUNTER_EVENTS}")
 
 
-def is_event_gate(cond):
-    """{q_encounter_events includes x}, or an 'any' made only of those."""
-    def leaf(c):
-        return c.get("question") == E.ENCOUNTER_EVENTS and c.get("op") == "includes"
-    return leaf(cond) or ("any" in cond and all(leaf(c) for c in cond["any"]))
-
-
 def check_event_gate(r, where, match):
-    kids = match["all"] if "all" in match else [match]
-    if not any(is_event_gate(c) for c in kids):
+    if E.event_gate(match) is None:
         r.err(where, f"match_condition must require an encounter event: put "
                      f"{{{E.ENCOUNTER_EVENTS} includes <event>}}, or an 'any' of those, "
                      f"directly in its top-level 'all'")
@@ -799,6 +791,17 @@ def check_authority(r, sw, a, p_ac, narrowed, courts, counts, nested):
                 check_authority(r, aw, p["authority"], p_ac, narrowed, courts, counts, nested=True)
 
 
+def too_many(r, where, what, qids, questions, refs):
+    """True (with a warning) if checking `what` would mean enumerating more than ENUMERATION_LIMIT
+    combinations of answers. The check is skipped, so the warning says which one and why."""
+    n = space_size(qids, questions, refs)
+    if n <= ENUMERATION_LIMIT:
+        return False
+    r.warn(where, f"too many answer combinations ({n:,}) to check {what} — skipped. "
+                  f"Questions involved: {', '.join(sorted(qids))}")
+    return True
+
+
 def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, courts):
     """In every forum the issue applies in, every matching set of answers must leave at least one
     paragraph with a cited sentence standing after its 'when' and applicable_courts — otherwise the
@@ -817,7 +820,7 @@ def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, co
                 and E.has_cited(p.get("sentences", []))]
         if any("when" not in p for p in live):
             continue  # a paragraph of law that always prints here: nothing to enumerate
-        if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
+        if too_many(r, where, "that every match leaves a paragraph of law", qids, questions, refs):
             return
         for a in assignments(qids, questions, refs):
             if E.eval_condition(match, a) and not any("when" not in p or E.eval_condition(p["when"], a)
@@ -832,38 +835,40 @@ def check_reachability(r, where, trig, paragraphs, questions):
     match = trig["match_condition"]
     mq = E.condition_questions(match)
 
-    def explore(extra_cond):
-        """Every relevant combination of answers for match_condition plus one other condition."""
+    def explore(extra_cond, what):
+        """Every relevant combination of answers for match_condition plus one other condition,
+        or None (with a warning) if there are too many to check."""
         qids = mq | (E.condition_questions(extra_cond) if extra_cond else set())
         refs = referenced_options([match] + ([extra_cond] if extra_cond else []))
-        if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
+        if too_many(r, where, what, qids, questions, refs):
             return None
         return assignments(qids, questions, refs)
 
-    space = explore(None)
+    space = explore(None, "whether match_condition can ever be true")
     if space is None:
-        r.warn(where, "too many answer combinations to check reachability — skipped")
         return
     if not any(E.eval_condition(match, a) for a in space):
         r.err(where, "match_condition can never be true for any combination of answers")
         return
 
     for i, rc in enumerate(trig.get("review_conditions", [])):
-        space = explore(rc["when"])
+        space = explore(rc["when"], f"review note {rc['flag']!r}")
         if space is not None and not any(E.eval_condition(match, a) and E.eval_condition(rc["when"], a) for a in space):
             r.err(f"{where} review_conditions[{i}] ({rc['flag']})",
                   "can never fire on an included issue — its 'when' contradicts match_condition")
 
     for i, ex in enumerate(trig.get("excluded_explanations", [])):
-        space = explore(ex["when"])
-        if space is not None and not any((not E.eval_condition(match, a)) and E.eval_condition(ex["when"], a) for a in space):
+        space = explore(ex["when"], f"near-miss explanation {ex['flag']!r}")
+        if space is not None and not any((not E.eval_condition(match, a)) and E.near_miss_fires(match, ex["when"], a)
+                                         for a in space):
             r.err(f"{where} excluded_explanations[{i}] ({ex['flag']})",
-                  "can never fire — whenever its 'when' is true, the issue is included")
+                  "can never fire — whenever its 'when' is true, either the issue is included or its "
+                  "encounter event didn't happen (near misses show only when the event did)")
 
     for p in paragraphs:
         if "when" not in p:
             continue
-        combos = explore(p["when"])
+        combos = explore(p["when"], f"paragraph {p['id']!r}")
         if combos is None:
             continue
         fires = redundant = False
@@ -895,7 +900,7 @@ def check_reachability(r, where, trig, paragraphs, questions):
         multi = q["type"] == "multi_select"
         for uid in [o["id"] for o in q["options"] if o["id"] in UNCERTAIN_OPTION_IDS]:
             others = (mq | note_qids) - {qid}
-            if space_size(others, questions, refs) > ENUMERATION_LIMIT:
+            if too_many(r, where, f"what answering {qid} = {uid!r} does", others, questions, refs):
                 continue
             uncertain = [uid] if multi else uid
             # On a checklist, leaving it blank ("none of these") is an alternative too.
@@ -910,7 +915,8 @@ def check_reachability(r, where, trig, paragraphs, questions):
                 decides = any(E.eval_condition(match, {**a, qid: alt}) != matched for alt in alternatives)
                 if not decides:
                     continue
-                if not matched and not excl_reported and not any(E.eval_condition(e["when"], a) for e in excluded):
+                if not matched and not excl_reported and not any(E.near_miss_fires(match, e["when"], a)
+                                                                 for e in excluded):
                     r.err(where, f"answering {answer} silently excludes this issue (a different "
                                  f"answer would have included it, and no excluded_explanation fires). "
                                  f"Include it with a review note (the default), or add an excluded_explanation.")

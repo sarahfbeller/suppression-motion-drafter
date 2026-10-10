@@ -158,6 +158,28 @@ def expand_issue(issue, groups):
     return issue, used, unknown
 
 
+def is_event_gate(cond):
+    """{q_encounter_events includes x}, or an 'any' made only of those (an expanded event group is one)."""
+    def leaf(c):
+        return c.get("question") == ENCOUNTER_EVENTS and c.get("op") == "includes"
+    return leaf(cond) or ("any" in cond and all(leaf(c) for c in cond["any"]))
+
+
+def event_gate(match):
+    """The event part of a match_condition: its top-level event gates, as one condition (None if it has none).
+    The validator requires every issue to have one."""
+    kids = match["all"] if "all" in match else [match]
+    gates = [c for c in kids if is_event_gate(c)]
+    return {"all": gates} if gates else None
+
+
+def near_miss_fires(match, when, answers):
+    """An excluded explanation fires only when the issue's event happened: a near miss is about an
+    encounter that took place, so with no such event there's nothing to explain."""
+    gate = event_gate(match)
+    return (gate is None or eval_condition(gate, answers)) and eval_condition(when, answers)
+
+
 def condition_questions(cond):
     """All question ids referenced anywhere in a condition."""
     if "all" in cond or "any" in cond:
@@ -328,6 +350,6 @@ def evaluate_session(config, issues, session):
             (result["included"] if cited else result["no_paragraph"]).append(entry)
         else:
             for ex in trig.get("excluded_explanations", []):
-                if eval_condition(ex["when"], answers):
+                if near_miss_fires(trig["match_condition"], ex["when"], answers):
                     result["near_misses"].append({"issue": issue, "note": ex["display_note"]})
     return result

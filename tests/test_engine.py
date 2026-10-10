@@ -262,6 +262,25 @@ class EventGroups(unittest.TestCase):
                          self.included({**STATE, "q_encounter_events": ["third_party_data"], **facts}))
 
 
+class NearMisses(unittest.TestCase):
+    """A near-miss explanation shows only when the issue's encounter event happened."""
+
+    def setUp(self):
+        self.config, _questions, issues = E.load_repo(ROOT)
+        self.issues = [i for i in issues if i["id"].startswith("plain-view")]
+
+    def near_misses(self, answers):
+        result = E.evaluate_session(self.config, self.issues, {"answers": {**STATE, **answers}})
+        return {nm["issue"]["id"] for nm in result["near_misses"]}
+
+    def test_no_near_miss_without_the_event(self):
+        self.assertEqual(self.near_misses({"q_encounter_events": ["breath_test"], "q_how_found": ["not_sure"]}), set())
+
+    def test_near_miss_when_the_event_happened(self):
+        self.assertIn("plain-view-object-moved",
+                      self.near_misses({"q_encounter_events": ["search_vehicle"], "q_how_found": ["not_sure"]}))
+
+
 class MatchedButNoParagraph(unittest.TestCase):
     """The memo must say whether an empty issue needs research or has a content problem."""
 

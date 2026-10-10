@@ -331,7 +331,26 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_reachability_still_checked_with_many_events(self):
         # 20 event options would be 2^20 subsets; the validator must still enumerate, not skip.
         r = V.validate(self.tmp)
-        self.assertFalse(any("reachability — skipped" in w for w in r.warnings), "\n".join(r.warnings))
+        self.assertFalse(any("too many answer combinations" in w for w in r.warnings), "\n".join(r.warnings))
+
+    def test_skipped_check_warns(self):
+        # Above the enumeration limit a check is skipped; it must say so, never skip silently.
+        old = V.ENUMERATION_LIMIT
+        V.ENUMERATION_LIMIT = 10
+        try:
+            r = V.validate(ROOT, only={"search-incident-to-arrest-exceeded-scope"})
+        finally:
+            V.ENUMERATION_LIMIT = old
+        skipped = [w for w in r.warnings if "too many answer combinations" in w]
+        self.assertTrue(skipped, "\n".join(r.warnings))
+        self.assertTrue(all("Questions involved:" in w for w in skipped))
+
+    def test_near_miss_contradicting_the_event_gate(self):
+        # Near misses show only when the issue's event happened, so one that needs no event can never fire.
+        def f(d):
+            d["trigger"]["excluded_explanations"].append(
+                {"when": {"question": "q_encounter_events", "op": "empty"}, "flag": "no_events", "display_note": "x"})
+        self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f), "encounter event didn't happen")
 
     def test_warrant_not_a_search_justification(self):
         def f(qs):
