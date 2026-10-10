@@ -89,14 +89,15 @@ def ordered_issues(config, issues):
 def eval_condition(cond, answers):
     """Evaluate a condition against answers (question id -> option id / list of ids).
 
-    A leaf whose question is unanswered is always false, for every op.
+    A leaf whose question is unanswered is always false, for every op. That includes a question
+    that was asked but has no answer (None): the attorney couldn't or didn't answer it.
     """
     if "all" in cond:
         return all(eval_condition(c, answers) for c in cond["all"])
     if "any" in cond:
         return any(eval_condition(c, answers) for c in cond["any"])
     qid = cond["question"]
-    if qid not in answers:
+    if answers.get(qid) is None:
         return False
     a, op, v = answers[qid], cond["op"], cond.get("value")
     if op == "equals":
@@ -165,12 +166,20 @@ def is_event_gate(cond):
     return leaf(cond) or ("any" in cond and all(leaf(c) for c in cond["any"]))
 
 
+_GATES = {}  # id(match) -> (match, gate); the interview asks for the same gates over and over
+
+
 def event_gate(match):
     """The event part of a match_condition: its top-level event gates, as one condition (None if it has none).
     The validator requires every issue to have one."""
+    hit = _GATES.get(id(match))
+    if hit is not None and hit[0] is match:
+        return hit[1]
     kids = match["all"] if "all" in match else [match]
     gates = [c for c in kids if is_event_gate(c)]
-    return {"all": gates} if gates else None
+    gate = {"all": gates} if gates else None
+    _GATES[id(match)] = (match, gate)
+    return gate
 
 
 def near_miss_fires(match, when, answers):
@@ -315,6 +324,90 @@ def law_paragraphs(issue, answers, courts, config):
 
 def has_cited(sentences):
     return any(st.get("kind", "rule") != "argument" for st in sentences)
+
+
+# --------------------------------------------------------------------------- the interview (decision tree)
+#
+# The top of the interview is hand-written (TOP_QUESTIONS); everything after it is derived from the
+# issues' conditions. A question is asked only if it appears in a condition that is still undecided
+# and still matters to the output. Answers so far are the only state: an absent question hasn't been
+# asked yet, and None means asked but not answered.
+
+TOP_QUESTIONS = (FILING_COURT, CLIENT_PRONOUNS, ENCOUNTER_EVENTS)
+
+
+def _eval3(cond, answers):
+    """(value, open questions): value as in eval3; open questions are the unasked ones that can still
+    decide it, left to right (empty once it's decided)."""
+    if "all" in cond or "any" in cond:
+        stop = False if "all" in cond else True
+        undecided = []
+        for c in cond.get("all", cond.get("any")):
+            v, qs = _eval3(c, answers)
+            if v is stop:
+                return stop, []
+            if v is None:
+                undecided += [q for q in qs if q not in undecided]
+        return (None, undecided) if undecided else (not stop, [])
+    if cond["question"] not in answers:
+        return None, [cond["question"]]
+    return eval_condition(cond, answers), []
+
+
+def eval3(cond, answers):
+    """Like eval_condition, but a question that hasn't been asked yet is unknown: returns True, False,
+    or None when the answer still depends on unasked questions. A decided result holds however those
+    questions are answered, or if they're never asked (which renders as false)."""
+    return _eval3(cond, answers)[0]
+
+
+def open_questions(cond, answers):
+    """Unasked questions that can still decide cond, in the order they appear (left to right)."""
+    return _eval3(cond, answers)[1]
+
+
+def issue_open_questions(issue, answers, courts):
+    """The issue's questions that could still change the output, in asking order: its trigger first,
+    then its near-miss explanations, review notes, and paragraphs, in the order they're written.
+
+    An issue that can no longer match keeps only its near-miss questions, and only if its event
+    happened (or may have). Near-miss questions count while the issue is still undecided too, so
+    answering never makes an earlier topic relevant again."""
+    if not applies_in(issue["applicable_courts"], courts):
+        return []
+    trig = issue["trigger"]
+    match = trig["match_condition"]
+    m, match_open = _eval3(match, answers)
+    gate = event_gate(match)
+    out = list(match_open)
+    conds = []
+    if m is not True and (gate is None or eval3(gate, answers) is not False):
+        conds += [ex["when"] for ex in trig.get("excluded_explanations", [])]
+    if m is not False:
+        conds += [rc["when"] for rc in trig.get("review_conditions", [])]
+        conds += [p["when"] for p in issue["law_paragraphs"]
+                  if "when" in p and applies_in(paragraph_courts(issue, p), courts)]
+    for c in conds:
+        out += [q for q in open_questions(c, answers) if q not in out]
+    return out
+
+
+def next_question(issues, answers):
+    """The id of the next question to ask, or None when the interview is done.
+
+    The hand-written top comes first. Then issues are taken one at a time in motion order (issues
+    must already be ordered, as load_repo returns them), asking each one's open questions in order."""
+    for qid in TOP_QUESTIONS:
+        if qid not in answers:
+            return qid
+    if answers[FILING_COURT] is None:
+        return FILING_COURT  # the one question that must have an answer: it decides whose law applies
+    courts = binding_courts(answers)
+    for issue in issues:
+        for qid in issue_open_questions(issue, answers, courts):
+            if qid not in answers:
+                return qid
+    return None
 
 
 # --------------------------------------------------------------------------- session evaluation

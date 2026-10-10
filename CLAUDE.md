@@ -79,8 +79,9 @@ call per sentence).
 
 ## Open items
 
-- Decision tree: the top layer exists (`q_encounter_events`; every issue requires an event).
-  Still to build: the derived part that picks the next question from the answers so far.
+- Decision tree: built (`engine.next_question`; see "The interview" in `docs/SCHEMA.md`). Try it
+  with `scripts/interview.py`; review its behavior with `scripts/interview_audit.py`. Next: use it
+  as an attorney and see how the order and prompts feel.
 - Output should be formatted .docx for both the motion and the memo, with each
   sentence's citations in a footnote. Likely front-end work; the engine already returns
   sentence text and authorities separately.

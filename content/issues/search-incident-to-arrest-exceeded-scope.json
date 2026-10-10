@@ -69,16 +69,25 @@
       },
       {
         "when": {
-          "any": [
+          "all": [
             {
-              "question": "q_container_use",
+              "question": "q_sita_problems",
               "op": "includes",
-              "value": "generally_used"
+              "value": "closed_container"
             },
             {
-              "question": "q_container_use",
-              "op": "includes",
-              "value": "actually_used"
+              "any": [
+                {
+                  "question": "q_container_use",
+                  "op": "includes",
+                  "value": "generally_used"
+                },
+                {
+                  "question": "q_container_use",
+                  "op": "includes",
+                  "value": "actually_used"
+                }
+              ]
             }
           ]
         },
@@ -369,6 +378,7 @@
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Chimel v. California, Arizona v. Gant, Riley v. California, Preston v. United States. Unverified; pincites empty.",
     "alaska_closed_containers, immediately_associated, container_not_personal: text and citations supplied by the maintainer, 2026-10-08 (Crawford at 258–59 and 260, citing Hinkel; Hinkel at 1071; Pitka at 402). Alaska only, when q_sita_problems includes closed_container. Changes: '[S]pecial' bracketed because the quote begins a sentence; the maintainer's short forms ('Hinkel, 618 P.2d at 1071', 'Crawford, 138 P.3d at 260') print in full, since the renderer only makes Id..",
     "The immediately-associated exception helps the prosecution, but it prints whenever the container option is checked: it's the main ground the prosecution will argue, and Pitka's limit on it is the defense's answer. container_not_personal is the generated application sentence, when q_container_use is answered with nothing checked. The container_personal_effects review note was written by me from the maintainer's text; not separately verified.",
-    "No federal authority on closed containers yet (federal law is less protective here; not researched). In a Ninth Circuit case, checking closed_container includes the issue with only the general Chimel paragraph."
+    "No federal authority on closed containers yet (federal law is less protective here; not researched). In a Ninth Circuit case, checking closed_container includes the issue with only the general Chimel paragraph.",
+    "container_personal_effects review note now also requires the closed_container option (2026-10-09); without it the interview asked about the container in every search-incident-to-arrest case."
   ]
 }

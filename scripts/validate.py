@@ -949,6 +949,10 @@ def check_sessions(r, root, config, questions):
             if q is None:
                 r.err(where, f"answer for unknown question {qid!r}")
                 continue
+            if ans is None:
+                if qid == E.FILING_COURT:
+                    r.err(where, f"{qid} can't be left unanswered — it decides whose law applies")
+                continue  # asked, but the attorney didn't answer
             if q["type"] == "short_text":
                 ok = isinstance(ans, str)
             elif q["type"] == "multi_select":

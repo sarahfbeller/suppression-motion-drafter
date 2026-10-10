@@ -87,7 +87,37 @@ every member is an encounter event and warns about groups no issue uses.
 ## Case session
 
 A case session is `{ answers }`: question id → answer (see question types). It must answer
-`q_filing_court`. A question the tree skipped is absent.
+`q_filing_court`. A question the interview didn't ask is absent; `null` means it was asked but the
+attorney didn't answer. Both render the same way: every condition leaf on that question is false.
+`q_filing_court` can't be `null`.
+
+## The interview (decision tree)
+
+`engine.next_question(issues, answers)` returns the next question to ask, or `None` when the
+interview is done. It keeps no state: the answers so far decide everything, so changing an earlier
+answer just changes what comes next.
+
+- **The top is hand-written:** `q_filing_court`, `q_client_pronouns`, `q_encounter_events`, in that order.
+- **Everything after it is derived from conditions.** A question is asked only if it appears in a
+  condition that is still undecided (three-valued: true, false, or not yet known) and still matters:
+  - the `match_condition` of an issue that applies in this forum and hasn't been decided;
+  - the paragraph and review-note `when`s of an issue that can still match (paragraphs that don't
+    apply in this forum don't count);
+  - the near-miss `when`s of an issue that isn't included, while its event gate isn't false.
+  So once the forum is known, the other forum's questions drop out; once the events are known,
+  every issue whose event didn't happen drops out with its questions. A question no condition
+  uses is never asked.
+- **Order: one issue at a time,** in `config.motion_order`. Within an issue: its trigger, then its
+  near-miss explanations, review notes, and paragraphs in the order they're written; within a
+  condition, left to right. A question several issues use is asked at the first issue that needs it.
+- **Answering never makes an earlier topic relevant again:** the set of questions that could still be
+  asked only shrinks.
+
+Because an unasked question renders as false, skipping it never changes the output; the tests check
+this on simulated interviews. The flip side: **a condition must state every fact its question
+assumes.** A paragraph `when` of "your client was a passenger" with no vehicle stop makes the
+interview ask about the stopped vehicle after a pedestrian frisk. `scripts/interview_audit.py` lists,
+for each question, the events present whenever it's asked, to catch this.
 
 ## Questions
 
