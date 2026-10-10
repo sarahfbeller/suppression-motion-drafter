@@ -19,10 +19,6 @@
       {
         "id": "handed_over",
         "label": "Your client or someone else handed it over"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   },
@@ -38,10 +34,6 @@
       {
         "id": "disputed",
         "label": "Disputed — e.g. entered a home or yard without a warrant, went beyond a warrant or consent, or the stop itself was unlawful"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   },
@@ -57,10 +49,6 @@
       {
         "id": "required_investigation",
         "label": "No — the officer had to examine, test, or investigate further to know"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   },
@@ -76,10 +64,6 @@
       {
         "id": "no",
         "label": "No"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   }

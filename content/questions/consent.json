@@ -39,10 +39,6 @@
       {
         "id": "do_you_mind_phrasing",
         "label": "The officer asked with a phrase like “do you mind if…”"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   },
@@ -58,10 +54,6 @@
       {
         "id": "continued_after_withdrawal",
         "label": "Police kept searching after your client withdrew or limited consent"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   }

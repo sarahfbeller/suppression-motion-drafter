@@ -79,9 +79,11 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     # ---- dead conditions (found twice during design)
 
     def test_review_condition_contradicting_match(self):
-        # Original bug: review note on q_independent_suspicion == yes, while match requires no/not_sure.
+        # Original bug: review note on q_independent_suspicion == yes, while match requires no.
         def f(d):
-            d["trigger"]["review_conditions"][0]["when"]["value"] = "yes"
+            d["trigger"].setdefault("review_conditions", []).append(
+                {"when": {"question": "q_independent_suspicion", "op": "equals", "value": "yes"},
+                 "flag": "suspicion_found", "display_note": "x"})
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "can never fire on an included issue")
 
     def test_negligence_as_review_condition(self):
@@ -348,7 +350,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_near_miss_contradicting_the_event_gate(self):
         # Near misses show only when the issue's event happened, so one that needs no event can never fire.
         def f(d):
-            d["trigger"]["excluded_explanations"].append(
+            d["trigger"].setdefault("excluded_explanations", []).append(
                 {"when": {"question": "q_encounter_events", "op": "empty"}, "flag": "no_events", "display_note": "x"})
         self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f), "encounter event didn't happen")
 
@@ -374,7 +376,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         # Plain view starts from any of ten events; the validator enumerates them as one group.
         # A review note that needs none of those events must still be caught as dead.
         def f(d):
-            d["trigger"]["review_conditions"].append(
+            d["trigger"].setdefault("review_conditions", []).append(
                 {"when": {"question": "q_encounter_events", "op": "empty"},
                  "flag": "impossible", "display_note": "x"})
         self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f),
@@ -647,10 +649,13 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "silently excludes")
 
     def test_silent_exclusion_on_checklist_not_sure(self):
+        # Requiring one specific problem means "not sure" checked alone excludes the issue, silently.
         def f(d):
-            d["trigger"]["excluded_explanations"] = []
-        self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f),
-                         "q_how_found = 'not_sure' (checked alone) silently excludes")
+            m = d["trigger"]["match_condition"]["all"]
+            i = next(i for i, c in enumerate(m) if c.get("question") == "q_sita_problems")
+            m[i] = {"question": "q_sita_problems", "op": "includes", "value": "vehicle_after_secured"}
+        self.assertError(self.run_with(f"{ISSUES}/search-incident-to-arrest-exceeded-scope.json", f),
+                         "q_sita_problems = 'not_sure' (checked alone) silently excludes")
 
     def test_uncertain_inclusion_without_review_note(self):
         # Franks is drafted on intent = unknown; without its review note the attorney wouldn't know.
@@ -663,9 +668,9 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_uncertain_inclusion_without_review_note_on_checklist(self):
         def f(d):
             d["trigger"]["review_conditions"] = [
-                n for n in d["trigger"]["review_conditions"] if n["flag"] != "consent_circumstances_unknown"]
-        self.assertError(self.run_with(f"{ISSUES}/consent-not-voluntary.json", f),
-                         "q_consent_circumstances = 'not_sure' (checked alone) can include this issue")
+                n for n in d["trigger"]["review_conditions"] if n["flag"] != "sita_scope_unknown"]
+        self.assertError(self.run_with(f"{ISSUES}/search-incident-to-arrest-exceeded-scope.json", f),
+                         "q_sita_problems = 'not_sure' (checked alone) can include this issue")
 
     def test_silent_exclusion_resolved_by_excluded_explanation(self):
         def f(d):

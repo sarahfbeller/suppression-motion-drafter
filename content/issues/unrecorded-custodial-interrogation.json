@@ -28,8 +28,7 @@
           "question": "q_questioning_location",
           "op": "in",
           "value": [
-            "place_of_detention",
-            "not_sure"
+            "place_of_detention"
           ]
         },
         {
@@ -37,8 +36,7 @@
           "op": "in",
           "value": [
             "partially",
-            "not_recorded",
-            "not_sure"
+            "not_recorded"
           ]
         }
       ]
@@ -52,24 +50,6 @@
         },
         "flag": "custody_unknown",
         "display_note": "You aren't sure yet whether your client was in custody. This section was drafted anyway; pin down whether your client was under arrest or restrained like an arrest (handcuffs, locked car, told not free to leave) before filing, or cut this section."
-      },
-      {
-        "when": {
-          "question": "q_questioning_location",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "location_unknown",
-        "display_note": "You aren't sure yet where the questioning happened. This section was drafted anyway; confirm the location from the reports before filing, or cut this section."
-      },
-      {
-        "when": {
-          "question": "q_interrogation_recorded",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "recording_unknown",
-        "display_note": "You aren't sure yet whether the questioning was recorded. This section was drafted anyway; request every recording from every officer and device before filing, or cut this section."
       }
     ]
   },

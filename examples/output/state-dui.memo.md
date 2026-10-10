@@ -17,7 +17,6 @@
 **Check before filing:**
 
 - This section's legal content has not yet been reviewed by an attorney. Check every proposition and citation before filing.
-- It's unclear whether the officer developed independent reasonable suspicion during the original-purpose tasks. If it turns out suspicion did arise then, the extension may be independently justified and this issue could be weaker than presented — confirm the timeline (CAD, body-cam) before relying on this issue as written.
 
 **Practice notes:**
 

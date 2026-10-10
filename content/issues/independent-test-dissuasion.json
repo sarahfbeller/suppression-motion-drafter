@@ -25,23 +25,11 @@
           "question": "q_independent_test_dissuaded",
           "op": "in",
           "value": [
-            "yes",
-            "not_sure"
+            "yes"
           ]
         }
       ]
-    },
-    "review_conditions": [
-      {
-        "when": {
-          "question": "q_independent_test_dissuaded",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "dissuasion_unknown",
-        "display_note": "You aren't sure yet whether the officer discouraged your client from getting an independent test. This section was drafted anyway; review the station video and audio for exactly what was said about the independent test before filing, or cut this section."
-      }
-    ]
+    }
   },
   "law_paragraphs": [
     {

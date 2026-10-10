@@ -15,45 +15,16 @@
           "event_group": "any_search"
         },
         {
-          "any": [
-            {
-              "question": "q_search_justification",
-              "op": "includes",
-              "value": "consent"
-            },
-            {
-              "question": "q_search_justification",
-              "op": "includes",
-              "value": "not_sure"
-            }
-          ]
+          "question": "q_search_justification",
+          "op": "includes",
+          "value": "consent"
         },
         {
           "question": "q_consent_scope_problems",
           "op": "not_empty"
         }
       ]
-    },
-    "review_conditions": [
-      {
-        "when": {
-          "question": "q_search_justification",
-          "op": "includes",
-          "value": "not_sure"
-        },
-        "flag": "justification_unknown",
-        "display_note": "You aren't sure yet how police justified the search. This section was drafted anyway; find out from the reports and the prosecution's response what justification they claim before filing, or cut this section."
-      },
-      {
-        "when": {
-          "question": "q_consent_scope_problems",
-          "op": "includes",
-          "value": "not_sure"
-        },
-        "flag": "consent_scope_unknown",
-        "display_note": "You aren't sure yet whether the search stayed within the consent. This section was drafted anyway; get the exact words of the request and any video before filing, or cut this section."
-      }
-    ]
+    }
   },
   "law_paragraphs": [
     {

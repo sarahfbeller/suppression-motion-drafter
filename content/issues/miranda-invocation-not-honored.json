@@ -33,8 +33,7 @@
           "op": "in",
           "value": [
             "continued",
-            "resumed",
-            "not_sure"
+            "resumed"
           ]
         }
       ]
@@ -57,15 +56,6 @@
         },
         "flag": "ambiguous_invocation",
         "display_note": "If your client's words were arguably ambiguous, expect the prosecution to argue they didn't invoke at all: an invocation of counsel must be unambiguous (Davis v. United States, 512 U.S. 452 (1994)), and the same applies to silence (Berghuis v. Thompkins, 560 U.S. 370 (2010)). Get the exact words."
-      },
-      {
-        "when": {
-          "question": "q_after_invocation",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "after_invocation_unknown",
-        "display_note": "You aren't sure yet what police did after your client invoked. This section was drafted anyway; review the recording from the invocation onward before filing, or cut this section."
       }
     ]
   },

@@ -33,16 +33,14 @@
                   "question": "q_passenger_id_requested",
                   "op": "in",
                   "value": [
-                    "yes",
-                    "not_sure"
+                    "yes"
                   ]
                 },
                 {
                   "question": "q_passenger_records_check",
                   "op": "in",
                   "value": [
-                    "yes",
-                    "not_sure"
+                    "yes"
                   ]
                 }
               ]
@@ -53,41 +51,11 @@
           "question": "q_independent_suspicion",
           "op": "in",
           "value": [
-            "no",
-            "not_sure"
+            "no"
           ]
         }
       ]
-    },
-    "review_conditions": [
-      {
-        "when": {
-          "question": "q_independent_suspicion",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "independent_suspicion_uncertain",
-        "display_note": "It's unclear whether the officer developed independent reasonable suspicion during the original-purpose tasks. If it turns out suspicion did arise then, the extension may be independently justified and this issue could be weaker than presented — confirm the timeline (CAD, body-cam) before relying on this issue as written."
-      },
-      {
-        "when": {
-          "question": "q_passenger_id_requested",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "passenger_id_request_uncertain",
-        "display_note": "You aren't sure yet whether police asked your client for identification. The Perozzo argument was drafted anyway; confirm from body-cam or the report before filing, or cut it."
-      },
-      {
-        "when": {
-          "question": "q_passenger_records_check",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "passenger_records_check_uncertain",
-        "display_note": "You aren't sure yet whether police ran a warrants or records check on your client. The Perozzo argument was drafted anyway; check dispatch/CAD records before filing, or cut it."
-      }
-    ]
+    }
   },
   "law_paragraphs": [
     {
@@ -170,16 +138,14 @@
             "question": "q_passenger_id_requested",
             "op": "in",
             "value": [
-              "yes",
-              "not_sure"
+              "yes"
             ]
           },
           {
             "question": "q_passenger_records_check",
             "op": "in",
             "value": [
-              "yes",
-              "not_sure"
+              "yes"
             ]
           }
         ]
@@ -241,7 +207,7 @@
   "_author_notes": [
     "Timing redesign 2026-10-08 (the maintainer): Rodriguez forbids adding time with unrelated inquiries whenever they happen, not only after the stop's tasks are done. q_original_purpose_completed was removed, and q_extension_event and q_independent_suspicion were reworded to drop the before/after framing.",
     "passenger_identification: text and citation supplied by the maintainer (2026-10-08). Perozzo is a prolongation case: an unnecessary passenger ID and warrants check is one way of unlawfully prolonging the stop. Alaska only (no federal authority yet). Two open items: the quote needs its quoting parenthetical for the 'fishing expedition' language (the maintainer will supply it); and 'We [] conclude' is kept exactly as given, but the empty brackets look like a lost omission marker. Inner quotation marks were alternated (double outside, then single, then double) because the passage is now itself a quotation.",
-    "Perozzo's 'no other case-specific justification' is covered by q_independent_suspicion, which the match already requires to be no or not_sure.",
+    "Perozzo's 'no other case-specific justification' is covered by q_independent_suspicion, which the match already requires to be no.",
     "least_intrusive_means: text and citation (Royer at 500) supplied by the maintainer, 2026-10-08. Verify: as I recall, the part of Royer containing this passage was a plurality opinion (four Justices). Not checked against the opinion."
   ]
 }

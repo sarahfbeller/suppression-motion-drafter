@@ -21,8 +21,7 @@
           "op": "in",
           "value": [
             "generalized_only",
-            "none_articulated",
-            "not_sure"
+            "none_articulated"
           ]
         }
       ]
@@ -36,15 +35,6 @@
         },
         "flag": "frisk_basis_borderline",
         "display_note": "Courts are split on whether generalized nervousness or a high-crime-area location, without more, can support a frisk. This is a weaker record than 'no suspicion articulated' — confirm the full context of what the officer said before relying on this issue as written."
-      },
-      {
-        "when": {
-          "question": "q_frisk_suspicion_basis",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "frisk_basis_unknown",
-        "display_note": "You aren't sure yet what the officer gave as the basis for the frisk. This section was drafted anyway; get the report and body-cam footage before filing, or cut this section."
       }
     ]
   },

@@ -37,8 +37,7 @@
           "op": "in",
           "value": [
             "incomplete",
-            "none",
-            "not_sure"
+            "none"
           ]
         }
       ]
@@ -61,15 +60,6 @@
         },
         "flag": "interrogation_unknown",
         "display_note": "You aren't sure yet whether the statements were a response to questioning. This section was drafted anyway; get the recording or report of what police said just before each statement before filing, or cut this section."
-      },
-      {
-        "when": {
-          "question": "q_miranda_warnings",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "warnings_unknown",
-        "display_note": "You aren't sure yet what warnings were given. This section was drafted anyway; get the recording or the officer's rights form before filing, or cut this section."
       }
     ]
   },

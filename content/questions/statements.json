@@ -53,10 +53,6 @@
       {
         "id": "none",
         "label": "No warnings before questioning"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   },
@@ -114,10 +110,6 @@
       {
         "id": "resumed",
         "label": "Stopped, but came back and questioned again"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   },
@@ -164,10 +156,6 @@
       {
         "id": "elsewhere",
         "label": "Somewhere else (roadside, home, hospital)"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   },
@@ -187,10 +175,6 @@
       {
         "id": "not_recorded",
         "label": "No"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   }

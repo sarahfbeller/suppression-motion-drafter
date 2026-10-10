@@ -30,34 +30,11 @@
           "question": "q_item_moved",
           "op": "in",
           "value": [
-            "yes",
-            "not_sure"
+            "yes"
           ]
         }
       ]
-    },
-    "review_conditions": [
-      {
-        "when": {
-          "question": "q_item_moved",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "item_moved_unknown",
-        "display_note": "You aren't sure yet whether the officer moved or handled anything. This section was drafted anyway; review the body-cam footage before filing, or cut this section."
-      }
-    ],
-    "excluded_explanations": [
-      {
-        "when": {
-          "question": "q_how_found",
-          "op": "includes",
-          "value": "not_sure"
-        },
-        "flag": "how_found_unknown",
-        "display_note": "You aren't sure yet how police say they came across the evidence, so this issue wasn't drafted. If the reports claim plain view, check whether the officer moved, opened, or handled anything to see it."
-      }
-    ]
+    }
   },
   "law_paragraphs": [
     {

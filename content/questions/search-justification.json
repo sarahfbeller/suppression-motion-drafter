@@ -23,10 +23,6 @@
       {
         "id": "other",
         "label": "Something else"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   }

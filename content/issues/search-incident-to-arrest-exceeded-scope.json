@@ -20,18 +20,9 @@
           "event_group": "any_search"
         },
         {
-          "any": [
-            {
-              "question": "q_search_justification",
-              "op": "includes",
-              "value": "incident_to_arrest"
-            },
-            {
-              "question": "q_search_justification",
-              "op": "includes",
-              "value": "not_sure"
-            }
-          ]
+          "question": "q_search_justification",
+          "op": "includes",
+          "value": "incident_to_arrest"
         },
         {
           "question": "q_sita_problems",
@@ -40,15 +31,6 @@
       ]
     },
     "review_conditions": [
-      {
-        "when": {
-          "question": "q_search_justification",
-          "op": "includes",
-          "value": "not_sure"
-        },
-        "flag": "justification_unknown",
-        "display_note": "You aren't sure yet how police justified the search. This section was drafted anyway; find out from the reports and the prosecution's response what justification they claim before filing, or cut this section."
-      },
       {
         "when": {
           "question": "q_sita_problems",

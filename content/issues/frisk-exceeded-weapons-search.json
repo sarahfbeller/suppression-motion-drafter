@@ -31,18 +31,7 @@
           ]
         }
       ]
-    },
-    "excluded_explanations": [
-      {
-        "when": {
-          "question": "q_frisk_conduct",
-          "op": "includes",
-          "value": "not_sure"
-        },
-        "flag": "frisk_conduct_unknown",
-        "display_note": "You aren't sure yet what the officer did during the pat-down, so this issue wasn't drafted. If body-cam footage or the report shows the officer reached into clothing without feeling a possible weapon, or removed something that couldn't have been a weapon, the pat-down may have exceeded its lawful scope."
-      }
-    ]
+    }
   },
   "law_paragraphs": [
     {
@@ -102,7 +91,6 @@
   ],
   "practice_notes": [],
   "_author_notes": [
-    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Terry v. Ohio, Sibron v. New York, Minnesota v. Dickerson. Unverified; pincites empty.",
-    "When the attorney isn't sure what happened during the pat-down, this issue is excluded with an explanation instead of drafted: without any facts about the officer's conduct there's no argument to draft. That's the uncertain-answer rule's exception, not its default."
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Terry v. Ohio, Sibron v. New York, Minnesota v. Dickerson. Unverified; pincites empty."
   ]
 }

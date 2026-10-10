@@ -15,10 +15,6 @@
       {
         "id": "none_articulated",
         "label": "No suspicion articulated — the officer cited only the stop itself, officer safety in general, or your client's proximity to someone else"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet"
       }
     ]
   },
@@ -42,10 +38,6 @@
       {
         "id": "manipulated_object",
         "label": "Kept squeezing, sliding, or manipulating an object after it was clear it wasn't a weapon"
-      },
-      {
-        "id": "not_sure",
-        "label": "Not sure yet (e.g. waiting on body-cam footage)"
       }
     ]
   }

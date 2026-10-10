@@ -22,18 +22,7 @@
           "value": "manipulated_object"
         }
       ]
-    },
-    "excluded_explanations": [
-      {
-        "when": {
-          "question": "q_frisk_conduct",
-          "op": "includes",
-          "value": "not_sure"
-        },
-        "flag": "frisk_conduct_unknown",
-        "display_note": "You aren't sure yet what the officer did during the pat-down, so this issue wasn't drafted. If body-cam footage or the report shows the officer kept squeezing or manipulating an object after it was clearly not a weapon, that's the plain-feel problem."
-      }
-    ]
+    }
   },
   "law_paragraphs": [
     {

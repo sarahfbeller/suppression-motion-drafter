@@ -30,34 +30,11 @@
           "question": "q_item_apparent",
           "op": "in",
           "value": [
-            "required_investigation",
-            "not_sure"
+            "required_investigation"
           ]
         }
       ]
-    },
-    "review_conditions": [
-      {
-        "when": {
-          "question": "q_item_apparent",
-          "op": "equals",
-          "value": "not_sure"
-        },
-        "flag": "apparent_unknown",
-        "display_note": "You aren't sure yet whether the item's nature was immediately obvious. This section was drafted anyway; get the officer's account of what they saw or felt and what they did next before filing, or cut this section."
-      }
-    ],
-    "excluded_explanations": [
-      {
-        "when": {
-          "question": "q_how_found",
-          "op": "includes",
-          "value": "not_sure"
-        },
-        "flag": "how_found_unknown",
-        "display_note": "You aren't sure yet how police say they came across the evidence, so this issue wasn't drafted. If the reports claim plain view, check whether the officer needed a closer look, a test, or other investigation before knowing what the item was."
-      }
-    ]
+    }
   },
   "law_paragraphs": [
     {
