@@ -46,7 +46,11 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         shutil.rmtree(self.tmp)
 
     def run_with(self, rel, fn):
+        """Inject a bug into one file and validate. A bug in an issue file only needs that issue
+        checked (much faster); anything else (config, questions, sessions) gets a full check."""
         edit(self.tmp, rel, fn)
+        if rel.startswith(ISSUES + "/"):
+            return V.validate(self.tmp, only={os.path.splitext(os.path.basename(rel))[0]})
         return V.validate(self.tmp)
 
     def assertError(self, report, needle):
@@ -62,6 +66,15 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_clean_content_has_no_errors(self):
         r = V.validate(ROOT)
         self.assertEqual(r.errors, [], "\n".join(r.errors))
+
+    def test_checking_one_issue_matches_the_full_check(self):
+        # The fast path the other tests use must report exactly what a full check reports for that issue.
+        full = V.validate(ROOT)
+        for iid in ("prolonged-stop", "search-incident-to-arrest-exceeded-scope", "consent-not-voluntary"):
+            with self.subTest(issue=iid):
+                part = V.validate(ROOT, only={iid})
+                mine = lambda msgs: [m for m in msgs if m.startswith(f"{ISSUES}/{iid}.json")]
+                self.assertEqual((mine(part.errors), mine(part.warnings)), (mine(full.errors), mine(full.warnings)))
 
     # ---- dead conditions (found twice during design)
 

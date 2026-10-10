@@ -393,6 +393,11 @@ def referenced_options(conds):
     options that are interchangeable: ones mentioned only as 'includes' leaves inside the same
     'any' groups (e.g. an issue that starts from any of ten encounter events). Swapping such
     options never changes any condition's value, so enumerating one of them is enough.
+
+    Every question the conditions use gets an entry, even one used only as 'empty' / 'not_empty':
+    its options are then all interchangeable, and one representative stands in for them.
+    Pass only the conditions a check actually evaluates; options mentioned elsewhere in the
+    issue don't change the outcome, and leaving them out keeps the enumeration small.
     """
     contexts = {}  # (question, option) -> set of places it's mentioned
 
@@ -415,9 +420,11 @@ def referenced_options(conds):
         walk(c)
 
     refs, seen = {}, set()
+    for c in conds:
+        for q in E.condition_questions(c):
+            refs.setdefault(q, set())
     for (q, x), ctx in contexts.items():
         sig = (q, frozenset(ctx))
-        refs.setdefault(q, set())
         if sig not in seen:
             seen.add(sig)
             refs[q].add(x)
@@ -503,12 +510,6 @@ def space_size(qids, questions, refs=None):
     for q in qids:
         n *= len(domain(questions[q], refs.get(q)))
     return n
-
-
-def issue_conditions(trig, paragraphs):
-    return ([trig["match_condition"]] + [n["when"] for n in trig.get("review_conditions", [])]
-            + [n["when"] for n in trig.get("excluded_explanations", [])]
-            + [p["when"] for p in paragraphs if "when" in p])
 
 
 # --------------------------------------------------------------------------- issues
@@ -672,9 +673,8 @@ def check_issue(r, where, issue, config, questions, used_questions):
                                                f"go to the attorney — move it to '_author_notes'? {note[:70]!r}")
 
     if conds_ok and match is not None:
-        refs = referenced_options(issue_conditions(trig, good_paragraphs))
-        check_reachability(r, where, trig, good_paragraphs, questions, refs)
-        check_every_match_has_a_paragraph(r, where, issue, good_paragraphs, questions, courts, refs)
+        check_reachability(r, where, trig, good_paragraphs, questions)
+        check_every_match_has_a_paragraph(r, where, issue, good_paragraphs, questions, courts)
 
 
 def check_fill_in(r, pw, text):
@@ -799,23 +799,26 @@ def check_authority(r, sw, a, p_ac, narrowed, courts, counts, nested):
                 check_authority(r, aw, p["authority"], p_ac, narrowed, courts, counts, nested=True)
 
 
-def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, courts, refs):
+def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, courts):
     """In every forum the issue applies in, every matching set of answers must leave at least one
     paragraph with a cited sentence standing after its 'when' and applicable_courts — otherwise the
     issue matches but produces nothing (argument alone isn't a section), and it isn't a research gap."""
     match = issue["trigger"]["match_condition"]
+    whens = [p["when"] for p in paragraphs if "when" in p]
     qids = E.condition_questions(match)
-    for p in paragraphs:
-        if "when" in p:
-            qids |= E.condition_questions(p["when"])
-    if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
-        return
+    for w in whens:
+        qids |= E.condition_questions(w)
+    refs = referenced_options([match] + whens)
     for code in sorted(courts):
         binding = [E.SCOTUS, code]
         if courts[code]["kind"] == "scotus" or not E.applies_in(issue["applicable_courts"], binding):
             continue
         live = [p for p in paragraphs if E.applies_in(E.paragraph_courts(issue, p), binding)
                 and E.has_cited(p.get("sentences", []))]
+        if any("when" not in p for p in live):
+            continue  # a paragraph of law that always prints here: nothing to enumerate
+        if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
+            return
         for a in assignments(qids, questions, refs):
             if E.eval_condition(match, a) and not any("when" not in p or E.eval_condition(p["when"], a)
                                                       for p in live):
@@ -825,12 +828,14 @@ def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, co
                 break
 
 
-def check_reachability(r, where, trig, paragraphs, questions, refs):
+def check_reachability(r, where, trig, paragraphs, questions):
     match = trig["match_condition"]
     mq = E.condition_questions(match)
 
     def explore(extra_cond):
+        """Every relevant combination of answers for match_condition plus one other condition."""
         qids = mq | (E.condition_questions(extra_cond) if extra_cond else set())
+        refs = referenced_options([match] + ([extra_cond] if extra_cond else []))
         if space_size(qids, questions, refs) > ENUMERATION_LIMIT:
             return None
         return assignments(qids, questions, refs)
@@ -882,6 +887,7 @@ def check_reachability(r, where, trig, paragraphs, questions, refs):
     note_qids = set()
     for n in excluded + reviews:
         note_qids |= E.condition_questions(n["when"])
+    refs = referenced_options([match] + [n["when"] for n in excluded + reviews])
     for qid in sorted(mq):
         q = questions[qid]
         if q["type"] not in ("multiple_choice", "multi_select"):
@@ -950,7 +956,10 @@ def check_sessions(r, root, config, questions):
 
 # --------------------------------------------------------------------------- main
 
-def validate(root):
+def validate(root, only=None):
+    """Validate the repo. only: a set of issue ids to check instead of every issue (for tests).
+    Config, questions, and example sessions are always checked; the checks that need every issue
+    (unused questions and event groups, duplicate headings across files) run only on a full check."""
     r = Report()
     config = check_config(r, root)
     if config is None:
@@ -964,6 +973,8 @@ def validate(root):
     used = set()
     headings = {}
     for path in E.content_files(root, "issues"):
+        if only is not None and os.path.splitext(os.path.basename(path))[0] not in only:
+            continue
         where = os.path.relpath(path, root)
         try:
             issue = E.load_json(path)
@@ -982,6 +993,9 @@ def validate(root):
             if h in headings:
                 r.warn(where, f"same motion_heading as {headings[h]}")
             headings[h] = where
+    if only is not None:
+        check_sessions(r, root, config, questions)
+        return r
     for name in sorted(set(config["event_groups"]) - groups_used):
         r.warn("content/config.json event_groups", f"group {name!r} isn't used by any issue")
     for qid, q in sorted(questions.items()):
