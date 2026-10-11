@@ -29,8 +29,11 @@
       },
       {
         "id": "unclear",
-        "label": "Unclear or not established"
+        "label": "Not sure yet"
       }
+    ],
+    "_author_notes": [
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'unclear') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: near-miss purpose_unclear_needs_development in denial-of-contact-before-breath-test."
     ]
   },
   {

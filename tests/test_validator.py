@@ -347,6 +347,16 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertTrue(skipped, "\n".join(r.warnings))
         self.assertTrue(all("Questions involved:" in w for w in skipped))
 
+    def test_missing_precondition_on_an_answer(self):
+        # The container bug: a paragraph reaches q_container_use only after a closed container was
+        # searched, but a review note reached it without that, so the interview asked about "the
+        # container" in every search-incident-to-arrest case.
+        def f(d):
+            rc = next(r for r in d["trigger"]["review_conditions"] if r["flag"] == "container_personal_effects")
+            rc["when"] = rc["when"]["all"][1]
+        self.assertWarning(self.run_with(f"{ISSUES}/search-incident-to-arrest-exceeded-scope.json", f),
+                           "q_container_use may be missing a precondition")
+
     def test_near_miss_contradicting_the_event_gate(self):
         # Near misses show only when the issue's event happened, so one that needs no event can never fire.
         def f(d):

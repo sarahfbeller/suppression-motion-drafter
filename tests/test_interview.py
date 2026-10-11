@@ -99,6 +99,15 @@ class InterviewDetails(unittest.TestCase):
         self.assertNotIn("q_bail_established", asked)
 
 
+class AuditReport(unittest.TestCase):
+    def test_builds_with_every_section(self):
+        import interview_audit as A
+        text = A.build(ROOT, per_issue=3)
+        for heading in ("## Questions", "## Possible missing preconditions",
+                        "## Used by a condition but never asked", "## Interview length"):
+            self.assertIn(heading, text)
+
+
 class CommandLineInterviewer(unittest.TestCase):
     def test_scripted_interview(self):
         import interview as I

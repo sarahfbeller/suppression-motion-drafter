@@ -116,8 +116,13 @@ answer just changes what comes next.
 Because an unasked question renders as false, skipping it never changes the output; the tests check
 this on simulated interviews. The flip side: **a condition must state every fact its question
 assumes.** A paragraph `when` of "your client was a passenger" with no vehicle stop makes the
-interview ask about the stopped vehicle after a pedestrian frisk. `scripts/interview_audit.py` lists,
-for each question, the events present whenever it's asked, to catch this.
+interview ask about the stopped vehicle after a pedestrian frisk. Two tools help:
+
+- The validator warns when, within one issue, one condition reaches a question only after some fact
+  is true (written before it, left to right) and another condition reaches it without that fact.
+- `scripts/interview_audit.py` lists, for each question, the events and earlier answers present
+  every time it's asked, to read against its prompt. That also catches a question used in only one
+  condition, which the validator can't compare.
 
 ## Questions
 

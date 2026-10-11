@@ -14,8 +14,11 @@
       },
       {
         "id": "not_sure",
-        "label": "Not sure"
+        "label": "Not sure yet"
       }
+    ],
+    "_author_notes": [
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note booking_search_unknown in inventory-search-before-bail."
     ]
   },
   {
@@ -33,8 +36,11 @@
       },
       {
         "id": "not_sure",
-        "label": "Not sure"
+        "label": "Not sure yet"
       }
+    ],
+    "_author_notes": [
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note bail_unknown in inventory-search-before-bail."
     ]
   },
   {
@@ -52,8 +58,11 @@
       },
       {
         "id": "not_sure",
-        "label": "Not sure"
+        "label": "Not sure yet"
       }
+    ],
+    "_author_notes": [
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note bail_opportunity_unknown in inventory-search-before-bail."
     ]
   }
 ]

@@ -16,6 +16,9 @@
         "id": "not_sure",
         "label": "Not sure yet"
       }
+    ],
+    "_author_notes": [
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note custody_unknown in miranda-warnings-inadequate; review note custody_unknown in miranda-waiver-invalid; review note custody_unknown in miranda-invocation-not-honored; review note custody_unknown in unrecorded-custodial-interrogation."
     ]
   },
   {
@@ -35,6 +38,9 @@
         "id": "not_sure",
         "label": "Not sure yet"
       }
+    ],
+    "_author_notes": [
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note interrogation_unknown in miranda-warnings-inadequate; review note interrogation_unknown in miranda-waiver-invalid."
     ]
   },
   {
@@ -73,6 +79,9 @@
         "id": "not_sure",
         "label": "Not sure yet"
       }
+    ],
+    "_author_notes": [
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note waiver_unknown in miranda-waiver-invalid."
     ]
   },
   {
@@ -142,6 +151,9 @@
         "id": "not_sure",
         "label": "Not sure yet"
       }
+    ],
+    "_author_notes": [
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note coercion_unknown in confession-involuntary."
     ]
   },
   {

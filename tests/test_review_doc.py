@@ -27,5 +27,13 @@ class ReviewDocument(unittest.TestCase):
         self.assertIn("`drugs`: A drug offense *(no issue uses this option)*", D.build(ROOT))
 
 
+    def test_shows_question_author_notes(self):
+        _config, questions, _issues = E.load_repo(ROOT)
+        text = D.build(ROOT)
+        for q in questions.values():
+            for note in q.get("_author_notes", []):
+                self.assertIn(note, text)
+
+
 if __name__ == "__main__":
     unittest.main()

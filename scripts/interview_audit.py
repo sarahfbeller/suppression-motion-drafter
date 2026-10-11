@@ -17,6 +17,21 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import engine as E  # noqa: E402
 import simulate as S  # noqa: E402
+import validate as V  # noqa: E402
+
+
+def facts(answers):
+    """The answers given so far, as short facts ("q_x = yes", "q_y includes z"), leaving out the
+    events (reported separately) and pronouns (they don't change what's asked)."""
+    out = set()
+    for qid, a in answers.items():
+        if qid in (E.ENCOUNTER_EVENTS, E.CLIENT_PRONOUNS):
+            continue
+        if isinstance(a, list):
+            out |= {f"{qid} includes {o}" for o in a} if a else {f"{qid}: nothing checked"}
+        else:
+            out.add(f"{qid} = {a}")
+    return out
 
 
 def build(root, per_issue):
@@ -24,12 +39,15 @@ def build(root, per_issue):
     asked_with = {}  # question -> intersection of events present when it was asked
     groups = config.get("event_groups", {})
     group_with = {}  # question -> event groups with at least one member present every time it was asked
+    facts_with = {}  # question -> answers already given every time it was asked
     times = {}
     lengths = {}  # issue id (or None for random cases) -> interview lengths after the top questions
     for target, full in S.cases(questions, issues, per_issue, seed=1):
         _, asked = S.run_interview(issues, full)
         events = set(full[E.ENCOUNTER_EVENTS] or [])
-        for qid in asked:
+        for n, qid in enumerate(asked):
+            known = facts({q: full[q] for q in asked[:n]})
+            facts_with[qid] = facts_with[qid] & known if qid in facts_with else known
             times[qid] = times.get(qid, 0) + 1
             asked_with[qid] = asked_with[qid] & events if qid in asked_with else set(events)
             present = {g for g, members in groups.items() if events & set(members)}
@@ -53,14 +71,24 @@ def build(root, per_issue):
            "was asked. If a question's prompt assumes an event that isn't listed (e.g. a question about "
            "\"the stopped vehicle\" without `vehicle_stop`), some condition using it is missing that "
            "precondition. *Always with one of* names the event groups (`content/config.json`) that had at "
-           "least one event present every time.", "",
-           "| Question | Asked in | Always with | Always with one of | Prompt |", "|---|---|---|---|---|"]
+           "least one event present every time. *Always after these answers* lists the earlier answers that "
+           "were given every time; read it the same way, for premises that are answers (a question about "
+           "\"the container\" should come after an answer saying a container was searched).", "",
+           "| Question | Asked in | Always with | Always with one of | Always after these answers | Prompt |",
+           "|---|---|---|---|---|---|"]
     for qid, q in questions.items():
         if qid in E.TOP_QUESTIONS or qid not in times:
             continue
         always = ", ".join(f"`{e}`" for e in sorted(asked_with[qid])) or "—"
         one_of = ", ".join(f"`{g}`" for g in sorted(group_with[qid])) or "—"
-        out.append(f"| `{qid}` | {times[qid]} | {always} | {one_of} | {q['prompt']} |")
+        after = ", ".join(f"`{f}`" for f in sorted(facts_with[qid])) or "—"
+        out.append(f"| `{qid}` | {times[qid]} | {always} | {one_of} | {after} | {q['prompt']} |")
+    out += ["", "## Possible missing preconditions", "",
+            "Within one issue, a question that one condition only reaches after some fact is true, but "
+            "another condition reaches without it. The validator warns about these too.", ""]
+    found = [(i["id"], *f) for i in issues for f in V.inconsistent_preconditions(i)]
+    out += [f"- `{iid}`: `{qid}` is reached only after `{guard}` in {', '.join(has)}, but not in "
+            f"{', '.join(lacks)}" for iid, qid, guard, has, lacks in found] or ["None."]
     never = sorted(q for q in used if q not in times and q not in E.TOP_QUESTIONS)
     out += ["", "## Used by a condition but never asked", ""]
     out += [f"- `{q}`" for q in never] if never else ["None."]

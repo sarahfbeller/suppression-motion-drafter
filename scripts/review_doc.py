@@ -170,6 +170,8 @@ def question_section(rel, qids, questions, used_by, used_options):
             unused = "" if engine_read or (qid, o["id"]) in used_options else " *(no issue uses this option)*"
             out.append(f"  - `{o['id']}`: {o['label']}{unused}")
         users = sorted(used_by.get(qid, []))
+        for note in q.get("_author_notes", []):
+            out.append(f"  - *Author note (never rendered):* {note}")
         if qid == E.FILING_COURT:
             out.append("  - *Used by:* the engine (sets which courts' authority is cited)")
         elif qid == E.CLIENT_PRONOUNS:

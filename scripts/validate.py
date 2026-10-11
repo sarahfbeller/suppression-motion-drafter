@@ -666,6 +666,10 @@ def check_issue(r, where, issue, config, questions, used_questions):
 
     if conds_ok and match is not None:
         check_reachability(r, where, trig, good_paragraphs, questions)
+        for qid, guard, has, lacks in inconsistent_preconditions({**issue, "law_paragraphs": good_paragraphs}):
+            r.warn(where, f"{qid} may be missing a precondition: {', '.join(has)} only reach it when "
+                          f"{guard} is true, but {', '.join(lacks)} reach it without that, so the interview "
+                          f"can ask {qid} when its premise is false. Add the condition if it applies.")
         check_every_match_has_a_paragraph(r, where, issue, good_paragraphs, questions, courts)
 
 
@@ -800,6 +804,59 @@ def too_many(r, where, what, qids, questions, refs):
     r.warn(where, f"too many answer combinations ({n:,}) to check {what} — skipped. "
                   f"Questions involved: {', '.join(sorted(qids))}")
     return True
+
+
+def _atom(c):
+    return json.dumps(c, sort_keys=True)
+
+
+def _guards_before(cond, qid, inherited=frozenset()):
+    """For each place qid appears in cond, the conditions written before it in the same 'all'
+    chain: what must already be true when the interview reaches it (it asks left to right)."""
+    if "all" in cond:
+        out = []
+        for i, k in enumerate(cond["all"]):
+            out += _guards_before(k, qid, inherited | frozenset(_atom(x) for x in cond["all"][:i]))
+        return out
+    if "any" in cond:
+        return [g for k in cond["any"] for g in _guards_before(k, qid, inherited)]
+    return [inherited] if cond.get("question") == qid else []
+
+
+def inconsistent_preconditions(issue):
+    """Questions that one condition only reaches after some fact is true, but another reaches
+    without it: e.g. a paragraph that asks about "the container" only after a container search, and
+    a review note that asks the same question with no container. The second lets the interview ask
+    a question whose premise may be false. Compares review notes and paragraphs with each other, and
+    near misses with each other, for questions not in the trigger (those are asked while the trigger
+    is decided). Returns (question, condition, conditions with it, conditions without it)."""
+    trig = issue["trigger"]
+    match = trig["match_condition"]
+    in_match = frozenset(_atom(x) for x in (match["all"] if "all" in match else [match]))
+    gate = E.event_gate(match)
+    in_gate = frozenset(_atom(x) for x in gate["all"]) if gate else frozenset()
+    details = ([("review note " + n["flag"], n["when"], in_match) for n in trig.get("review_conditions", [])]
+               + [("paragraph " + p["id"], p["when"], in_match) for p in issue["law_paragraphs"] if "when" in p])
+    nears = [("near-miss " + n["flag"], n["when"], in_gate) for n in trig.get("excluded_explanations", [])]
+    skip = E.condition_questions(match)
+    found = []
+    for ctxs in (details, nears):
+        qids = set()
+        for _, cond, _ in ctxs:
+            qids |= E.condition_questions(cond)
+        for qid in sorted(qids - skip):
+            seen = []
+            for label, cond, base in ctxs:
+                occ = _guards_before(cond, qid)
+                if occ:
+                    g = frozenset.intersection(*occ) | base
+                    seen.append((label, frozenset(a for a in g if qid not in E.condition_questions(json.loads(a)))))
+            if len(seen) < 2:
+                continue
+            common = frozenset.intersection(*[g for _, g in seen])
+            for a in sorted(frozenset.union(*[g for _, g in seen]) - common):
+                found.append((qid, a, [lab for lab, g in seen if a in g], [lab for lab, g in seen if a not in g]))
+    return found
 
 
 def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, courts):
