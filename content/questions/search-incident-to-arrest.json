@@ -1,28 +1,36 @@
 [
   {
-    "id": "q_sita_problems",
+    "id": "q_sita_searched",
     "type": "multi_select",
-    "prompt": "Did the search go beyond what a search incident to arrest allows? Select all that apply; leave blank if it didn't.",
+    "prompt": "After the arrest, what did police search? Select all that apply.",
     "options": [
       {
-        "id": "beyond_immediate_control",
-        "label": "Police searched beyond your client's person and the area within their immediate reach (e.g. other rooms, closed areas)"
+        "id": "person",
+        "label": "Your client's person and pockets"
       },
       {
-        "id": "vehicle_after_secured",
-        "label": "Police searched a vehicle after your client was secured and away from it"
+        "id": "within_reach",
+        "label": "The area within your client's reach"
       },
       {
-        "id": "cell_phone_data",
-        "label": "Police looked through the data on a cell phone"
+        "id": "other_room_or_closed_area",
+        "label": "Another room, or a closed or concealed area of the room"
       },
       {
-        "id": "remote_in_time_or_place",
-        "label": "The search happened well after the arrest, or somewhere else"
+        "id": "vehicle",
+        "label": "A vehicle"
+      },
+      {
+        "id": "phone_data",
+        "label": "The data on a phone"
       },
       {
         "id": "closed_container",
-        "label": "Police opened a closed container (a bag, purse, box, or a car's console or other compartment)"
+        "label": "A closed container (a bag, purse, box, or a car's console or other compartment)"
+      },
+      {
+        "id": "later_or_elsewhere",
+        "label": "Something searched later, or somewhere else (e.g. at the station)"
       },
       {
         "id": "not_sure",
@@ -30,7 +38,27 @@
       }
     ],
     "_author_notes": [
-      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note sita_scope_unknown in search-incident-to-arrest-exceeded-scope."
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note sita_scope_unknown in search-incident-to-arrest-exceeded-scope.",
+      "Replaced q_sita_problems on 2026-10-12 (facts in, issues out; option B): the old prompt asked whether the search 'went beyond what a search incident to arrest allows'. Options drafted by Claude."
+    ]
+  },
+  {
+    "id": "q_location_during_search",
+    "type": "multiple_choice",
+    "prompt": "Where was your client when police searched?",
+    "options": [
+      {
+        "id": "secured",
+        "label": "Handcuffed, or in a patrol car"
+      },
+      {
+        "id": "nearby_unrestrained",
+        "label": "Standing nearby, not restrained"
+      },
+      {
+        "id": "taken_away",
+        "label": "Already taken away from the scene"
+      }
     ]
   },
   {

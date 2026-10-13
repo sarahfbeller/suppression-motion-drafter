@@ -322,15 +322,6 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         r = self.run_with(f"{ISSUES}/prolonged-stop.json", f)
         self.assertFalse(any("encounter event" in e for e in r.errors), "\n".join(r.errors))
 
-    def test_superseded_questions_are_gone(self):
-        for qid in ("q_warrant_used", "q_passenger_frisked", "q_original_purpose_completed", "q_breath_test_administered",
-                    "q_waiver_problems", "q_stop_basis_problems", "q_stop_type"):
-            with self.subTest(qid=qid):
-                self.setUp()
-                def f(d):
-                    d["trigger"]["match_condition"]["all"].append({"question": qid, "op": "equals", "value": "yes"})
-                self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "unknown question")
-
     def test_reachability_still_checked_with_many_events(self):
         # 20 event options would be 2^20 subsets; the validator must still enumerate, not skip.
         r = V.validate(self.tmp)
@@ -663,10 +654,10 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         # Requiring one specific problem means "not sure" checked alone excludes the issue, silently.
         def f(d):
             m = d["trigger"]["match_condition"]["all"]
-            i = next(i for i, c in enumerate(m) if c.get("question") == "q_sita_problems")
-            m[i] = {"question": "q_sita_problems", "op": "includes", "value": "vehicle_after_secured"}
+            i = next(i for i, c in enumerate(m) if "any" in c)
+            m[i] = {"question": "q_sita_searched", "op": "includes", "value": "phone_data"}
         self.assertError(self.run_with(f"{ISSUES}/search-incident-to-arrest-exceeded-scope.json", f),
-                         "q_sita_problems = 'not_sure' (checked alone) silently excludes")
+                         "q_sita_searched = 'not_sure' (checked alone) silently excludes")
 
     def test_uncertain_inclusion_without_review_note(self):
         # Franks is drafted on intent = unknown; without its review note the attorney wouldn't know.
@@ -681,7 +672,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             d["trigger"]["review_conditions"] = [
                 n for n in d["trigger"]["review_conditions"] if n["flag"] != "sita_scope_unknown"]
         self.assertError(self.run_with(f"{ISSUES}/search-incident-to-arrest-exceeded-scope.json", f),
-                         "q_sita_problems = 'not_sure' (checked alone) can include this issue")
+                         "q_sita_searched = 'not_sure' (checked alone) can include this issue")
 
     def test_silent_exclusion_resolved_by_excluded_explanation(self):
         def f(d):

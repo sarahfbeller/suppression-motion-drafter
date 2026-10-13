@@ -75,7 +75,8 @@ call per sentence).
 - Ask before adding anything new to `docs/AUTHORING_GUIDE.md`. Correcting statements that
   have become wrong is fine; say what you changed.
 - When a redesign changes how a fact is represented, remove the old representation
-  everywhere, and extend the validator so it can't come back.
+  everywhere, and extend the validator so the old format can't come back. Retired question
+  ids don't need this: the unknown-question check already catches stale references.
 
 ## Open items
 

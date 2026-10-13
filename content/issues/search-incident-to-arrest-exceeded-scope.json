@@ -25,15 +25,57 @@
           "value": "incident_to_arrest"
         },
         {
-          "question": "q_sita_problems",
-          "op": "not_empty"
+          "any": [
+            {
+              "question": "q_sita_searched",
+              "op": "includes",
+              "value": "other_room_or_closed_area"
+            },
+            {
+              "all": [
+                {
+                  "question": "q_sita_searched",
+                  "op": "includes",
+                  "value": "vehicle"
+                },
+                {
+                  "question": "q_location_during_search",
+                  "op": "in",
+                  "value": [
+                    "secured",
+                    "taken_away"
+                  ]
+                }
+              ]
+            },
+            {
+              "question": "q_sita_searched",
+              "op": "includes",
+              "value": "phone_data"
+            },
+            {
+              "question": "q_sita_searched",
+              "op": "includes",
+              "value": "closed_container"
+            },
+            {
+              "question": "q_sita_searched",
+              "op": "includes",
+              "value": "later_or_elsewhere"
+            },
+            {
+              "question": "q_sita_searched",
+              "op": "includes",
+              "value": "not_sure"
+            }
+          ]
         }
       ]
     },
     "review_conditions": [
       {
         "when": {
-          "question": "q_sita_problems",
+          "question": "q_sita_searched",
           "op": "includes",
           "value": "not_sure"
         },
@@ -42,9 +84,21 @@
       },
       {
         "when": {
-          "question": "q_sita_problems",
-          "op": "includes",
-          "value": "vehicle_after_secured"
+          "all": [
+            {
+              "question": "q_sita_searched",
+              "op": "includes",
+              "value": "vehicle"
+            },
+            {
+              "question": "q_location_during_search",
+              "op": "in",
+              "value": [
+                "secured",
+                "taken_away"
+              ]
+            }
+          ]
         },
         "flag": "vehicle_evidence_prong",
         "display_note": "Even when the arrestee is secured, a vehicle search incident to arrest is allowed if it was reasonable to believe evidence of the offense of arrest was in the vehicle. Expect the prosecution to argue this, especially for drug or DUI arrests (open containers); be ready to explain why no such evidence could be expected."
@@ -53,7 +107,7 @@
         "when": {
           "all": [
             {
-              "question": "q_sita_problems",
+              "question": "q_sita_searched",
               "op": "includes",
               "value": "closed_container"
             },
@@ -100,9 +154,9 @@
     {
       "id": "other_rooms_and_closed_areas",
       "when": {
-        "question": "q_sita_problems",
+        "question": "q_sita_searched",
         "op": "includes",
-        "value": "beyond_immediate_control"
+        "value": "other_room_or_closed_area"
       },
       "sentences": [
         {
@@ -126,7 +180,7 @@
         "ak"
       ],
       "when": {
-        "question": "q_sita_problems",
+        "question": "q_sita_searched",
         "op": "includes",
         "value": "closed_container"
       },
@@ -175,7 +229,7 @@
         "ak"
       ],
       "when": {
-        "question": "q_sita_problems",
+        "question": "q_sita_searched",
         "op": "includes",
         "value": "closed_container"
       },
@@ -264,7 +318,7 @@
       "when": {
         "all": [
           {
-            "question": "q_sita_problems",
+            "question": "q_sita_searched",
             "op": "includes",
             "value": "closed_container"
           },
@@ -286,9 +340,21 @@
     {
       "id": "vehicle",
       "when": {
-        "question": "q_sita_problems",
-        "op": "includes",
-        "value": "vehicle_after_secured"
+        "all": [
+          {
+            "question": "q_sita_searched",
+            "op": "includes",
+            "value": "vehicle"
+          },
+          {
+            "question": "q_location_during_search",
+            "op": "in",
+            "value": [
+              "secured",
+              "taken_away"
+            ]
+          }
+        ]
       },
       "sentences": [
         {
@@ -309,9 +375,9 @@
     {
       "id": "cell_phone",
       "when": {
-        "question": "q_sita_problems",
+        "question": "q_sita_searched",
         "op": "includes",
-        "value": "cell_phone_data"
+        "value": "phone_data"
       },
       "sentences": [
         {
@@ -332,9 +398,9 @@
     {
       "id": "remote_in_time_or_place",
       "when": {
-        "question": "q_sita_problems",
+        "question": "q_sita_searched",
         "op": "includes",
-        "value": "remote_in_time_or_place"
+        "value": "later_or_elsewhere"
       },
       "sentences": [
         {
@@ -357,8 +423,9 @@
     "A search incident to arrest requires a lawful arrest — if the arrest itself lacked probable cause, argue that too; this issue assumes the arrest was lawful."
   ],
   "_author_notes": [
+    "REVIEW CAREFULLY (legal judgment not yet reviewed): this issue is suggested when q_sita_searched includes another room or closed area, phone data, a closed container, something searched later or elsewhere, or 'not sure'; or a vehicle while your client was secured or taken away (Gant). The person and the area within reach never suggest it on their own, and neither does a vehicle searched while your client stood nearby unrestrained. Drafted by Claude on 2026-10-12 and built at the maintainer's request; not yet legally agreed. Open question: should searching the area within reach suggest the issue when your client was already secured?",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Chimel v. California, Arizona v. Gant, Riley v. California, Preston v. United States. Unverified; pincites empty.",
-    "alaska_closed_containers, immediately_associated, container_not_personal: text and citations supplied by the maintainer, 2026-10-08 (Crawford at 258–59 and 260, citing Hinkel; Hinkel at 1071; Pitka at 402). Alaska only, when q_sita_problems includes closed_container. Changes: '[S]pecial' bracketed because the quote begins a sentence; the maintainer's short forms ('Hinkel, 618 P.2d at 1071', 'Crawford, 138 P.3d at 260') print in full, since the renderer only makes Id..",
+    "alaska_closed_containers, immediately_associated, container_not_personal: text and citations supplied by the maintainer, 2026-10-08 (Crawford at 258–59 and 260, citing Hinkel; Hinkel at 1071; Pitka at 402). Alaska only, when q_sita_searched includes closed_container. Changes: '[S]pecial' bracketed because the quote begins a sentence; the maintainer's short forms ('Hinkel, 618 P.2d at 1071', 'Crawford, 138 P.3d at 260') print in full, since the renderer only makes Id..",
     "The immediately-associated exception helps the prosecution, but it prints whenever the container option is checked: it's the main ground the prosecution will argue, and Pitka's limit on it is the defense's answer. container_not_personal is the generated application sentence, when q_container_use is answered with nothing checked. The container_personal_effects review note was written by me from the maintainer's text; not separately verified.",
     "No federal authority on closed containers yet (federal law is less protective here; not researched). In a Ninth Circuit case, checking closed_container includes the issue with only the general Chimel paragraph.",
     "container_personal_effects review note now also requires the closed_container option (2026-10-09); without it the interview asked about the container in every search-incident-to-arrest case."
