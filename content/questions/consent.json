@@ -43,18 +43,33 @@
     ]
   },
   {
-    "id": "q_consent_scope_problems",
+    "id": "q_consent_search_events",
     "type": "multi_select",
-    "prompt": "Did the search go beyond what your client agreed to? Select all that apply; leave blank if it stayed within the consent.",
+    "prompt": "During the consent search, did any of these happen? Select all that apply; leave blank if none.",
     "options": [
       {
-        "id": "exceeded_area",
-        "label": "Police searched places or containers the consent didn't cover"
+        "id": "searched_elsewhere",
+        "label": "Police searched somewhere other than what they asked to search (e.g. asked about the car's center console and searched the trunk)"
       },
       {
-        "id": "continued_after_withdrawal",
-        "label": "Police kept searching after your client withdrew or limited consent"
+        "id": "exceeded_client_limit",
+        "label": "Your client limited the consent (e.g. “just the trunk”), and police searched beyond that limit"
+      },
+      {
+        "id": "opened_locked_container",
+        "label": "Police opened a locked or sealed container"
+      },
+      {
+        "id": "damaged_property",
+        "label": "Police damaged or took apart property"
+      },
+      {
+        "id": "continued_after_objection",
+        "label": "Your client objected or withdrew consent, and police kept going"
       }
+    ],
+    "_author_notes": [
+      "Replaced q_consent_scope_problems on 2026-10-12 (facts in, issues out): the old prompt asked whether the search 'went beyond what your client agreed to'. Options drafted by Claude and revised by the maintainer (the limit option names both the limit and the search past it; the first option's example)."
     ]
   }
 ]

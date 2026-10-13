@@ -20,7 +20,7 @@
           "value": "consent"
         },
         {
-          "question": "q_consent_scope_problems",
+          "question": "q_consent_search_events",
           "op": "not_empty"
         }
       ]
@@ -81,9 +81,9 @@
     {
       "id": "withdrawal",
       "when": {
-        "question": "q_consent_scope_problems",
+        "question": "q_consent_search_events",
         "op": "includes",
-        "value": "continued_after_withdrawal"
+        "value": "continued_after_objection"
       },
       "sentences": [
         {
@@ -99,6 +99,7 @@
     "If your client objected or limited the search partway through, find out whether it's on video."
   ],
   "_author_notes": [
+    "REVIEW CAREFULLY (legal judgment not yet reviewed): this issue is suggested when any q_consent_search_events option is checked; the withdrawal paragraph prints for 'objected or withdrew, and police kept going'. Drafted by Claude on 2026-10-12 and built at the maintainer's request; not yet legally agreed. Consider whether the locked-container and property-damage options should print their own paragraphs (with authority).",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Walter v. United States, Florida v. Jimeno. Unverified; pincites empty.",
     "withdrawal has no authority: I'm not certain of a Supreme Court case holding that consent can be withdrawn mid-search, so it's left as a gap. Ninth Circuit and Alaska authority not researched.",
     "Baxter v. State (Alaska parallel citation on limited_by_authorization, at 27) supplied by the maintainer, 2026-10-08."
