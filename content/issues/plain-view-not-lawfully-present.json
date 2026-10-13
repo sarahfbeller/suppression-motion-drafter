@@ -27,10 +27,31 @@
           "value": "plain_view"
         },
         {
-          "question": "q_officer_location_lawful",
-          "op": "in",
-          "value": [
-            "disputed"
+          "any": [
+            {
+              "all": [
+                {
+                  "question": "q_officer_vantage",
+                  "op": "in",
+                  "value": [
+                    "inside_vehicle",
+                    "yard",
+                    "inside_building",
+                    "other"
+                  ]
+                },
+                {
+                  "question": "q_officer_access",
+                  "op": "equals",
+                  "value": "no_stated_reason"
+                }
+              ]
+            },
+            {
+              "question": "q_officer_access",
+              "op": "equals",
+              "value": "beyond_scope"
+            }
           ]
         }
       ]
@@ -73,6 +94,7 @@
     "This issue usually depends on another one: if the entry, stop, or search that put the officer there was unlawful, plain view falls with it. Make sure that underlying issue is argued too."
   ],
   "_author_notes": [
+    "REVIEW CAREFULLY (legal judgment not yet reviewed): this issue is suggested when the officer was somewhere private (inside a vehicle, the yard, inside a building, or somewhere else) with no stated reason for being there, or had a warrant or consent but went beyond it. A public place, outside a vehicle looking in, and the front door (an ordinary knock-and-talk) don't suggest it; nor do a warrant, consent, an emergency, or an arrest. Those can still be challenged as their own issues. Drafted by Claude on 2026-10-12 and built at the maintainer's request; not yet legally agreed.",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Horton v. California. Unverified; pincites empty.",
     "Starts from any stop, contact, or search (config event groups any_stop_or_contact and any_search). That includes digital_device, per the maintainer: whether these statements fit digital evidence is a question for legal review."
   ]

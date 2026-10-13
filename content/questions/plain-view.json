@@ -23,17 +23,71 @@
     ]
   },
   {
-    "id": "q_officer_location_lawful",
+    "id": "q_officer_vantage",
     "type": "multiple_choice",
-    "prompt": "Did the officer have a right to be where they were when they saw the item?",
+    "prompt": "Where was the officer when they saw the item?",
     "options": [
       {
-        "id": "lawful",
-        "label": "Yes — somewhere they clearly had a right to be (public place, lawful stop, inside under a valid warrant)"
+        "id": "public",
+        "label": "A public place or street"
       },
       {
-        "id": "disputed",
-        "label": "Disputed — e.g. entered a home or yard without a warrant, went beyond a warrant or consent, or the stop itself was unlawful"
+        "id": "outside_vehicle",
+        "label": "Outside a vehicle, looking in"
+      },
+      {
+        "id": "inside_vehicle",
+        "label": "Inside a vehicle"
+      },
+      {
+        "id": "front_door",
+        "label": "At the front door or on the porch"
+      },
+      {
+        "id": "yard",
+        "label": "In the yard or around the house"
+      },
+      {
+        "id": "inside_building",
+        "label": "Inside a home or other building"
+      },
+      {
+        "id": "other",
+        "label": "Somewhere else"
+      }
+    ],
+    "_author_notes": [
+      "Replaced q_officer_location_lawful on 2026-10-12 (facts in, issues out; option A), together with q_officer_access. The old question asked whether the officer 'had a right to be where they were'. Options drafted by Claude."
+    ]
+  },
+  {
+    "id": "q_officer_access",
+    "type": "multiple_choice",
+    "prompt": "How did the officer come to be there?",
+    "options": [
+      {
+        "id": "warrant",
+        "label": "A warrant"
+      },
+      {
+        "id": "consent",
+        "label": "Consent"
+      },
+      {
+        "id": "beyond_scope",
+        "label": "A warrant or consent, but the officer went beyond what it allowed"
+      },
+      {
+        "id": "emergency_or_pursuit",
+        "label": "An emergency, or chasing someone"
+      },
+      {
+        "id": "during_arrest",
+        "label": "During an arrest"
+      },
+      {
+        "id": "no_stated_reason",
+        "label": "No stated reason"
       }
     ]
   },
