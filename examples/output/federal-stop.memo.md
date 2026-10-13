@@ -18,12 +18,14 @@
 
 - This section's legal content has not yet been reviewed by an attorney. Check every proposition and citation before filing.
 - This section cites only U.S. Supreme Court authority; no Ninth Circuit authority is cited. Consider adding a Ninth Circuit case if one exists.
+- A proposition relevant to these facts was left out of the motion because no authority for this forum is available yet: "The government bears the burden of establishing that the officer had that suspicion before beginning the additional investigation."
+- A proposition relevant to these facts was left out of the motion because no authority for this forum is available yet: "Suspicion that arises only after the officer has begun the additional investigation cannot justify the extension."
+- If police called for a K-9 unit before the stop's original tasks were done, that timing itself can be favorable: it suggests they meant to prolong the stop regardless of what happened later.
 
 **Practice notes:**
 
 - Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
 - Get the CAD and any bodycam/dashcam timestamps in discovery early — this issue depends on minute-by-minute sequencing.
-- If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later.
 
 ### II. Frisk Without Reasonable Suspicion That the Person Was Armed and Dangerous
 

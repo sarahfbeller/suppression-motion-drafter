@@ -9,8 +9,12 @@
         "label": "A dog sniff"
       },
       {
-        "id": "wait_for_backup_or_k9",
-        "label": "Waited for another officer or a K-9 unit"
+        "id": "wait_for_backup",
+        "label": "Waited for another officer"
+      },
+      {
+        "id": "wait_for_k9",
+        "label": "Waited for a K-9 unit"
       },
       {
         "id": "unrelated_questioning",

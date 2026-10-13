@@ -17,12 +17,13 @@
 **Check before filing:**
 
 - This section's legal content has not yet been reviewed by an attorney. Check every proposition and citation before filing.
+- A proposition relevant to these facts was left out of the motion because no authority for this forum is available yet: "The government bears the burden of establishing that the officer had that suspicion before beginning the additional investigation."
+- A proposition relevant to these facts was left out of the motion because no authority for this forum is available yet: "Suspicion that arises only after the officer has begun the additional investigation cannot justify the extension."
 
 **Practice notes:**
 
 - Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
 - Get the CAD and any bodycam/dashcam timestamps in discovery early — this issue depends on minute-by-minute sequencing.
-- If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later.
 
 ### II. Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)
 

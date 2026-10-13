@@ -10,7 +10,7 @@
     ],
     "q_arrested": "yes",
     "q_extension_event": [
-      "wait_for_backup_or_k9"
+      "wait_for_backup"
     ],
     "q_duration": "About 12 minutes",
     "q_occupant_role": "driver",
