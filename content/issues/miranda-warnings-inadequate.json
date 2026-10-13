@@ -17,11 +17,60 @@
           "value": "statements"
         },
         {
-          "question": "q_custody",
-          "op": "in",
-          "value": [
-            "yes",
-            "not_sure"
+          "any": [
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "formally_arrested"
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "restrained"
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "confined"
+            },
+            {
+              "all": [
+                {
+                  "any": [
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "at_station"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "told_not_free"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "questioned_long"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "officers_or_weapons"
+                    }
+                  ]
+                },
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "not_includes",
+                  "value": "told_free_to_leave"
+                }
+              ]
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "not_sure"
+            }
           ]
         },
         {
@@ -45,8 +94,8 @@
     "review_conditions": [
       {
         "when": {
-          "question": "q_custody",
-          "op": "equals",
+          "question": "q_custody_circumstances",
+          "op": "includes",
           "value": "not_sure"
         },
         "flag": "custody_unknown",
@@ -60,6 +109,94 @@
         },
         "flag": "interrogation_unknown",
         "display_note": "You aren't sure yet whether the statements were a response to questioning. This section was drafted anyway; get the recording or report of what police said just before each statement before filing, or cut this section."
+      },
+      {
+        "when": {
+          "all": [
+            {
+              "question": "q_custody_circumstances",
+              "op": "not_includes",
+              "value": "formally_arrested"
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "not_includes",
+              "value": "restrained"
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "not_includes",
+              "value": "confined"
+            },
+            {
+              "all": [
+                {
+                  "any": [
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "at_station"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "told_not_free"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "questioned_long"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "officers_or_weapons"
+                    }
+                  ]
+                },
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "not_includes",
+                  "value": "told_free_to_leave"
+                }
+              ]
+            }
+          ]
+        },
+        "flag": "custody_totality",
+        "display_note": "Your client wasn't formally arrested, restrained, or confined, so whether they were in custody will be decided on the totality of the circumstances. Expect the prosecution to argue a reasonable person would have felt free to leave; develop every circumstance of the questioning (where, how long, who was there, what was said)."
+      },
+      {
+        "when": {
+          "all": [
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "told_free_to_leave"
+            },
+            {
+              "any": [
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "includes",
+                  "value": "formally_arrested"
+                },
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "includes",
+                  "value": "restrained"
+                },
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "includes",
+                  "value": "confined"
+                }
+              ]
+            }
+          ]
+        },
+        "flag": "custody_told_free_but_restrained",
+        "display_note": "Police told your client they were free to leave, but your client was arrested, restrained, or confined. Expect the prosecution to rely on that statement; the restraint is what a reasonable person would have experienced."
       }
     ]
   },
@@ -183,6 +320,7 @@
     "If the warnings came only after an unwarned statement and the questioning was repeated, look at whether the warnings were effective at all — that's a distinct 'question-first' problem worth raising."
   ],
   "_author_notes": [
+    "REVIEW CAREFULLY (legal judgment not yet reviewed): custody is treated as shown when q_custody_circumstances includes a formal arrest, restraint, or confinement (even if police said your client was free to leave, at the maintainer's instruction), or any softer fact (station or jail, told not free to leave, long questioning, several officers or weapons) without being told they were free to leave. 'Not sure yet' keeps the issue, with the custody_unknown note. Drafted by Claude on 2026-10-12; the custody_totality and custody_told_free_but_restrained review notes are Claude's drafts too. Not yet legally agreed.",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Stansbury v. California, Rhode Island v. Innis, Florida v. Powell. Unverified; pincites empty.",
     "The 'question-first' (midstream warnings) point is only a practice note, not a rule statement: the leading Supreme Court case is a plurality, and I'm not certain enough of the controlling rule to state it.",
     "alaska_right_to_silence: text and citations supplied by the maintainer, 2026-10-08. Placed right after the first Miranda sentence, which split the old 'main' paragraph: custody_and_interrogation holds its other two sentences. Citations put in Bluebook form and the text reordered to 'United States and Alaska constitutions' to match the citation order (the engine cites Supreme Court authority first), both at the maintainer's request."

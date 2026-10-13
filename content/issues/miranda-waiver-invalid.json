@@ -17,11 +17,60 @@
           "value": "statements"
         },
         {
-          "question": "q_custody",
-          "op": "in",
-          "value": [
-            "yes",
-            "not_sure"
+          "any": [
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "formally_arrested"
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "restrained"
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "confined"
+            },
+            {
+              "all": [
+                {
+                  "any": [
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "at_station"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "told_not_free"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "questioned_long"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "officers_or_weapons"
+                    }
+                  ]
+                },
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "not_includes",
+                  "value": "told_free_to_leave"
+                }
+              ]
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "not_sure"
+            }
           ]
         },
         {
@@ -41,8 +90,8 @@
     "review_conditions": [
       {
         "when": {
-          "question": "q_custody",
-          "op": "equals",
+          "question": "q_custody_circumstances",
+          "op": "includes",
           "value": "not_sure"
         },
         "flag": "custody_unknown",
@@ -74,6 +123,94 @@
         },
         "flag": "implied_waiver",
         "display_note": "Your client never expressly waived; they answered questions after the warnings. Expect the prosecution to argue an implied waiver, which can be valid if your client understood the warnings. This section is strongest alongside facts showing your client didn't understand, or that the waiver wasn't voluntary."
+      },
+      {
+        "when": {
+          "all": [
+            {
+              "question": "q_custody_circumstances",
+              "op": "not_includes",
+              "value": "formally_arrested"
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "not_includes",
+              "value": "restrained"
+            },
+            {
+              "question": "q_custody_circumstances",
+              "op": "not_includes",
+              "value": "confined"
+            },
+            {
+              "all": [
+                {
+                  "any": [
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "at_station"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "told_not_free"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "questioned_long"
+                    },
+                    {
+                      "question": "q_custody_circumstances",
+                      "op": "includes",
+                      "value": "officers_or_weapons"
+                    }
+                  ]
+                },
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "not_includes",
+                  "value": "told_free_to_leave"
+                }
+              ]
+            }
+          ]
+        },
+        "flag": "custody_totality",
+        "display_note": "Your client wasn't formally arrested, restrained, or confined, so whether they were in custody will be decided on the totality of the circumstances. Expect the prosecution to argue a reasonable person would have felt free to leave; develop every circumstance of the questioning (where, how long, who was there, what was said)."
+      },
+      {
+        "when": {
+          "all": [
+            {
+              "question": "q_custody_circumstances",
+              "op": "includes",
+              "value": "told_free_to_leave"
+            },
+            {
+              "any": [
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "includes",
+                  "value": "formally_arrested"
+                },
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "includes",
+                  "value": "restrained"
+                },
+                {
+                  "question": "q_custody_circumstances",
+                  "op": "includes",
+                  "value": "confined"
+                }
+              ]
+            }
+          ]
+        },
+        "flag": "custody_told_free_but_restrained",
+        "display_note": "Police told your client they were free to leave, but your client was arrested, restrained, or confined. Expect the prosecution to rely on that statement; the restraint is what a reasonable person would have experienced."
       }
     ]
   },
@@ -128,6 +265,7 @@
     "Expect the prosecution to argue an implied waiver from your client's answering questions after warnings; the argument is strongest where understanding was genuinely impaired."
   ],
   "_author_notes": [
+    "REVIEW CAREFULLY (legal judgment not yet reviewed): custody is treated as shown when q_custody_circumstances includes a formal arrest, restraint, or confinement (even if police said your client was free to leave, at the maintainer's instruction), or any softer fact (station or jail, told not free to leave, long questioning, several officers or weapons) without being told they were free to leave. 'Not sure yet' keeps the issue, with the custody_unknown note. Drafted by Claude on 2026-10-12; the custody_totality and custody_told_free_but_restrained review notes are Claude's drafts too. Not yet legally agreed.",
     "REVIEW CAREFULLY (legal judgment not yet reviewed): this issue is suggested when ANY q_waiver_circumstances option is checked, including the implied-waiver option alone (with the implied_waiver review note). Drafted by Claude on 2026-10-11 and built at the maintainer's request; the maintainer hasn't agreed with these thresholds legally. Consider whether some facts should print their own paragraphs (e.g. juvenile, limited English, police deception).",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Moran v. Burbine, Stansbury v. California. Unverified; pincites empty.",
     "implied_waiver review note: drafted by Claude from general knowledge of implied-waiver doctrine (Berghuis v. Thompkins, not cited in the note). Unverified."

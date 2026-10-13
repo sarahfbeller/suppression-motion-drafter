@@ -1,16 +1,40 @@
 [
   {
-    "id": "q_custody",
-    "type": "multiple_choice",
-    "prompt": "Was your client in custody when questioned — under arrest, or restrained in a way a reasonable person would see as like an arrest?",
+    "id": "q_custody_circumstances",
+    "type": "multi_select",
+    "prompt": "When your client was questioned, did any of these apply? Select all that apply; leave blank if none.",
     "options": [
       {
-        "id": "yes",
-        "label": "Yes"
+        "id": "formally_arrested",
+        "label": "Your client was formally arrested"
       },
       {
-        "id": "no",
-        "label": "No"
+        "id": "restrained",
+        "label": "Your client was handcuffed or physically restrained"
+      },
+      {
+        "id": "confined",
+        "label": "Your client was in a patrol car, a locked room, or a cell"
+      },
+      {
+        "id": "at_station",
+        "label": "Your client was questioned at a police station or jail"
+      },
+      {
+        "id": "told_not_free",
+        "label": "Your client was told they weren't free to leave"
+      },
+      {
+        "id": "questioned_long",
+        "label": "Your client was questioned for a long time"
+      },
+      {
+        "id": "officers_or_weapons",
+        "label": "Several officers were present, or weapons were displayed"
+      },
+      {
+        "id": "told_free_to_leave",
+        "label": "Your client was told they were free to leave"
       },
       {
         "id": "not_sure",
@@ -18,7 +42,8 @@
       }
     ],
     "_author_notes": [
-      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note custody_unknown in miranda-warnings-inadequate; review note custody_unknown in miranda-waiver-invalid; review note custody_unknown in miranda-invocation-not-honored; review note custody_unknown in unrecorded-custodial-interrogation."
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note custody_unknown in miranda-warnings-inadequate; review note custody_unknown in miranda-waiver-invalid; review note custody_unknown in miranda-invocation-not-honored; review note custody_unknown in unrecorded-custodial-interrogation.",
+      "Replaced q_custody on 2026-10-12 (facts in, issues out; option A). The old question asked whether your client was 'in custody', which is the legal test. Options drafted by Claude; the maintainer asked that options about the client start 'Your client was'."
     ]
   },
   {
