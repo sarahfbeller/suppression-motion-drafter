@@ -33,7 +33,7 @@
           ]
         },
         {
-          "question": "q_waiver_problems",
+          "question": "q_waiver_circumstances",
           "op": "not_empty"
         }
       ]
@@ -59,12 +59,21 @@
       },
       {
         "when": {
-          "question": "q_waiver_problems",
+          "question": "q_waiver_circumstances",
           "op": "includes",
           "value": "not_sure"
         },
         "flag": "waiver_unknown",
         "display_note": "You aren't sure yet whether the waiver holds up. This section was drafted anyway; get the waiver form, the recording, and any evidence of impairment before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_waiver_circumstances",
+          "op": "includes",
+          "value": "implied_only"
+        },
+        "flag": "implied_waiver",
+        "display_note": "Your client never expressly waived; they answered questions after the warnings. Expect the prosecution to argue an implied waiver, which can be valid if your client understood the warnings. This section is strongest alongside facts showing your client didn't understand, or that the waiver wasn't voluntary."
       }
     ]
   },
@@ -119,6 +128,8 @@
     "Expect the prosecution to argue an implied waiver from your client's answering questions after warnings; the argument is strongest where understanding was genuinely impaired."
   ],
   "_author_notes": [
-    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Moran v. Burbine, Stansbury v. California. Unverified; pincites empty."
+    "REVIEW CAREFULLY (legal judgment not yet reviewed): this issue is suggested when ANY q_waiver_circumstances option is checked, including the implied-waiver option alone (with the implied_waiver review note). Drafted by Claude on 2026-10-11 and built at the maintainer's request; the maintainer hasn't agreed with these thresholds legally. Consider whether some facts should print their own paragraphs (e.g. juvenile, limited English, police deception).",
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Moran v. Burbine, Stansbury v. California. Unverified; pincites empty.",
+    "implied_waiver review note: drafted by Claude from general knowledge of implied-waiver doctrine (Berghuis v. Thompkins, not cited in the note). Unverified."
   ]
 }

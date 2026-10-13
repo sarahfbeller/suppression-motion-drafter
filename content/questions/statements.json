@@ -63,17 +63,49 @@
     ]
   },
   {
-    "id": "q_waiver_problems",
+    "id": "q_waiver_circumstances",
     "type": "multi_select",
-    "prompt": "Is there reason to question your client's waiver of Miranda rights? Select all that apply; leave blank if the waiver looks solid.",
+    "prompt": "When your client waived their Miranda rights, did any of these circumstances apply? Select all that apply; leave blank if none.",
     "options": [
       {
-        "id": "impaired_understanding",
-        "label": "Your client may not have understood the rights (language, intoxication, mental condition, age)"
+        "id": "limited_english",
+        "label": "Your client doesn't speak or read English well, and the warnings were given in English"
       },
       {
-        "id": "pressured",
-        "label": "Police pressured, threatened, promised something, or tricked your client into waiving"
+        "id": "intoxicated",
+        "label": "Your client was intoxicated"
+      },
+      {
+        "id": "mental_condition",
+        "label": "Your client has a mental illness, intellectual disability, or similar condition"
+      },
+      {
+        "id": "juvenile",
+        "label": "Your client was a juvenile"
+      },
+      {
+        "id": "injured_or_exhausted",
+        "label": "Your client was injured, in pain, or exhausted"
+      },
+      {
+        "id": "threatened",
+        "label": "Police threatened your client"
+      },
+      {
+        "id": "promised",
+        "label": "Police promised your client something (leniency, release, help with charges)"
+      },
+      {
+        "id": "misled",
+        "label": "Police lied to or misled your client about the rights or the situation"
+      },
+      {
+        "id": "kept_pushing",
+        "label": "Police kept pushing after your client hesitated or declined"
+      },
+      {
+        "id": "implied_only",
+        "label": "Your client never expressly waived — they just answered questions after the warnings"
       },
       {
         "id": "not_sure",
@@ -81,7 +113,8 @@
       }
     ],
     "_author_notes": [
-      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note waiver_unknown in miranda-waiver-invalid."
+      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note waiver_unknown in miranda-waiver-invalid.",
+      "Replaced q_waiver_problems on 2026-10-11 (facts in, issues out): the old prompt asked whether there was 'reason to question' the waiver. Options drafted by Claude; the implied-waiver option was the maintainer's idea, folded into this checklist."
     ]
   },
   {
