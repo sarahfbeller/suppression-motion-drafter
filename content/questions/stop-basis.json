@@ -2,7 +2,7 @@
   {
     "id": "q_stop_reasons",
     "type": "multi_select",
-    "prompt": "What did the officer say the stop was based on? Select all that apply.",
+    "prompt": "What reason did the officer give for stopping your client? Select all that apply.",
     "options": [
       {
         "id": "traffic_violation",

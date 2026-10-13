@@ -109,7 +109,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_match_condition_that_is_never_true(self):
         def f(d):
             d["trigger"]["match_condition"]["all"].append(
-                {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "specific_to_client"})
+                {"question": "q_frisk_reasons", "op": "includes", "value": "weapon_seen_or_admitted"})
         self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f), "can never be true")
 
     # ---- op / type mismatches (not_equals null on a multi_select)
@@ -391,10 +391,10 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     # ---- an issue that matches but produces nothing
 
     def test_match_with_every_paragraph_filtered_by_when(self):
-        # Matches on none_articulated too, but every paragraph now needs generalized_only.
+        # Matches without crime_type too, but every paragraph now needs crime_type.
         def f(d):
             for p in d["law_paragraphs"]:
-                p["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
+                p["when"] = {"question": "q_frisk_reasons", "op": "includes", "value": "crime_type"}
         self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f),
                          "no paragraph of law left")
 
@@ -544,10 +544,10 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertEqual(r.errors, [], "\n".join(r.errors))
 
     def test_match_leaving_only_argument(self):
-        # Every paragraph of law needs generalized_only; an unconditional argument paragraph isn't enough.
+        # Every paragraph of law needs crime_type; an unconditional argument paragraph isn't enough.
         def f(d):
             for p in d["law_paragraphs"]:
-                p["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
+                p["when"] = {"question": "q_frisk_reasons", "op": "includes", "value": "crime_type"}
             d["law_paragraphs"].append({"id": "application", "sentences": [
                 {"id": "reasoning", "kind": "argument", "text": "That is what happened here.", "authorities": []}]})
         self.assertError(self.run_with(f"{ISSUES}/frisk-without-reasonable-suspicion.json", f),

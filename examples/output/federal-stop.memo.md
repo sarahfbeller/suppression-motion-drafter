@@ -33,7 +33,6 @@
 
 - This section's legal content has not yet been reviewed by an attorney. Check every proposition and citation before filing.
 - This section cites only U.S. Supreme Court authority; no Ninth Circuit authority is cited. Consider adding a Ninth Circuit case if one exists.
-- Courts are split on whether generalized nervousness or a high-crime-area location, without more, can support a frisk. This is a weaker record than 'no suspicion articulated' — confirm the full context of what the officer said before relying on this issue as written.
 
 **Practice notes:**
 

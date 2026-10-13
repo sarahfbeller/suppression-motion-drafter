@@ -21,7 +21,9 @@
     ],
     "q_occupant_role": "passenger",
     "q_passenger_ordered_out": "yes",
-    "q_frisk_suspicion_basis": "generalized_only",
+    "q_frisk_reasons": [
+      "no_reason_or_officer_safety"
+    ],
     "q_affidavit_accuracy": "material_omission",
     "q_intent": "reckless",
     "q_materiality": "no",

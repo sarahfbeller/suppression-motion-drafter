@@ -131,7 +131,7 @@ class FillIns(unittest.TestCase):
         config, _questions, issues = E.load_repo(ROOT)
         issue = next(i for i in issues if i["id"] == "frisk-without-reasonable-suspicion")
         answers = {**FEDERAL, "q_encounter_events": ["vehicle_stop", "frisk"],
-                   "q_occupant_role": "driver", "q_frisk_suspicion_basis": "none_articulated"}
+                   "q_occupant_role": "driver", "q_frisk_reasons": ["no_reason_or_officer_safety"]}
         result = E.evaluate_session(config, [issue], {"answers": answers})
         motion = R.render_motion(result)
         self.assertIn("the motion has 1 bracketed [Fill in: …] prompt.", R.render_memo(result, config, motion))
@@ -231,7 +231,7 @@ class ClientTokens(unittest.TestCase):
         config, _questions, issues = E.load_repo(ROOT)
         issue = next(i for i in issues if i["id"] == "frisk-without-reasonable-suspicion")
         answers = {**FEDERAL, "q_client_pronouns": "she_her", "q_encounter_events": ["vehicle_stop", "frisk"],
-                   "q_occupant_role": "driver", "q_frisk_suspicion_basis": "none_articulated"}
+                   "q_occupant_role": "driver", "q_frisk_reasons": ["no_reason_or_officer_safety"]}
         result = E.evaluate_session(config, [issue], {"answers": answers})
         motion = R.render_motion(result)
         self.assertIn("The Frisk of [Client] Was Not Supported by Reasonable Suspicion That She Was Armed", motion)
@@ -291,7 +291,7 @@ class MatchedButNoParagraph(unittest.TestCase):
         self.config, _questions, issues = E.load_repo(ROOT)
         self.issue = copy.deepcopy(next(i for i in issues if i["id"] == "frisk-without-reasonable-suspicion"))
         self.answers = {**FEDERAL, "q_encounter_events": ["vehicle_stop", "frisk"], "q_occupant_role": "passenger",
-                        "q_frisk_suspicion_basis": "none_articulated"}
+                        "q_frisk_reasons": ["no_reason_or_officer_safety"]}
 
     def memo(self):
         result = E.evaluate_session(self.config, [self.issue], {"answers": self.answers})
@@ -307,7 +307,7 @@ class MatchedButNoParagraph(unittest.TestCase):
 
     def test_every_paragraph_filtered_says_content_problem(self):
         for p in self.issue["law_paragraphs"]:
-            p["when"] = {"question": "q_frisk_suspicion_basis", "op": "equals", "value": "generalized_only"}
+            p["when"] = {"question": "q_frisk_reasons", "op": "includes", "value": "crime_type"}
         memo = self.memo()
         self.assertIn("problem with the issue's content", memo)
         self.assertNotIn("Research needed", memo)

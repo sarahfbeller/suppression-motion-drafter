@@ -1,20 +1,52 @@
 [
   {
-    "id": "q_frisk_suspicion_basis",
-    "type": "multiple_choice",
-    "prompt": "What did the officer articulate as the basis for frisking your client specifically?",
+    "id": "q_frisk_reasons",
+    "type": "multi_select",
+    "prompt": "What reason did the officer give for frisking your client? Select all that apply.",
     "options": [
       {
-        "id": "specific_to_client",
-        "label": "Something specific to your client (e.g. visible bulge, furtive movement, matched a description)"
+        "id": "no_reason_or_officer_safety",
+        "label": "No reason given, or only general officer safety"
       },
       {
-        "id": "generalized_only",
-        "label": "General nervousness or presence in a high-crime area only"
+        "id": "crime_type",
+        "label": "The kind of crime suspected (e.g. drugs, burglary)"
       },
       {
-        "id": "none_articulated",
-        "label": "No suspicion articulated — the officer cited only the stop itself, officer safety in general, or your client's proximity to someone else"
+        "id": "companion_or_location",
+        "label": "Something about a companion or the location (e.g. a search warrant for the place)"
+      },
+      {
+        "id": "weapon_bulge",
+        "label": "A bulge or object that looked like a weapon"
+      },
+      {
+        "id": "furtive_movements",
+        "label": "Furtive movements or reaching"
+      },
+      {
+        "id": "ignored_commands",
+        "label": "Your client didn't follow commands (e.g. show hands)"
+      },
+      {
+        "id": "criminal_history",
+        "label": "Your client's criminal history"
+      },
+      {
+        "id": "tip_armed",
+        "label": "A tip or information that your client was armed"
+      },
+      {
+        "id": "weapon_seen_or_admitted",
+        "label": "The officer saw a weapon or your client said they had one"
+      },
+      {
+        "id": "other",
+        "label": "Something else"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
       }
     ]
   },

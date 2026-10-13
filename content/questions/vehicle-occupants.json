@@ -22,7 +22,7 @@
   {
     "id": "q_passenger_id_requested",
     "type": "multiple_choice",
-    "prompt": "Did police ask your client, as a passenger, for identification?",
+    "prompt": "Did police ask your client for identification?",
     "options": [
       {
         "id": "yes",

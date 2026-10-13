@@ -17,24 +17,21 @@
           "value": "frisk"
         },
         {
-          "question": "q_frisk_suspicion_basis",
-          "op": "in",
-          "value": [
-            "generalized_only",
-            "none_articulated"
-          ]
+          "question": "q_frisk_reasons",
+          "op": "not_includes",
+          "value": "weapon_seen_or_admitted"
         }
       ]
     },
     "review_conditions": [
       {
         "when": {
-          "question": "q_frisk_suspicion_basis",
-          "op": "equals",
-          "value": "generalized_only"
+          "question": "q_frisk_reasons",
+          "op": "includes",
+          "value": "not_sure"
         },
-        "flag": "frisk_basis_borderline",
-        "display_note": "Courts are split on whether generalized nervousness or a high-crime-area location, without more, can support a frisk. This is a weaker record than 'no suspicion articulated' — confirm the full context of what the officer said before relying on this issue as written."
+        "flag": "frisk_reasons_unknown",
+        "display_note": "You aren't sure yet what reason the officer gave for the frisk. This section was drafted anyway; get the officer's report and any body-cam footage before filing, and cut this section if the officer saw a weapon or your client said they had one."
       }
     ]
   },
@@ -155,6 +152,11 @@
   ],
   "_author_notes": [
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Ybarra v. Illinois, and Arizona v. Johnson and Terry v. Ohio as used in armed_and_dangerous_required, passenger_standard, and hunch_insufficient. Unverified; pincites empty.",
-    "passenger_standard's condition now also requires a vehicle stop (2026-10-09). With only 'passenger' it would have made the decision tree ask the driver-or-passenger question after a pedestrian frisk."
+    "passenger_standard's condition now also requires a vehicle stop (2026-10-09). With only 'passenger' it would have made the decision tree ask the driver-or-passenger question after a pedestrian frisk.",
+    "REVIEW CAREFULLY (2026-10-12, option B, the maintainer): q_frisk_suspicion_basis (a 3-way choice asking whether the basis was 'specific to your client' or 'generalized') was replaced by q_frisk_reasons, a checklist of the reasons the officer gave. The issue fires on any frisk unless weapon_seen_or_admitted ('The officer saw a weapon or your client said they had one') is picked. Everything else, including a bulge, a tip, and the kind of crime suspected, keeps the issue. Not sure yet never removes it. The thresholds are for the maintainer's legal review.",
+    "The frisk_basis_borderline review note (courts split on nervousness or a high-crime area alone) was dropped: the maintainer cut both options.",
+    "TO CHECK (the maintainer, 2026-10-12): is there case law on criminal history as a basis for a frisk? Kept as an option (criminal_history) for now; nothing is keyed to it.",
+    "Possible later keys (not done): companion_or_location fits suspicion_directed_at_person (Ybarra); no_reason_or_officer_safety fits general_officer_safety_insufficient in the passenger paragraph.",
+    "frisk_reasons_unknown review note (Claude draft, 2026-10-12): required by the uncertain-answer rule, since 'Not sure yet' alone includes the issue."
   ]
 }

@@ -85,7 +85,7 @@ class InterviewDetails(unittest.TestCase):
     def test_no_vehicle_question_after_a_pedestrian_frisk(self):
         asked = self.interview({"q_filing_court": "ak", "q_client_pronouns": "she_her",
                                 "q_encounter_events": ["pedestrian_stop", "frisk"],
-                                "q_frisk_suspicion_basis": "none_articulated"})
+                                "q_frisk_reasons": ["no_reason_or_officer_safety"]})
         self.assertNotIn("q_occupant_role", asked)
 
     def test_no_events_means_a_short_interview(self):
