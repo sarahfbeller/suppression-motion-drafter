@@ -333,17 +333,17 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_reachability_still_checked_with_many_events(self):
         # 20 event options would be 2^20 subsets; the validator must still enumerate, not skip.
         r = V.validate(self.tmp)
-        self.assertFalse(any("too many answer combinations" in w for w in r.warnings), "\n".join(r.warnings))
+        self.assertFalse(any("search steps — skipped" in w for w in r.warnings), "\n".join(r.warnings))
 
     def test_skipped_check_warns(self):
         # Above the enumeration limit a check is skipped; it must say so, never skip silently.
-        old = V.ENUMERATION_LIMIT
-        V.ENUMERATION_LIMIT = 10
+        old = V.SEARCH_LIMIT
+        V.SEARCH_LIMIT = 1
         try:
             r = V.validate(ROOT, only={"search-incident-to-arrest-exceeded-scope"})
         finally:
-            V.ENUMERATION_LIMIT = old
-        skipped = [w for w in r.warnings if "too many answer combinations" in w]
+            V.SEARCH_LIMIT = old
+        skipped = [w for w in r.warnings if "search steps — skipped" in w]
         self.assertTrue(skipped, "\n".join(r.warnings))
         self.assertTrue(all("Questions involved:" in w for w in skipped))
 

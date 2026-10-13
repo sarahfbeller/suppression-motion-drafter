@@ -17,38 +17,229 @@
           "value": "vehicle_stop"
         },
         {
-          "question": "q_stop_basis_problems",
-          "op": "not_empty"
+          "any": [
+            {
+              "question": "q_stop_reasons",
+              "op": "includes",
+              "value": "no_reason"
+            },
+            {
+              "all": [
+                {
+                  "any": [
+                    {
+                      "question": "q_stop_reasons",
+                      "op": "includes",
+                      "value": "high_crime_area"
+                    },
+                    {
+                      "question": "q_stop_reasons",
+                      "op": "includes",
+                      "value": "nervousness"
+                    },
+                    {
+                      "question": "q_stop_reasons",
+                      "op": "includes",
+                      "value": "time_of_day"
+                    },
+                    {
+                      "question": "q_stop_reasons",
+                      "op": "includes",
+                      "value": "furtive_movements"
+                    },
+                    {
+                      "question": "q_stop_reasons",
+                      "op": "includes",
+                      "value": "other"
+                    }
+                  ]
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "traffic_violation"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "bad_driving"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "vehicle_problem"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "tip"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "known_vehicle_or_person"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "matched_description"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "flight"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "observed_crime"
+                }
+              ]
+            },
+            {
+              "all": [
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "bad_driving"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "traffic_violation"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "vehicle_problem"
+                }
+              ]
+            },
+            {
+              "all": [
+                {
+                  "any": [
+                    {
+                      "question": "q_stop_reasons",
+                      "op": "includes",
+                      "value": "traffic_violation"
+                    },
+                    {
+                      "question": "q_stop_reasons",
+                      "op": "includes",
+                      "value": "vehicle_problem"
+                    }
+                  ]
+                },
+                {
+                  "question": "q_cited_conduct_happened",
+                  "op": "in",
+                  "value": [
+                    "no",
+                    "not_sure"
+                  ]
+                }
+              ]
+            },
+            {
+              "all": [
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "tip"
+                },
+                {
+                  "question": "q_tip_caller_identified",
+                  "op": "equals",
+                  "value": "no"
+                },
+                {
+                  "question": "q_tip_corroborated",
+                  "op": "equals",
+                  "value": "no"
+                }
+              ]
+            },
+            {
+              "all": [
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "known_vehicle_or_person"
+                },
+                {
+                  "question": "q_known_person_mismatch",
+                  "op": "equals",
+                  "value": "yes"
+                }
+              ]
+            },
+            {
+              "all": [
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "matched_description"
+                },
+                {
+                  "question": "q_description_detail",
+                  "op": "equals",
+                  "value": "general_only"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     "review_conditions": [
       {
         "when": {
-          "question": "q_stop_basis_problems",
-          "op": "includes",
-          "value": "violation_disputed"
+          "all": [
+            {
+              "any": [
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "traffic_violation"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "vehicle_problem"
+                }
+              ]
+            },
+            {
+              "question": "q_cited_conduct_happened",
+              "op": "in",
+              "value": [
+                "no",
+                "not_sure"
+              ]
+            }
+          ]
         },
         "flag": "mistake_of_law",
         "display_note": "If the dispute is that the conduct isn't actually a violation, expect the prosecution to argue the officer made a reasonable mistake of law, which can still support a stop (Heien v. North Carolina, 574 U.S. 54 (2014)). Be ready to show the statute is clear and the officer's reading wasn't reasonable."
       },
       {
         "when": {
-          "question": "q_stop_basis_problems",
-          "op": "includes",
+          "question": "q_cited_conduct_happened",
+          "op": "equals",
           "value": "not_sure"
         },
-        "flag": "stop_basis_unknown",
-        "display_note": "You aren't sure yet whether the stop's basis holds up. This section was drafted anyway; get the dash-cam footage, the officer's report, and dispatch records before filing, or cut this section."
+        "flag": "cited_conduct_unknown",
+        "display_note": "You aren't sure yet whether the traffic violation or vehicle problem the officer described actually happened. This section was drafted anyway; get the dash-cam footage, the officer's report, and dispatch records before filing, or cut this section."
       },
       {
         "when": {
-          "question": "q_stop_type",
-          "op": "equals",
+          "question": "q_stop_reasons",
+          "op": "includes",
           "value": "other"
         },
         "flag": "other_stop_basis",
-        "display_note": "The stop's stated basis was neither a traffic violation nor suspicion of a crime (for example, a welfare check). Expect the prosecution to rely on a different justification, such as community caretaking; this section argues only that reasonable suspicion was lacking, so address the other justification separately."
+        "display_note": "The officer gave a reason for the stop that isn't on the list. Expect the prosecution to rely on it, or on a different justification such as community caretaking; this section argues only that reasonable suspicion was lacking, so evaluate that reason and address any other justification separately."
       }
     ]
   },
@@ -110,9 +301,18 @@
     {
       "id": "traffic_basis",
       "when": {
-        "question": "q_stop_type",
-        "op": "equals",
-        "value": "traffic_violation"
+        "any": [
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "traffic_violation"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "vehicle_problem"
+          }
+        ]
       },
       "sentences": [
         {
@@ -133,9 +333,58 @@
     {
       "id": "criminal_basis",
       "when": {
-        "question": "q_stop_type",
-        "op": "equals",
-        "value": "terry_stop"
+        "any": [
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "bad_driving"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "tip"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "high_crime_area"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "nervousness"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "time_of_day"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "furtive_movements"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "known_vehicle_or_person"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "matched_description"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "flight"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "observed_crime"
+          }
+        ]
       },
       "sentences": [
         {
@@ -156,9 +405,18 @@
     {
       "id": "general_basis",
       "when": {
-        "question": "q_stop_type",
-        "op": "equals",
-        "value": "other"
+        "any": [
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "other"
+          },
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "no_reason"
+          }
+        ]
       },
       "sentences": [
         {
@@ -285,9 +543,86 @@
     {
       "id": "hunch_insufficient",
       "when": {
-        "question": "q_stop_basis_problems",
-        "op": "includes",
-        "value": "hunch_or_generalities"
+        "any": [
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "no_reason"
+          },
+          {
+            "all": [
+              {
+                "any": [
+                  {
+                    "question": "q_stop_reasons",
+                    "op": "includes",
+                    "value": "high_crime_area"
+                  },
+                  {
+                    "question": "q_stop_reasons",
+                    "op": "includes",
+                    "value": "nervousness"
+                  },
+                  {
+                    "question": "q_stop_reasons",
+                    "op": "includes",
+                    "value": "time_of_day"
+                  },
+                  {
+                    "question": "q_stop_reasons",
+                    "op": "includes",
+                    "value": "furtive_movements"
+                  },
+                  {
+                    "question": "q_stop_reasons",
+                    "op": "includes",
+                    "value": "other"
+                  }
+                ]
+              },
+              {
+                "question": "q_stop_reasons",
+                "op": "not_includes",
+                "value": "traffic_violation"
+              },
+              {
+                "question": "q_stop_reasons",
+                "op": "not_includes",
+                "value": "bad_driving"
+              },
+              {
+                "question": "q_stop_reasons",
+                "op": "not_includes",
+                "value": "vehicle_problem"
+              },
+              {
+                "question": "q_stop_reasons",
+                "op": "not_includes",
+                "value": "tip"
+              },
+              {
+                "question": "q_stop_reasons",
+                "op": "not_includes",
+                "value": "known_vehicle_or_person"
+              },
+              {
+                "question": "q_stop_reasons",
+                "op": "not_includes",
+                "value": "matched_description"
+              },
+              {
+                "question": "q_stop_reasons",
+                "op": "not_includes",
+                "value": "flight"
+              },
+              {
+                "question": "q_stop_reasons",
+                "op": "not_includes",
+                "value": "observed_crime"
+              }
+            ]
+          }
+        ]
       },
       "sentences": [
         {
@@ -321,9 +656,23 @@
     {
       "id": "anonymous_tip",
       "when": {
-        "question": "q_stop_basis_problems",
-        "op": "includes",
-        "value": "uncorroborated_tip"
+        "all": [
+          {
+            "question": "q_stop_reasons",
+            "op": "includes",
+            "value": "tip"
+          },
+          {
+            "question": "q_tip_caller_identified",
+            "op": "equals",
+            "value": "no"
+          },
+          {
+            "question": "q_tip_corroborated",
+            "op": "equals",
+            "value": "no"
+          }
+        ]
       },
       "sentences": [
         {
@@ -347,9 +696,10 @@
     "If the stop falls, everything that followed (observations, statements, search results) is potentially fruit — consider which later issues depend on it."
   ],
   "_author_notes": [
+    "REVIEW CAREFULLY (legal judgment not yet reviewed): when this issue fires is decided by the 'any' group in trigger.match_condition, keyed to q_stop_reasons and its follow-ups. Those thresholds were drafted by Claude on 2026-10-10 and built at the maintainer's request, but the maintainer has NOT yet agreed with them legally. Check each branch: which stated reasons (alone or together) should suggest this issue, and which should not. The paragraph 'when's (traffic_basis, criminal_basis, general_basis, hunch_insufficient, anonymous_tip) use the same reason groups and need the same review.",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Delaware v. Prouse, Brendlin v. California, United States v. Cortez, Terry v. Ohio, Brown v. Texas, Florida v. J.L. Unverified; pincites empty.",
     "Gated on vehicle_stop only, per the maintainer ('traffic stop'). Pedestrian stops would need their own gate or issue.",
-    "Statements vary with q_stop_type (drafted 2026-09-27 at the maintainer's request): traffic_basis for traffic stops (Prouse), criminal_basis for stops on suspicion of a crime (Terry's 'specific and articulable facts'), general_basis for 'other' (Prouse). If q_stop_type is unanswered, only the unconditional statements render.",
-    "alaska_coleman_standard was supplied by the maintainer (2026-10-08) from one of their filed motions, with its citations and pincites. Alaska only. It applies to all investigative stops (the maintainer, 2026-10-08), so it has no condition on q_stop_type."
+    "alaska_coleman_standard was supplied by the maintainer (2026-10-08) from one of their filed motions, with its citations and pincites. Alaska only. It applies to all investigative stops (the maintainer, 2026-10-08), so it has no condition on q_stop_type.",
+    "Redesigned 2026-10-10 on the 'facts in, issues out' principle: q_stop_basis_problems (a legal-conclusion question) and q_stop_type were replaced by q_stop_reasons (what the officer said the stop was based on) plus factual follow-ups. The thresholds for suggesting this section were drafted by me and built at the maintainer's request, pending legal review (see the REVIEW CAREFULLY note): no reason given; only weak reasons (high-crime area, nervousness, time of day, furtive movements, something else); bad driving with no violation or vehicle problem; a traffic violation or vehicle problem that didn't happen (or not sure); an unidentified, uncorroborated tip; a known vehicle or person where the officer had reason to think it was someone else; a general-only description. Flight and an observed crime don't trigger it alone, and count as real reasons."
   ]
 }

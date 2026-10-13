@@ -327,5 +327,5 @@ line says so.
    fired; practice notes. An issue that matched but rendered no paragraph is listed here as
    "not in motion," with a note saying whether research is needed (its sentences were gaps) or its
    content is broken (no paragraph applied). The validator rejects content that can produce the
-   second case, when the answer space is small enough to check.
+   second case.
 3. Issues considered but not included: excluded explanations that fired.

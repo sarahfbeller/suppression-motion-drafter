@@ -9,7 +9,6 @@
       "dog_sniff",
       "warrant"
     ],
-    "q_stop_type": "traffic_violation",
     "q_extension_event": [
       "canine_sniff",
       "unrelated_questioning"
@@ -24,6 +23,10 @@
     "q_contact_requested": [
       "attorney"
     ],
-    "q_contact_outcome": "denied_outright"
+    "q_contact_outcome": "denied_outright",
+    "q_stop_reasons": [
+      "traffic_violation"
+    ],
+    "q_cited_conduct_happened": "yes"
   }
 }

@@ -7,7 +7,6 @@
       "arrest",
       "breath_test"
     ],
-    "q_stop_type": "traffic_violation",
     "q_extension_event": [
       "wait_for_backup_or_k9"
     ],
@@ -22,6 +21,10 @@
     "q_breath_test_completed": "yes",
     "q_independent_test_advisement": "clear_advisement",
     "q_independent_test_type_limited": "yes",
-    "q_comprehension_barrier": "language"
+    "q_comprehension_barrier": "language",
+    "q_stop_reasons": [
+      "traffic_violation"
+    ],
+    "q_cited_conduct_happened": "yes"
   }
 }

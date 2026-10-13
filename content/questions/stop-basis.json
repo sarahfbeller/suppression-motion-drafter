@@ -1,47 +1,117 @@
 [
   {
-    "id": "q_stop_type",
-    "type": "multiple_choice",
-    "prompt": "What was the original basis for the stop?",
+    "id": "q_stop_reasons",
+    "type": "multi_select",
+    "prompt": "What did the officer say the stop was based on? Select all that apply.",
     "options": [
       {
         "id": "traffic_violation",
-        "label": "Traffic violation"
+        "label": "A traffic violation, such as speeding, failing to signal, or running a stop sign (vehicle stops)"
       },
       {
-        "id": "terry_stop",
-        "label": "Suspicion of a crime other than a traffic violation"
+        "id": "bad_driving",
+        "label": "Bad driving that isn't itself a violation, such as weaving within the lane, erratic braking, or driving slowly (vehicle stops)"
+      },
+      {
+        "id": "vehicle_problem",
+        "label": "A problem with the vehicle, such as equipment, expired registration, or plates (vehicle stops)"
+      },
+      {
+        "id": "tip",
+        "label": "A tip or 911 call"
+      },
+      {
+        "id": "high_crime_area",
+        "label": "Presence in a high-crime area"
+      },
+      {
+        "id": "nervousness",
+        "label": "Nervousness"
+      },
+      {
+        "id": "time_of_day",
+        "label": "Time of day or night"
+      },
+      {
+        "id": "furtive_movements",
+        "label": "Furtive movements or reaching"
+      },
+      {
+        "id": "known_vehicle_or_person",
+        "label": "A vehicle or person the officer knew or recognized (e.g. a registered owner with a suspended license or a warrant)"
+      },
+      {
+        "id": "matched_description",
+        "label": "Your client matched a description of a suspect"
+      },
+      {
+        "id": "flight",
+        "label": "Your client ran from or avoided the officer"
+      },
+      {
+        "id": "observed_crime",
+        "label": "The officer saw what looked like a drug deal or other crime"
+      },
+      {
+        "id": "no_reason",
+        "label": "No reason given"
       },
       {
         "id": "other",
-        "label": "Other"
+        "label": "Something else"
       }
+    ],
+    "_author_notes": [
+      "REVIEW CAREFULLY: which of these reasons suggest a no-reasonable-suspicion issue is decided in the trigger of no-reasonable-suspicion-for-stop and no-reasonable-suspicion-for-pedestrian-stop. Those thresholds haven't been legally reviewed yet; see the REVIEW CAREFULLY note in each issue. The options themselves (and whether to add or cut any) are also worth a second look."
     ]
   },
   {
-    "id": "q_stop_basis_problems",
-    "type": "multi_select",
-    "prompt": "Is there reason to dispute the officer's basis for the stop? Select all that apply; leave blank if the basis looks solid.",
+    "id": "q_cited_conduct_happened",
+    "type": "multiple_choice",
+    "prompt": "Did the traffic violation or vehicle problem the officer described actually happen?",
     "options": [
       {
-        "id": "violation_disputed",
-        "label": "The claimed traffic violation didn't happen, or the conduct described isn't actually a violation"
+        "id": "yes",
+        "label": "Yes"
       },
       {
-        "id": "hunch_or_generalities",
-        "label": "The officer's reasons were a hunch or generalities (nervousness, high-crime area, time of night)"
-      },
-      {
-        "id": "uncorroborated_tip",
-        "label": "The stop rested on an anonymous tip police didn't corroborate"
+        "id": "no",
+        "label": "No"
       },
       {
         "id": "not_sure",
         "label": "Not sure yet"
       }
-    ],
-    "_author_notes": [
-      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note stop_basis_unknown in no-reasonable-suspicion-for-stop; review note stop_basis_unknown in no-reasonable-suspicion-for-pedestrian-stop."
+    ]
+  },
+  {
+    "id": "q_tip_caller_identified",
+    "type": "yes_no",
+    "prompt": "Did the caller give their name or other identifying information?"
+  },
+  {
+    "id": "q_tip_corroborated",
+    "type": "yes_no",
+    "prompt": "Before the stop, did police see anything themselves that confirmed the tip?"
+  },
+  {
+    "id": "q_known_person_mismatch",
+    "type": "yes_no",
+    "prompt": "Did the officer know anything suggesting the person they stopped wasn't the person they had in mind (for example, the driver didn't match the registered owner's description)?"
+  },
+  {
+    "id": "q_description_detail",
+    "type": "multiple_choice",
+    "prompt": "How detailed was the description your client matched?",
+    "options": [
+      {
+        "id": "specific",
+        "label": "Specific: clothing, a particular vehicle, a plate number, or other distinguishing details"
+      },
+      {
+        "id": "general_only",
+        "label": "General only: race, sex, age range, or similar"
+      }
     ]
   }
 ]

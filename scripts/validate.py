@@ -18,7 +18,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import engine as E  # noqa: E402
 
 UNANSWERED = object()
-ENUMERATION_LIMIT = 200_000
 UNCERTAIN_OPTION_IDS = {"unknown", "not_sure", "unclear"}
 
 QUESTION_TYPES = {"yes_no", "multiple_choice", "multi_select", "short_text"}
@@ -379,17 +378,17 @@ def domain(q, refs=None):
 
 
 def referenced_options(conds):
-    """question id -> the option ids worth enumerating, given these conditions.
+    """question id -> the option ids worth trying, given these conditions.
 
     Starts from the option ids the conditions mention, then keeps one representative of any
     options that are interchangeable: ones mentioned only as 'includes' leaves inside the same
     'any' groups (e.g. an issue that starts from any of ten encounter events). Swapping such
-    options never changes any condition's value, so enumerating one of them is enough.
+    options never changes any condition's value, so trying one of them is enough.
 
     Every question the conditions use gets an entry, even one used only as 'empty' / 'not_empty':
     its options are then all interchangeable, and one representative stands in for them.
     Pass only the conditions a check actually evaluates; options mentioned elsewhere in the
-    issue don't change the outcome, and leaving them out keeps the enumeration small.
+    issue don't change the outcome, and leaving them out keeps the search small.
     """
     contexts = {}  # (question, option) -> set of places it's mentioned
 
@@ -487,21 +486,6 @@ def check_condition(r, where, cond, questions):
         r.err(where, f"{qid}: {bad} not valid option ids (valid: {sorted(valid)})")
         return False
     return True
-
-
-def assignments(qids, questions, refs=None):
-    qids = sorted(qids)
-    refs = refs or {}
-    for combo in itertools.product(*(domain(questions[q], refs.get(q)) for q in qids)):
-        yield {q: v for q, v in zip(qids, combo) if v is not UNANSWERED}
-
-
-def space_size(qids, questions, refs=None):
-    refs = refs or {}
-    n = 1
-    for q in qids:
-        n *= len(domain(questions[q], refs.get(q)))
-    return n
 
 
 # --------------------------------------------------------------------------- issues
@@ -795,17 +779,6 @@ def check_authority(r, sw, a, p_ac, narrowed, courts, counts, nested):
                 check_authority(r, aw, p["authority"], p_ac, narrowed, courts, counts, nested=True)
 
 
-def too_many(r, where, what, qids, questions, refs):
-    """True (with a warning) if checking `what` would mean enumerating more than ENUMERATION_LIMIT
-    combinations of answers. The check is skipped, so the warning says which one and why."""
-    n = space_size(qids, questions, refs)
-    if n <= ENUMERATION_LIMIT:
-        return False
-    r.warn(where, f"too many answer combinations ({n:,}) to check {what} — skipped. "
-                  f"Questions involved: {', '.join(sorted(qids))}")
-    return True
-
-
 def _atom(c):
     return json.dumps(c, sort_keys=True)
 
@@ -859,16 +832,291 @@ def inconsistent_preconditions(issue):
     return found
 
 
+# --------------------------------------------------------------------------- the search
+#
+# Every logic check below asks "is there any set of answers where F is true?" for a formula F built
+# from conditions. Instead of listing every combination, the search builds answers one fact at a
+# time and evaluates F three-valued (true / false / not yet known) after each step, abandoning a
+# branch as soon as F is settled. A checklist option is its own yes/no fact, so a 14-option
+# checklist doesn't mean 2^14 combinations. Unanswered is always one of the possibilities.
+
+SEARCH_LIMIT = 200_000  # steps per check; a check that needs more is skipped, with a warning
+
+
+class SearchTooBig(Exception):
+    pass
+
+
+def F_cond(cond, overrides=None):
+    """A condition as a formula. overrides fixes some questions' answers ({qid: answer})."""
+    return ("c", cond, overrides or {})
+
+
+def F_and(*fs):
+    return ("and", list(fs))
+
+
+def F_or(*fs):
+    return ("or", list(fs))
+
+
+def F_not(f):
+    return ("not", f)
+
+
+def _formula_conds(f, out):
+    if f[0] == "c":
+        out.append((f[1], f[2]))
+    elif f[0] == "not":
+        _formula_conds(f[1], out)
+    else:
+        for g in f[1]:
+            _formula_conds(g, out)
+    return out
+
+
+def _combine(kind, vals):
+    stop = False if kind == "and" else True
+    if stop in vals:
+        return stop
+    return None if None in vals else not stop
+
+
+def _leaf3(leaf, pa, ov, opts):
+    q = leaf["question"]
+    if q in ov:
+        return E.eval_condition(leaf, {q: ov[q]})
+    if q not in pa:
+        return None
+    v = pa[q]
+    if v is UNANSWERED:
+        return False
+    if not isinstance(v, dict):
+        return E.eval_condition(leaf, {q: v})
+    op, x = leaf["op"], leaf.get("value")  # a checklist, some options decided so far
+    if op in ("includes", "not_includes"):
+        if x not in v:
+            # an option this search doesn't branch on stands in as unchecked
+            return op == "not_includes" if x not in opts[q] else None
+        return v[x] if op == "includes" else not v[x]
+    anything = True if any(v.values()) else (False if len(v) == len(opts[q]) else None)
+    return anything if op == "not_empty" else (None if anything is None else not anything)
+
+
+def _cond3(cond, pa, ov, opts):
+    if "all" in cond or "any" in cond:
+        kind = "and" if "all" in cond else "or"
+        vals = []
+        for c in cond.get("all", cond.get("any")):
+            v = _cond3(c, pa, ov, opts)
+            if v is (kind == "or"):
+                return v
+            vals.append(v)
+        return _combine(kind, vals)
+    return _leaf3(cond, pa, ov, opts)
+
+
+def _f3(f, pa, opts):
+    if f[0] == "c":
+        return _cond3(f[1], pa, f[2], opts)
+    if f[0] == "not":
+        v = _f3(f[1], pa, opts)
+        return None if v is None else not v
+    vals = []
+    for g in f[1]:
+        v = _f3(g, pa, opts)
+        if v is (f[0] == "or"):
+            return v
+        vals.append(v)
+    return _combine(f[0], vals)
+
+
+def satisfy(f, questions):
+    """Answers that make formula f true, as {qid: answer} (questions left out are unanswered), or None
+    if there are none. Raises SearchTooBig past SEARCH_LIMIT steps."""
+    conds = _formula_conds(f, [])
+    order = []
+    for c, ov in conds:
+        for leaf_q in _leaf_questions(c):
+            if leaf_q not in ov and leaf_q not in order:
+                order.append(leaf_q)
+    refs = referenced_options([c for c, _ in conds])
+    named = {}  # question -> every option id any leaf names, including all members of in/not_in lists
+    for c, _ in conds:
+        _named_options(c, named)
+    opts = {}
+    for q in order:
+        qq = questions[q]
+        ids = ["yes", "no"] if qq["type"] == "yes_no" else [o["id"] for o in qq["options"]]
+        mentioned = [i for i in ids if i in refs.get(q, set())]
+        # One option no leaf names at all stands in for the rest. An option that refs dropped as
+        # interchangeable with a sibling is still named, so it can't be the stand-in.
+        rest = [i for i in ids if i not in named.get(q, set())]
+        opts[q] = mentioned + rest[:1]
+    steps = [0]
+    memo = {}
+
+    def residual(pa):
+        """f with everything pa decides folded in: True, False, or what's still open."""
+        return _simplify(f, pa, opts)
+
+    def branch(pa, rest):
+        """Answers extending pa that make the residual formula `rest` true, or None. The answer only
+        depends on `rest`, so it's memoized on it: branches that leave the same open formula are
+        solved once."""
+        if rest is True:
+            return pa
+        if rest is False:
+            return None
+        key = repr(rest)
+        if key in memo:
+            add = memo[key]
+            return None if add is None else _extend(pa, add)
+        steps[0] += 1
+        if steps[0] > SEARCH_LIMIT:
+            raise SearchTooBig()
+        q, opt = _first_open(rest)
+        multi = questions[q]["type"] == "multi_select"
+        if q not in pa:
+            choices = [{**pa, q: c} for c in ([UNANSWERED, {}] if multi else [UNANSWERED] + opts[q])]
+        else:
+            choices = [{**pa, q: {**pa[q], opt: b}} for b in (True, False)]
+        for c in choices:
+            found = branch(c, residual(c))
+            if found is not None:
+                memo[key] = _added(pa, found)
+                return found
+        memo[key] = None
+        return None
+
+    found = branch({}, residual({}))
+    if found is None:
+        return None
+    out = {}
+    for q, v in found.items():
+        if v is UNANSWERED:
+            continue
+        out[q] = [o for o in opts[q] if v.get(o)] if isinstance(v, dict) else v
+    return out
+
+
+def _simplify(f, pa, opts):
+    """Formula f with every part pa decides replaced by its value: True, False, or a nested tuple of
+    what's still open. Open leaves record how far their question has got, so two branches with the
+    same open formula really are the same subproblem."""
+    if f[0] == "c":
+        return _simplify_cond(f[1], pa, f[2], opts)
+    if f[0] == "not":
+        v = _simplify(f[1], pa, opts)
+        return (not v) if isinstance(v, bool) else ("not", v)
+    stop = f[0] == "or"
+    kids = []
+    for g in f[1]:
+        v = _simplify(g, pa, opts)
+        if v is stop:
+            return stop
+        if v is not (not stop):
+            kids.append(v)
+    if not kids:
+        return not stop
+    return kids[0] if len(kids) == 1 else (f[0], tuple(kids))
+
+
+def _simplify_cond(cond, pa, ov, opts):
+    if "all" in cond or "any" in cond:
+        kind = "and" if "all" in cond else "or"
+        stop = kind == "or"
+        kids = []
+        for c in cond.get("all", cond.get("any")):
+            v = _simplify_cond(c, pa, ov, opts)
+            if v is stop:
+                return stop
+            if v is not (not stop):
+                kids.append(v)
+        if not kids:
+            return not stop
+        return kids[0] if len(kids) == 1 else (kind, tuple(kids))
+    v = _leaf3(cond, pa, ov, opts)
+    if v is not None:
+        return v
+    q, op, x = cond["question"], cond["op"], cond.get("value")
+    if q not in pa:
+        return ("leaf", q, op, tuple(x) if isinstance(x, list) else x)
+    left = tuple(o for o in opts[q] if o not in pa[q])  # checklist answered, these options still open
+    if op in ("includes", "not_includes"):
+        return ("opt", q, op, x)
+    return ("any_open", q, op, left)
+
+
+def _added(pa, found):
+    """What found decides beyond pa: whole questions pa left open, and options of checklists pa had
+    only partly decided. Only open facts, so it can be reused for any branch with the same residual."""
+    out = {}
+    for q, v in found.items():
+        if q not in pa:
+            out[q] = v
+        elif isinstance(v, dict) and isinstance(pa[q], dict):
+            extra = {o: b for o, b in v.items() if o not in pa[q]}
+            if extra:
+                out[q] = extra
+    return out
+
+
+def _extend(pa, add):
+    out = dict(pa)
+    for q, v in add.items():
+        out[q] = {**pa[q], **v} if q in pa and isinstance(pa[q], dict) else v
+    return out
+
+
+def _first_open(rest):
+    """The first question (and, for an answered checklist, option) the open formula still depends on."""
+    if rest[0] in ("leaf",):
+        return rest[1], None
+    if rest[0] == "opt":
+        return rest[1], rest[3]
+    if rest[0] == "any_open":
+        return rest[1], rest[3][0]
+    if rest[0] == "not":
+        return _first_open(rest[1])
+    return _first_open(rest[1][0])
+
+
+def _named_options(cond, out):
+    if "all" in cond or "any" in cond:
+        for c in cond.get("all", cond.get("any")):
+            _named_options(c, out)
+        return out
+    v = cond.get("value")
+    out.setdefault(cond["question"], set()).update(v if isinstance(v, list) else [] if v is None else [v])
+    return out
+
+
+def _leaf_questions(cond):
+    if "all" in cond or "any" in cond:
+        out = []
+        for c in cond.get("all", cond.get("any")):
+            out += [q for q in _leaf_questions(c) if q not in out]
+        return out
+    return [cond["question"]]
+
+
+def search(r, where, what, f, questions):
+    """satisfy(), but a search that's too big becomes a warning. Returns (answers or None, skipped)."""
+    try:
+        return satisfy(f, questions), False
+    except SearchTooBig:
+        qs = sorted({q for c, ov in _formula_conds(f, []) for q in E.condition_questions(c) if q not in ov})
+        r.warn(where, f"checking {what} needed more than {SEARCH_LIMIT:,} search steps — skipped. "
+                      f"Questions involved: {', '.join(qs)}")
+        return None, True
+
+
 def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, courts):
     """In every forum the issue applies in, every matching set of answers must leave at least one
     paragraph with a cited sentence standing after its 'when' and applicable_courts — otherwise the
     issue matches but produces nothing (argument alone isn't a section), and it isn't a research gap."""
     match = issue["trigger"]["match_condition"]
-    whens = [p["when"] for p in paragraphs if "when" in p]
-    qids = E.condition_questions(match)
-    for w in whens:
-        qids |= E.condition_questions(w)
-    refs = referenced_options([match] + whens)
     for code in sorted(courts):
         binding = [E.SCOTUS, code]
         if courts[code]["kind"] == "scotus" or not E.applies_in(issue["applicable_courts"], binding):
@@ -876,48 +1124,42 @@ def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, co
         live = [p for p in paragraphs if E.applies_in(E.paragraph_courts(issue, p), binding)
                 and E.has_cited(p.get("sentences", []))]
         if any("when" not in p for p in live):
-            continue  # a paragraph of law that always prints here: nothing to enumerate
-        if too_many(r, where, "that every match leaves a paragraph of law", qids, questions, refs):
+            continue  # a paragraph of law that always prints here: nothing to search
+        f = F_and(F_cond(match), *[F_not(F_cond(p["when"])) for p in live])
+        a, skipped = search(r, where, "that every match leaves a paragraph of law", f, questions)
+        if skipped:
             return
-        for a in assignments(qids, questions, refs):
-            if E.eval_condition(match, a) and not any("when" not in p or E.eval_condition(p["when"], a)
-                                                      for p in live):
-                r.err(where, f"in {courts[code]['display_name']}, the issue can match with no paragraph of law "
-                             f"left after 'when' and applicable_courts, so it would produce nothing — "
-                             f"e.g. answers {a}")
-                break
+        if a is not None:
+            r.err(where, f"in {courts[code]['display_name']}, the issue can match with no paragraph of law "
+                         f"left after 'when' and applicable_courts, so it would produce nothing — "
+                         f"e.g. answers {a}")
 
 
 def check_reachability(r, where, trig, paragraphs, questions):
     match = trig["match_condition"]
-    mq = E.condition_questions(match)
+    M = F_cond(match)
+    gate = E.event_gate(match)
 
-    def explore(extra_cond, what):
-        """Every relevant combination of answers for match_condition plus one other condition,
-        or None (with a warning) if there are too many to check."""
-        qids = mq | (E.condition_questions(extra_cond) if extra_cond else set())
-        refs = referenced_options([match] + ([extra_cond] if extra_cond else []))
-        if too_many(r, where, what, qids, questions, refs):
-            return None
-        return assignments(qids, questions, refs)
+    def near_miss(when, ov=None):
+        return F_and(F_cond(gate, ov), F_cond(when, ov)) if gate else F_cond(when, ov)
 
-    space = explore(None, "whether match_condition can ever be true")
-    if space is None:
+    a, skipped = search(r, where, "whether match_condition can ever be true", M, questions)
+    if skipped:
         return
-    if not any(E.eval_condition(match, a) for a in space):
+    if a is None:
         r.err(where, "match_condition can never be true for any combination of answers")
         return
 
     for i, rc in enumerate(trig.get("review_conditions", [])):
-        space = explore(rc["when"], f"review note {rc['flag']!r}")
-        if space is not None and not any(E.eval_condition(match, a) and E.eval_condition(rc["when"], a) for a in space):
+        a, skipped = search(r, where, f"review note {rc['flag']!r}", F_and(M, F_cond(rc["when"])), questions)
+        if not skipped and a is None:
             r.err(f"{where} review_conditions[{i}] ({rc['flag']})",
                   "can never fire on an included issue — its 'when' contradicts match_condition")
 
     for i, ex in enumerate(trig.get("excluded_explanations", [])):
-        space = explore(ex["when"], f"near-miss explanation {ex['flag']!r}")
-        if space is not None and not any((not E.eval_condition(match, a)) and E.near_miss_fires(match, ex["when"], a)
-                                         for a in space):
+        a, skipped = search(r, where, f"near-miss explanation {ex['flag']!r}",
+                            F_and(F_not(M), near_miss(ex["when"])), questions)
+        if not skipped and a is None:
             r.err(f"{where} excluded_explanations[{i}] ({ex['flag']})",
                   "can never fire — whenever its 'when' is true, either the issue is included or its "
                   "encounter event didn't happen (near misses show only when the event did)")
@@ -925,20 +1167,16 @@ def check_reachability(r, where, trig, paragraphs, questions):
     for p in paragraphs:
         if "when" not in p:
             continue
-        combos = explore(p["when"], f"paragraph {p['id']!r}")
-        if combos is None:
+        what = f"paragraph {p['id']!r}"
+        a, skipped = search(r, where, what, F_and(M, F_cond(p["when"])), questions)
+        if skipped:
             continue
-        fires = redundant = False
-        redundant = True
-        for a in combos:
-            if E.eval_condition(match, a):
-                w = E.eval_condition(p["when"], a)
-                fires |= w
-                redundant &= w
-        if not fires:
+        if a is None:
             r.err(f"{where} paragraph {p['id']}", "'when' can never be true on an included issue, "
                                                   "so this paragraph never renders")
-        elif redundant:
+            continue
+        a, skipped = search(r, where, what, F_and(M, F_not(F_cond(p["when"]))), questions)
+        if not skipped and a is None:
             r.warn(f"{where} paragraph {p['id']}", "'when' is true whenever the issue matches — it can be removed")
 
     # Uncertain answers ("not sure", "unknown", "unclear") must never silently decide an issue:
@@ -946,45 +1184,33 @@ def check_reachability(r, where, trig, paragraphs, questions):
     # note must say so. On a multi_select, the uncertain answer is that option checked alone.
     excluded = trig.get("excluded_explanations", [])
     reviews = trig.get("review_conditions", [])
-    note_qids = set()
-    for n in excluded + reviews:
-        note_qids |= E.condition_questions(n["when"])
-    refs = referenced_options([match] + [n["when"] for n in excluded + reviews])
-    for qid in sorted(mq):
+    for qid in sorted(E.condition_questions(match)):
         q = questions[qid]
         if q["type"] not in ("multiple_choice", "multi_select"):
             continue
         multi = q["type"] == "multi_select"
         for uid in [o["id"] for o in q["options"] if o["id"] in UNCERTAIN_OPTION_IDS]:
-            others = (mq | note_qids) - {qid}
-            if too_many(r, where, f"what answering {qid} = {uid!r} does", others, questions, refs):
-                continue
-            uncertain = [uid] if multi else uid
+            u = {qid: [uid] if multi else uid}
             # On a checklist, leaving it blank ("none of these") is an alternative too.
-            alternatives = [[o["id"]] if multi else o["id"] for o in q["options"] if o["id"] != uid]
+            alts = [{qid: [o["id"]] if multi else o["id"]} for o in q["options"] if o["id"] != uid]
             if multi:
-                alternatives.append([])
+                alts.append({qid: []})
             answer = f"{qid} = {uid!r}" + (" (checked alone)" if multi else "")
-            excl_reported = incl_reported = False
-            for a in assignments(others, questions, refs):
-                a = {**a, qid: uncertain}
-                matched = E.eval_condition(match, a)
-                decides = any(E.eval_condition(match, {**a, qid: alt}) != matched for alt in alternatives)
-                if not decides:
-                    continue
-                if not matched and not excl_reported and not any(E.near_miss_fires(match, e["when"], a)
-                                                                 for e in excluded):
-                    r.err(where, f"answering {answer} silently excludes this issue (a different "
-                                 f"answer would have included it, and no excluded_explanation fires). "
-                                 f"Include it with a review note (the default), or add an excluded_explanation.")
-                    excl_reported = True
-                if matched and not incl_reported and not any(E.eval_condition(n["when"], a) for n in reviews):
-                    r.err(where, f"answering {answer} can include this issue with no review note firing, so "
-                                 f"the attorney isn't told the section rests on an uncertain answer. Add a "
-                                 f"review_conditions note for it.")
-                    incl_reported = True
-                if excl_reported and incl_reported:
-                    break
+            what = f"what answering {answer} does"
+            silent_exclusion = F_and(F_not(F_cond(match, u)), F_or(*[F_cond(match, alt) for alt in alts]),
+                                     *[F_not(near_miss(e["when"], u)) for e in excluded])
+            a, skipped = search(r, where, what, silent_exclusion, questions)
+            if not skipped and a is not None:
+                r.err(where, f"answering {answer} silently excludes this issue (a different "
+                             f"answer would have included it, and no excluded_explanation fires). "
+                             f"Include it with a review note (the default), or add an excluded_explanation.")
+            silent_inclusion = F_and(F_cond(match, u), F_or(*[F_not(F_cond(match, alt)) for alt in alts]),
+                                     *[F_not(F_cond(n["when"], u)) for n in reviews])
+            a, skipped = search(r, where, what, silent_inclusion, questions)
+            if not skipped and a is not None:
+                r.err(where, f"answering {answer} can include this issue with no review note firing, so "
+                             f"the attorney isn't told the section rests on an uncertain answer. Add a "
+                             f"review_conditions note for it.")
 
 
 # --------------------------------------------------------------------------- example sessions
