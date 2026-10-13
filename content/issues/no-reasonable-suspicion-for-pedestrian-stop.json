@@ -149,7 +149,7 @@
           "value": "yes"
         },
         "flag": "strieff_attenuation",
-        "display_note": "Police found an outstanding warrant for your client. Expect the prosecution to argue under Utah v. Strieff that the warrant attenuates the connection between the stop and the evidence."
+        "display_note": "Police found an outstanding warrant for your client. Expect the prosecution to argue under *Utah v. Strieff* that the warrant attenuates the connection between the stop and the evidence."
       }
     ]
   },

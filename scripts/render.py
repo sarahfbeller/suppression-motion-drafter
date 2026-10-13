@@ -97,10 +97,6 @@ def render_motion(result):
     return "\n".join(lines)
 
 
-PRONOUN_LABELS = {"he_him": "he/him", "she_her": "she/her", "they_them": "they/them",
-                  "no_pronouns": "none (the motion repeats your client's name)"}
-
-
 def render_memo(result, config, motion=""):
     courts = config["courts"]
     specific = result["courts"][1]
@@ -111,8 +107,6 @@ def render_memo(result, config, motion=""):
     lines = ["# Attorney memo: suppression issues", "",
              "*For the attorney only. Do not file.*", "",
              f"**Forum:** {forum} ({specific_name}). **Authority cited:** {cited}.", ""]
-    pronouns = PRONOUN_LABELS.get(result["pronouns"], "not answered, so the motion repeats your client's name")
-    lines += [f"**Pronouns for your client:** {pronouns}.", ""]
     f = motion.count("[Fill in:")
     if f:
         lines += [f"**Fill in the application:** the motion has {f} bracketed [Fill in: …] "

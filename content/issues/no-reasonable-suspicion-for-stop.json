@@ -189,6 +189,50 @@
               ]
             }
           ]
+        },
+        {
+          "any": [
+            {
+              "all": [
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "traffic_violation"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "not_includes",
+                  "value": "vehicle_problem"
+                }
+              ]
+            },
+            {
+              "all": [
+                {
+                  "any": [
+                    {
+                      "question": "q_stop_reasons",
+                      "op": "includes",
+                      "value": "traffic_violation"
+                    },
+                    {
+                      "question": "q_stop_reasons",
+                      "op": "includes",
+                      "value": "vehicle_problem"
+                    }
+                  ]
+                },
+                {
+                  "question": "q_cited_conduct_happened",
+                  "op": "in",
+                  "value": [
+                    "no",
+                    "not_sure"
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -221,13 +265,31 @@
           ]
         },
         "flag": "mistake_of_law",
-        "display_note": "If the dispute is that the conduct isn't actually a violation, expect the prosecution to argue the officer made a reasonable mistake of law, which can still support a stop (Heien v. North Carolina, 574 U.S. 54 (2014)). Be ready to show the statute is clear and the officer's reading wasn't reasonable."
+        "display_note": "If the dispute is that the conduct isn't actually a violation, expect the prosecution to argue the officer made a reasonable mistake of law, which can still support a stop (*Heien v. North Carolina*, 574 U.S. 54 (2014)). Be ready to show the statute is clear and the officer's reading wasn't reasonable."
       },
       {
         "when": {
-          "question": "q_cited_conduct_happened",
-          "op": "equals",
-          "value": "not_sure"
+          "all": [
+            {
+              "any": [
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "traffic_violation"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "vehicle_problem"
+                }
+              ]
+            },
+            {
+              "question": "q_cited_conduct_happened",
+              "op": "equals",
+              "value": "not_sure"
+            }
+          ]
         },
         "flag": "cited_conduct_unknown",
         "display_note": "You aren't sure yet whether the traffic violation or vehicle problem the officer described actually happened. This section was drafted anyway; get the dash-cam footage, the officer's report, and dispatch records before filing, or cut this section."
@@ -248,7 +310,36 @@
           "value": "yes"
         },
         "flag": "strieff_attenuation",
-        "display_note": "Police found an outstanding warrant for your client. Expect the prosecution to argue under Utah v. Strieff that the warrant attenuates the connection between the stop and the evidence."
+        "display_note": "Police found an outstanding warrant for your client. Expect the prosecution to argue under *Utah v. Strieff* that the warrant attenuates the connection between the stop and the evidence."
+      }
+    ],
+    "excluded_explanations": [
+      {
+        "when": {
+          "all": [
+            {
+              "any": [
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "traffic_violation"
+                },
+                {
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "vehicle_problem"
+                }
+              ]
+            },
+            {
+              "question": "q_cited_conduct_happened",
+              "op": "equals",
+              "value": "yes"
+            }
+          ]
+        },
+        "flag": "cited_conduct_happened",
+        "display_note": "You said the traffic violation or vehicle problem the officer cited actually happened, so this section was left out: a violation the officer saw generally justifies the stop, whatever other reasons the officer gave. If you still want to challenge the basis for the stop, you'll need to draft that argument yourself."
       }
     ]
   },
@@ -711,6 +802,7 @@
     "alaska_coleman_standard was supplied by the maintainer (2026-10-08) from one of their filed motions, with its citations and pincites. Alaska only. It applies to all investigative stops (the maintainer, 2026-10-08), so it has no condition on q_stop_type.",
     "Redesigned 2026-10-10 on the 'facts in, issues out' principle: q_stop_basis_problems (a legal-conclusion question) and q_stop_type were replaced by q_stop_reasons (what the officer said the stop was based on) plus factual follow-ups. The thresholds for suggesting this section were drafted by me and built at the maintainer's request, pending legal review (see the REVIEW CAREFULLY note): no reason given; only weak reasons (high-crime area, nervousness, time of day, furtive movements, something else); bad driving with no violation or vehicle problem; a traffic violation or vehicle problem that didn't happen (or not sure); an unidentified, uncorroborated tip; a known vehicle or person where the officer had reason to think it was someone else; a general-only description. Flight and an observed crime don't trigger it alone, and count as real reasons.",
     "strieff_attenuation review note (2026-10-12): drafted by Claude. Strieff (2016) as I recall it: discovering a valid, pre-existing arrest warrant after an unlawful stop attenuated the connection to evidence found in the search incident to the arrest. From memory, unverified. The maintainer chose to show the note in both courts for now.",
-    "TO CHECK (the maintainer, 2026-10-12): does Alaska follow Strieff under the Alaska Constitution, or has it rejected or limited it? The strieff_attenuation note prints in state court until this is checked."
+    "TO CHECK (the maintainer, 2026-10-12): does Alaska follow Strieff under the Alaska Constitution, or has it rejected or limited it? The strieff_attenuation note prints in state court until this is checked.",
+    "REVIEW CAREFULLY (2026-10-13, the maintainer): a confirmed traffic violation or vehicle problem (q_cited_conduct_happened yes) now removes the issue, even when another branch (e.g. a recognized person with a mismatch, or an anonymous tip) would fire it. The cited_conduct_happened near-miss note explains this (Claude draft; its 'generally justifies the stop, whatever other reasons the officer gave' is from memory of Whren and unverified for Alaska). The cited_conduct_unknown review note now requires a traffic violation or vehicle problem, so the interview no longer asks whether the violation happened when only bad driving was given."
   ]
 }

@@ -109,7 +109,7 @@
           "value": "yes"
         },
         "flag": "strieff_attenuation",
-        "display_note": "Police found an outstanding warrant for your client. Expect the prosecution to argue under Utah v. Strieff that the warrant attenuates the connection between the stop and the evidence."
+        "display_note": "Police found an outstanding warrant for your client. Expect the prosecution to argue under *Utah v. Strieff* that the warrant attenuates the connection between the stop and the evidence."
       },
       {
         "when": {
@@ -271,7 +271,7 @@
     }
   ],
   "practice_notes": [
-    "Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.",
+    "*Rodriguez* rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.",
     "Get the CAD and any bodycam/dashcam timestamps in discovery early — this issue depends on minute-by-minute sequencing."
   ],
   "_author_notes": [

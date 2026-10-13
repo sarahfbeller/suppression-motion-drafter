@@ -574,6 +574,8 @@ def check_issue(r, where, issue, config, questions, used_questions):
         r.err(where, "id must be a lowercase slug")
     if not issue.get("label"):
         r.err(where, "empty label")
+    else:
+        check_italics(r, f"{where} label", issue["label"])
     heading = issue.get("motion_heading", "")
     if not heading:
         r.err(where, "empty motion_heading")
@@ -632,7 +634,9 @@ def check_issue(r, where, issue, config, questions, used_questions):
             flags.add(note["flag"])
             if not note["display_note"]:
                 r.err(nw, "empty display_note")
-            elif AUTHOR_NOTE_RE.search(note["display_note"]):
+            else:
+                check_italics(r, nw, note["display_note"])
+            if note["display_note"] and AUTHOR_NOTE_RE.search(note["display_note"]):
                 r.warn(nw, "display_note reads like a note to the author, but it's shown to the "
                            "attorney — move it to an '_'-prefixed field?")
 
@@ -696,7 +700,9 @@ def check_issue(r, where, issue, config, questions, used_questions):
     for note in pn:
         if not isinstance(note, str) or not note:
             r.err(where, "practice_notes entries must be non-empty strings")
-        elif AUTHOR_NOTE_RE.search(note):
+            continue
+        check_italics(r, f"{where} practice_notes", note)
+        if AUTHOR_NOTE_RE.search(note):
             r.warn(f"{where} practice_notes", f"reads like a note to the author, but practice notes "
                                                f"go to the attorney — move it to '_author_notes'? {note[:70]!r}")
 
@@ -707,6 +713,12 @@ def check_issue(r, where, issue, config, questions, used_questions):
                           f"{guard} is true, but {', '.join(lacks)} reach it without that, so the interview "
                           f"can ask {qid} when its premise is false. Add the condition if it applies.")
         check_every_match_has_a_paragraph(r, where, issue, good_paragraphs, questions, courts)
+
+
+def check_italics(r, where, text):
+    """Memo text marks case names in italics, *like this*, as motion text does."""
+    if text.count("*") % 2:
+        r.err(where, "unbalanced '*' — italics (case names) are marked *like this*")
 
 
 def check_fill_in(r, pw, text):
@@ -720,6 +732,7 @@ def check_fill_in(r, pw, text):
         r.err(pw, "fill_in can't contain brackets; the renderer adds them")
     if not re.search(r"[.?!]$", text):
         r.err(pw, "fill_in must end with sentence punctuation")
+    check_italics(r, pw, text)
 
 
 def check_sentence(r, pw, st, p_ac, narrowed, courts, sentence_ids, counts):
@@ -853,8 +866,12 @@ def inconsistent_preconditions(issue):
     without it: e.g. a paragraph that asks about "the container" only after a container search, and
     a review note that asks the same question with no container. The second lets the interview ask
     a question whose premise may be false. Compares review notes and paragraphs with each other, and
-    near misses with each other, for questions not in the trigger (those are asked while the trigger
-    is decided). Returns (question, condition, conditions with it, conditions without it)."""
+    near misses with each other. A question the trigger also asks is reported only for a fact the
+    trigger itself always requires before asking it: once the trigger is decided, the review note or
+    paragraph is the only thing still asking, so it needs the same premise (and where the trigger asks
+    without the fact, the question gets asked anyway). Near misses skip trigger questions, which are
+    asked while the trigger is decided. Returns (question, condition, conditions with it, conditions
+    without it)."""
     trig = issue["trigger"]
     match = trig["match_condition"]
     in_match = frozenset(_atom(x) for x in (match["all"] if "all" in match else [match]))
@@ -865,17 +882,26 @@ def inconsistent_preconditions(issue):
     nears = [("near-miss " + n["flag"], n["when"], in_gate) for n in trig.get("excluded_explanations", [])]
     skip = E.condition_questions(match)
     found = []
-    for ctxs in (details, nears):
+    def premise(guards, qid):
+        return frozenset(a for a in guards if qid not in E.condition_questions(json.loads(a)))
+
+    for ctxs, check_trigger in ((details, True), (nears, False)):
         qids = set()
         for _, cond, _ in ctxs:
             qids |= E.condition_questions(cond)
-        for qid in sorted(qids - skip):
+        for qid in sorted(qids if check_trigger else qids - skip):
             seen = []
             for label, cond, base in ctxs:
                 occ = _guards_before(cond, qid)
                 if occ:
-                    g = frozenset.intersection(*occ) | base
-                    seen.append((label, frozenset(a for a in g if qid not in E.condition_questions(json.loads(a)))))
+                    seen.append((label, premise(frozenset.intersection(*occ) | base, qid)))
+            if qid in skip:
+                trigger = premise(frozenset.intersection(*_guards_before(match, qid)), qid)
+                for a in sorted(trigger):
+                    lacks = [lab for lab, g in seen if a not in g]
+                    if lacks:
+                        found.append((qid, a, ["the trigger"] + [lab for lab, g in seen if a in g], lacks))
+                continue
             if len(seen) < 2:
                 continue
             common = frozenset.intersection(*[g for _, g in seen])

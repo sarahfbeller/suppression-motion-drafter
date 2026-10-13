@@ -4,8 +4,6 @@
 
 **Forum:** Federal court (Ninth Circuit). **Authority cited:** U.S. Supreme Court and Ninth Circuit.
 
-**Pronouns for your client:** he/him.
-
 **Fill in the application:** the motion has 3 bracketed [Fill in: …] prompts. Replace each with your own argument applying the law to your client's facts, and delete the prompt.
 
 **Fill in your client's name:** the motion says [Client] in 1 place. Replace each one with your client's name the way you want it to appear in the motion, e.g. "Mr. Smith" or "Smith". Find and replace works, including for possessives ([Client]'s).
@@ -24,7 +22,7 @@
 
 **Practice notes:**
 
-- Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
+- *Rodriguez* rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
 - Get the CAD and any bodycam/dashcam timestamps in discovery early — this issue depends on minute-by-minute sequencing.
 
 ### II. Frisk Without Reasonable Suspicion That the Person Was Armed and Dangerous
@@ -37,9 +35,9 @@
 **Practice notes:**
 
 - If your client was a passenger and was also asked for ID and that added time to the stop, that may raise a separate timing issue independent of the frisk itself.
-- A passenger has standing to challenge the stop itself and any search of their own person (Brendlin v. California, 551 U.S. 249 (2007)), but standing to challenge a search of the vehicle's contents is analyzed separately — don't assume one covers the other.
+- A passenger has standing to challenge the stop itself and any search of their own person (*Brendlin v. California*, 551 U.S. 249 (2007)), but standing to challenge a search of the vehicle's contents is analyzed separately — don't assume one covers the other.
 
-### III. Franks Violation — False Statement or Material Omission in Affidavit
+### III. *Franks* Violation — False Statement or Material Omission in Affidavit
 
 **Check before filing:**
 
@@ -49,5 +47,11 @@
 
 **Practice notes:**
 
-- A Franks hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.
-- Consider pairing this with a good-faith exception rebuttal (Leon), since a Franks violation is one of the recognized exceptions to good-faith reliance on a warrant.
+- A *Franks* hearing requires more than pointing to an error — the defense must make a substantial preliminary showing of deliberate falsehood or reckless disregard, not mere negligence.
+- Consider pairing this with a good-faith exception rebuttal (*Leon*), since a *Franks* violation is one of the recognized exceptions to good-faith reliance on a warrant.
+
+## Issues considered but not included
+
+### No Reasonable Suspicion for the Initial Stop
+
+You said the traffic violation or vehicle problem the officer cited actually happened, so this section was left out: a violation the officer saw generally justifies the stop, whatever other reasons the officer gave. If you still want to challenge the basis for the stop, you'll need to draft that argument yourself.

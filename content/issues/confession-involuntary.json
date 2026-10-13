@@ -1,6 +1,6 @@
 {
   "id": "confession-involuntary",
-  "label": "Confession Involuntary Under Due Process (Independent of Miranda)",
+  "label": "Confession Involuntary Under Due Process (Independent of *Miranda*)",
   "motion_heading": "{client}'s Statements Were Involuntary and Their Use Would Violate Due Process",
   "status": "unreviewed",
   "last_reviewed": "",
@@ -104,7 +104,7 @@
     }
   ],
   "practice_notes": [
-    "Unlike Miranda, this doesn't require custody — it applies to any statement to police. Raise it alongside any Miranda issue, since an involuntary statement is excluded even for impeachment.",
+    "Unlike *Miranda*, this doesn't require custody — it applies to any statement to police. Raise it alongside any *Miranda* issue, since an involuntary statement is excluded even for impeachment.",
     "Build the record on your client's vulnerabilities (age, education, mental health, intoxication, injury) as well as police conduct; both go into the totality."
   ],
   "_author_notes": [

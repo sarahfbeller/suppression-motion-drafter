@@ -4,8 +4,6 @@
 
 **Forum:** State court (Alaska). **Authority cited:** U.S. Supreme Court and Alaska.
 
-**Pronouns for your client:** not answered, so the motion repeats your client's name.
-
 **Fill in the application:** the motion has 3 bracketed [Fill in: …] prompts. Replace each with your own argument applying the law to your client's facts, and delete the prompt.
 
 **Fill in your client's name:** the motion says [Client] in 2 places. Replace each one with your client's name the way you want it to appear in the motion, e.g. "Mr. Smith" or "Smith". Find and replace works, including for possessives ([Client]'s).
@@ -22,10 +20,10 @@
 
 **Practice notes:**
 
-- Rodriguez rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
+- *Rodriguez* rejects a bright-line minimum delay — even a short, unjustified extension can violate the Fourth Amendment, so don't discount this issue just because the added time was brief.
 - Get the CAD and any bodycam/dashcam timestamps in discovery early — this issue depends on minute-by-minute sequencing.
 
-### II. Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)
+### II. Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (*Copelin*/*Zsupnik*)
 
 **Check before filing:**
 
@@ -44,6 +42,10 @@
 
 ## Issues considered but not included
 
+### No Reasonable Suspicion for the Initial Stop
+
+You said the traffic violation or vehicle problem the officer cited actually happened, so this section was left out: a violation the officer saw generally justifies the stop, whatever other reasons the officer gave. If you still want to challenge the basis for the stop, you'll need to draft that argument yourself.
+
 ### Failure to Clearly and Expressly Advise of Right to an Independent Chemical Test
 
-The advisement was otherwise clear, and the only complaint is that the officer explained just one type of test (e.g. blood) without mentioning alternatives. Alaska law gives the state, not the defendant, the choice of which type of independent test to offer — this alone is not a violation. See Velarde v. State, 353 P.3d 355 (Alaska App. 2015).
+The advisement was otherwise clear, and the only complaint is that the officer explained just one type of test (e.g. blood) without mentioning alternatives. Alaska law gives the state, not the defendant, the choice of which type of independent test to offer — this alone is not a violation. See *Velarde v. State*, 353 P.3d 355 (Alaska App. 2015).

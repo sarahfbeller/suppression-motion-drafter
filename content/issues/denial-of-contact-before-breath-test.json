@@ -1,6 +1,6 @@
 {
   "id": "denial-of-contact-before-breath-test",
-  "label": "Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (Copelin/Zsupnik)",
+  "label": "Denial of Right to Contact Attorney or Relative/Friend Before Deciding Whether to Take a Breath Test (*Copelin*/*Zsupnik*)",
   "motion_heading": "The Breath Test Must Be Suppressed Because {client} Was Denied the Statutory Right to Consult Before Deciding Whether to Submit to a Breath Test",
   "status": "unreviewed",
   "last_reviewed": "",
@@ -115,7 +115,7 @@
           ]
         },
         "flag": "non_defense_purpose_remedy_undecided",
-        "display_note": "The request to contact a relative/friend appears to have served a purely personal purpose, not a defense-related one. Alaska's supreme court has expressly left open whether denial of a non-defense-related request requires suppression (Zsupnik v. State, 789 P.2d 357, 361 n.4 (Alaska 1990)), and Winfrey v. State, 78 P.3d 725 (Alaska App. 2003), has declined to extend suppression to non-defense-related requests. This may still be worth raising in the alternative depending on the full record, but it isn't clearly supported by current law."
+        "display_note": "The request to contact a relative/friend appears to have served a purely personal purpose, not a defense-related one. Alaska's supreme court has expressly left open whether denial of a non-defense-related request requires suppression (*Zsupnik v. State*, 789 P.2d 357, 361 n.4 (Alaska 1990)), and *Winfrey v. State*, 78 P.3d 725 (Alaska App. 2003), has declined to extend suppression to non-defense-related requests. This may still be worth raising in the alternative depending on the full record, but it isn't clearly supported by current law."
       },
       {
         "when": {
@@ -138,7 +138,7 @@
           ]
         },
         "flag": "purpose_unclear_needs_development",
-        "display_note": "It's unclear whether the request to contact a relative/friend served a defense-related purpose. Under Zsupnik v. State, 789 P.2d 357 (Alaska 1990), that purpose determines whether suppression is available — developing this fact (what your client said the reason was) could make this issue viable."
+        "display_note": "It's unclear whether the request to contact a relative/friend served a defense-related purpose. Under *Zsupnik v. State*, 789 P.2d 357 (Alaska 1990), that purpose determines whether suppression is available — developing this fact (what your client said the reason was) could make this issue viable."
       }
     ]
   },

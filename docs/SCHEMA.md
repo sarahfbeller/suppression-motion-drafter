@@ -322,8 +322,9 @@ Any change to `motion_heading`, `applicable_courts`, `trigger`, `law_paragraphs`
 ## Who reads what
 
 - **The court (motion):** `motion_heading`, sentence `text`, authorities.
-- **The attorney (memo):** `practice_notes`, and the `display_note` of review conditions and
-  excluded explanations.
+- **The attorney (memo):** the issue `label`, `practice_notes`, and the `display_note` of review
+  conditions and excluded explanations. Case names in memo text are italicized, `*like this*`, as
+  in motion text (the validator checks that the asterisks balance).
 - **The maintainer:** `_`-prefixed fields, `flag`.
 
 The test: would an attorney want this sentence in front of the court? Motion. In front of

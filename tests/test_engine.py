@@ -238,7 +238,7 @@ class ClientTokens(unittest.TestCase):
         memo = R.render_memo(result, config, motion)
         self.assertIn("the motion says [Client] in 1 place. Replace each one with your client's name the way you "
                       "want it to appear in the motion, e.g. \"Mr. Smith\" or \"Smith\".", memo)
-        self.assertIn("**Pronouns for your client:** she/her.", memo)
+        self.assertNotIn("Pronouns", memo)
 
 
 class EventGroups(unittest.TestCase):

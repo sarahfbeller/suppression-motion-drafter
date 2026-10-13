@@ -349,6 +349,19 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertWarning(self.run_with(f"{ISSUES}/search-incident-to-arrest-exceeded-scope.json", f),
                            "q_container_use may be missing a precondition")
 
+    def test_missing_precondition_on_a_trigger_question(self):
+        # The bad-driving bug: the trigger asks whether the cited violation happened only after a
+        # traffic violation or vehicle problem was given, but a review note asked it without that.
+        # Once bad driving had decided the trigger, the note alone kept asking about "the violation."
+        def f(d):
+            notes = d["trigger"]["review_conditions"]
+            notes[:] = [r for r in notes if r["flag"] != "mistake_of_law"]
+            rc = next(r for r in notes if r["flag"] == "cited_conduct_unknown")
+            rc["when"] = rc["when"]["all"][1]
+        r = self.run_with(f"{ISSUES}/no-reasonable-suspicion-for-stop.json", f)
+        self.assertWarning(r, "q_cited_conduct_happened may be missing a precondition")
+        self.assertTrue(any("the trigger" in w for w in r.warnings), "\n".join(r.warnings))
+
     def test_near_miss_contradicting_the_event_gate(self):
         # Near misses show only when the issue's event happened, so one that needs no event can never fire.
         def f(d):
@@ -508,6 +521,11 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         def f(d):
             d["law_paragraph"] = {"rule_statements": d["law_paragraphs"][0]["sentences"]}
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "was replaced by law_paragraphs")
+
+    def test_unbalanced_italics_in_memo_text(self):
+        def f(d):
+            d["practice_notes"].append("*Rodriguez rejects a bright-line rule.")
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "unbalanced '*'")
 
     def test_condition_on_a_sentence(self):
         for field, value in (("when", {"question": "q_warrant_found", "op": "equals", "value": "yes"}),
