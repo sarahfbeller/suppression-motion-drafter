@@ -22,9 +22,9 @@
           ]
         },
         {
-          "question": "q_how_found",
-          "op": "includes",
-          "value": "plain_view"
+          "question": "q_plain_view_claimed",
+          "op": "equals",
+          "value": "yes"
         },
         {
           "question": "q_item_moved",
@@ -69,9 +69,12 @@
       ]
     }
   ],
-  "practice_notes": [],
+  "practice_notes": [
+    "If police say they saw more than one item in plain view, this section treats them together. If the facts differ by item (e.g. where the officer was, or whether it was obvious what the item was), consider a separate argument for each."
+  ],
   "_author_notes": [
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Arizona v. Hicks. Unverified; pincites empty.",
-    "Starts from any stop, contact, or search (config event groups any_stop_or_contact and any_search). That includes digital_device, per the maintainer: whether these statements fit digital evidence is a question for legal review."
+    "Starts from any stop, contact, or search (config event groups any_stop_or_contact and any_search). That includes digital_device, per the maintainer: whether these statements fit digital evidence is a question for legal review.",
+    "2026-10-13 (the maintainer, option A): q_how_found ('How do police say they came across the evidence?') was unclear with several pieces of evidence, and only its plain_view option was used. Replaced by q_plain_view_claimed (yes/no). The multiple-items practice note is a Claude draft. A per-item interview (follow-ups asked for each item) is the fuller fix, deferred."
   ]
 }

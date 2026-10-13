@@ -250,14 +250,14 @@ class EventGroups(unittest.TestCase):
         return {e["issue"]["id"] for e in result["included"] + result["no_paragraph"]}
 
     def test_plain_view_starts_from_any_member_of_either_group(self):
-        facts = {"q_how_found": ["plain_view"], "q_officer_vantage": "inside_building", "q_officer_access": "no_stated_reason"}
+        facts = {"q_plain_view_claimed": "yes", "q_officer_vantage": "inside_building", "q_officer_access": "no_stated_reason"}
         for event in ("digital_device", "frisk", "entry_home"):
             with self.subTest(event=event):
                 self.assertIn("plain-view-not-lawfully-present",
                               self.included({**STATE, "q_encounter_events": [event], **facts}))
 
     def test_plain_view_not_reached_outside_the_groups(self):
-        facts = {"q_how_found": ["plain_view"], "q_officer_vantage": "inside_building", "q_officer_access": "no_stated_reason"}
+        facts = {"q_plain_view_claimed": "yes", "q_officer_vantage": "inside_building", "q_officer_access": "no_stated_reason"}
         self.assertNotIn("plain-view-not-lawfully-present",
                          self.included({**STATE, "q_encounter_events": ["third_party_data"], **facts}))
 

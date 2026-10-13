@@ -22,9 +22,9 @@
           ]
         },
         {
-          "question": "q_how_found",
-          "op": "includes",
-          "value": "plain_view"
+          "question": "q_plain_view_claimed",
+          "op": "equals",
+          "value": "yes"
         },
         {
           "question": "q_item_apparent",
@@ -70,11 +70,13 @@
     }
   ],
   "practice_notes": [
-    "Look for any step the officer took before being sure what the item was — a field test, a closer look, a question to your client. Each one suggests the character wasn't immediately apparent."
+    "Look for any step the officer took before being sure what the item was — a field test, a closer look, a question to your client. Each one suggests the character wasn't immediately apparent.",
+    "If police say they saw more than one item in plain view, this section treats them together. If the facts differ by item (e.g. where the officer was, or whether it was obvious what the item was), consider a separate argument for each."
   ],
   "_author_notes": [
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Horton v. California, Arizona v. Hicks. Unverified; pincites empty.",
     "Starts from any stop, contact, or search (config event groups any_stop_or_contact and any_search). That includes digital_device, per the maintainer: whether these statements fit digital evidence is a question for legal review.",
-    "Sight only (2026-09-27, maintainer's decision). Touch cases belong to plain-feel-manipulation (manipulating the object to identify it) and frisk-exceeded-weapons-search (removing something that couldn't be a weapon), so each fact pattern produces one section. The plain_feel option of q_how_found is kept as a recordable fact, though no issue uses it now."
+    "Sight only (2026-09-27, maintainer's decision). Touch cases belong to plain-feel-manipulation (manipulating the object to identify it) and frisk-exceeded-weapons-search (removing something that couldn't be a weapon), so each fact pattern produces one section. (q_how_found and its plain_feel option were later replaced by the yes/no q_plain_view_claimed, 2026-10-13.)",
+    "2026-10-13 (the maintainer, option A): q_how_found ('How do police say they came across the evidence?') was unclear with several pieces of evidence, and only its plain_view option was used. Replaced by q_plain_view_claimed (yes/no). The multiple-items practice note is a Claude draft. A per-item interview (follow-ups asked for each item) is the fuller fix, deferred."
   ]
 }

@@ -1,31 +1,13 @@
 [
   {
-    "id": "q_how_found",
-    "type": "multi_select",
-    "prompt": "How do police say they came across the evidence? Select all that apply.",
-    "options": [
-      {
-        "id": "plain_view",
-        "label": "They saw it in plain view"
-      },
-      {
-        "id": "plain_feel",
-        "label": "They felt it during a pat-down"
-      },
-      {
-        "id": "found_in_search",
-        "label": "They found it during a search"
-      },
-      {
-        "id": "handed_over",
-        "label": "Your client or someone else handed it over"
-      }
-    ]
+    "id": "q_plain_view_claimed",
+    "type": "yes_no",
+    "prompt": "Did police say they saw any of the evidence in plain view?"
   },
   {
     "id": "q_officer_vantage",
     "type": "multiple_choice",
-    "prompt": "Where was the officer when they saw the item?",
+    "prompt": "Where was the officer when they saw the item in plain view?",
     "options": [
       {
         "id": "public",
