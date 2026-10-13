@@ -6,15 +6,15 @@
     "options": [
       {
         "id": "traffic_violation",
-        "label": "A traffic violation, such as speeding, failing to signal, or running a stop sign (vehicle stops)"
+        "label": "A traffic violation (e.g. speeding, no turn signal)"
       },
       {
         "id": "bad_driving",
-        "label": "Bad driving that isn't itself a violation, such as weaving within the lane, erratic braking, or driving slowly (vehicle stops)"
+        "label": "Bad driving that isn't a violation (e.g. weaving within the lane)"
       },
       {
         "id": "vehicle_problem",
-        "label": "A problem with the vehicle, such as equipment, expired registration, or plates (vehicle stops)"
+        "label": "A vehicle problem (e.g. equipment, expired registration)"
       },
       {
         "id": "tip",
@@ -38,11 +38,11 @@
       },
       {
         "id": "known_vehicle_or_person",
-        "label": "A vehicle or person the officer knew or recognized (e.g. a registered owner with a suspended license or a warrant)"
+        "label": "A vehicle or person the officer recognized (e.g. an owner with a suspended license)"
       },
       {
         "id": "matched_description",
-        "label": "Your client matched a description of a suspect"
+        "label": "Your client matched a suspect's description"
       },
       {
         "id": "flight",
@@ -50,7 +50,7 @@
       },
       {
         "id": "observed_crime",
-        "label": "The officer saw what looked like a drug deal or other crime"
+        "label": "The officer saw what looked like a crime (e.g. a drug deal)"
       },
       {
         "id": "no_reason",
