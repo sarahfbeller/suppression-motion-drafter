@@ -55,7 +55,18 @@
           ]
         }
       ]
-    }
+    },
+    "review_conditions": [
+      {
+        "when": {
+          "question": "q_extension_event",
+          "op": "includes",
+          "value": "other_investigation"
+        },
+        "flag": "other_extension_activity",
+        "display_note": "You said police did something else during the stop. Before filing, check that it wasn't part of handling the reason for the stop (e.g. writing the ticket or checking the driver's license); if it was, it doesn't support this argument."
+      }
+    ]
   },
   "law_paragraphs": [
     {
@@ -208,6 +219,8 @@
     "Timing redesign 2026-10-08 (the maintainer): Rodriguez forbids adding time with unrelated inquiries whenever they happen, not only after the stop's tasks are done. q_original_purpose_completed was removed, and q_extension_event and q_independent_suspicion were reworded to drop the before/after framing.",
     "passenger_identification: text and citation supplied by the maintainer (2026-10-08). Perozzo is a prolongation case: an unnecessary passenger ID and warrants check is one way of unlawfully prolonging the stop. Alaska only (no federal authority yet). Two open items: the quote needs its quoting parenthetical for the 'fishing expedition' language (the maintainer will supply it); and 'We [] conclude' is kept exactly as given, but the empty brackets look like a lost omission marker. Inner quotation marks were alternated (double outside, then single, then double) because the passage is now itself a quotation.",
     "Perozzo's 'no other case-specific justification' is covered by q_independent_suspicion, which the match already requires to be no.",
-    "least_intrusive_means: text and citation (Royer at 500) supplied by the maintainer, 2026-10-08. Verify: as I recall, the part of Royer containing this passage was a plurality opinion (four Justices). Not checked against the opinion."
+    "least_intrusive_means: text and citation (Royer at 500) supplied by the maintainer, 2026-10-08. Verify: as I recall, the part of Royer containing this passage was a plurality opinion (four Justices). Not checked against the opinion.",
+    "TO CHECK (the maintainer, 2026-10-12): does a driver have standing to challenge a stop prolonged by a passenger's ID and warrants check? The maintainer's gut says maybe. For now the passenger-ID path requires q_occupant_role passenger, so a driver client never gets it.",
+    "2026-10-12 (the maintainer): q_extension_event reworded to drop 'unrelated' and 'added time' (attorneys lack solid intuition about what is related, e.g. passenger ID). 'Something else (e.g. investigating a different crime)' gets the other_extension_activity review note (Claude draft). The note's examples of mission tasks (ticket, driver's license) are from Rodriguez as I recall it; check before relying on it."
   ]
 }

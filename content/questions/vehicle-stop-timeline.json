@@ -2,27 +2,27 @@
   {
     "id": "q_extension_event",
     "type": "multi_select",
-    "prompt": "Did police do any of these things, unrelated to the reason for the stop, that added time to it? Select all that apply.",
+    "prompt": "During the stop, did police do any of these? Select all that apply.",
     "options": [
       {
         "id": "canine_sniff",
-        "label": "Canine sniff conducted"
-      },
-      {
-        "id": "unrelated_questioning",
-        "label": "Questioning unrelated to the stop (e.g. travel plans, contents of vehicle)"
-      },
-      {
-        "id": "search_request",
-        "label": "Request to search the vehicle"
+        "label": "A dog sniff"
       },
       {
         "id": "wait_for_backup_or_k9",
-        "label": "Wait for a second officer or K-9 unit to arrive"
+        "label": "Waited for another officer or a K-9 unit"
+      },
+      {
+        "id": "unrelated_questioning",
+        "label": "Asked about travel plans, drugs, or weapons"
+      },
+      {
+        "id": "search_request",
+        "label": "Asked to search the vehicle"
       },
       {
         "id": "other_investigation",
-        "label": "Other unrelated investigation"
+        "label": "Something else (e.g. investigating a different crime)"
       }
     ]
   },
