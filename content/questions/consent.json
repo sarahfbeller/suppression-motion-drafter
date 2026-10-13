@@ -30,11 +30,11 @@
       },
       {
         "id": "repeated_requests",
-        "label": "Your client gave in to repeated requests (for example, after first refusing)"
+        "label": "Your client gave in to repeated requests (e.g. after first refusing)"
       },
       {
         "id": "impaired_understanding",
-        "label": "Your client was intoxicated, injured, or had difficulty understanding (language, age, mental condition)"
+        "label": "Your client was intoxicated, injured, or had difficulty understanding (e.g. language, age, mental condition)"
       },
       {
         "id": "do_you_mind_phrasing",

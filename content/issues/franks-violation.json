@@ -12,9 +12,46 @@
     "match_condition": {
       "all": [
         {
-          "question": "q_encounter_events",
-          "op": "includes",
-          "value": "warrant"
+          "any": [
+            {
+              "event_group": "any_search"
+            },
+            {
+              "question": "q_encounter_events",
+              "op": "includes",
+              "value": "arrest"
+            }
+          ]
+        },
+        {
+          "any": [
+            {
+              "all": [
+                {
+                  "event_group": "any_search"
+                },
+                {
+                  "question": "q_search_justification",
+                  "op": "includes",
+                  "value": "warrant"
+                }
+              ]
+            },
+            {
+              "all": [
+                {
+                  "question": "q_encounter_events",
+                  "op": "includes",
+                  "value": "arrest"
+                },
+                {
+                  "question": "q_arrest_warrant",
+                  "op": "equals",
+                  "value": "yes"
+                }
+              ]
+            }
+          ]
         },
         {
           "question": "q_affidavit_accuracy",
@@ -121,6 +158,7 @@
   ],
   "_author_notes": [
     "omissions_extension has no authority yet, so it never renders. Franks itself addresses false statements; the omissions extension is circuit-level doctrine. A possible 9th Circuit source is United States v. Stanert, 762 F.2d 775 (9th Cir. 1985) — unverified. Alaska authority not yet researched.",
-    "The franks_intent_unknown review note states the Franks intent standard from general knowledge; it hasn't been checked against the opinion. Unverified."
+    "The franks_intent_unknown review note states the Franks intent standard from general knowledge; it hasn't been checked against the opinion. Unverified.",
+    "2026-10-12: warrants are no longer an encounter event. The trigger is a search with a search warrant (q_search_justification), or an arrest on an arrest warrant (q_arrest_warrant); each warrant question is reached only after its event."
   ]
 }

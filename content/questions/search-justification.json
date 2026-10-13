@@ -2,8 +2,12 @@
   {
     "id": "q_search_justification",
     "type": "multi_select",
-    "prompt": "How did police justify any warrantless search? Select all they relied on.",
+    "prompt": "How did police justify the search? Select all they relied on.",
     "options": [
+      {
+        "id": "warrant",
+        "label": "A warrant"
+      },
       {
         "id": "consent",
         "label": "Consent"

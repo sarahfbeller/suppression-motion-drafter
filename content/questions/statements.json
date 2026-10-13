@@ -118,7 +118,7 @@
       },
       {
         "id": "promised",
-        "label": "Police promised your client something (leniency, release, help with charges)"
+        "label": "Police promised your client something (e.g. leniency, release, help with charges)"
       },
       {
         "id": "misled",
@@ -203,7 +203,7 @@
       },
       {
         "id": "vulnerability",
-        "label": "Your client was especially vulnerable (age, mental condition, intoxication, injury)"
+        "label": "Your client was especially vulnerable (e.g. age, mental condition, intoxication, injury)"
       },
       {
         "id": "not_sure",
@@ -225,7 +225,7 @@
       },
       {
         "id": "elsewhere",
-        "label": "Somewhere else (roadside, home, hospital)"
+        "label": "Somewhere else (e.g. roadside, home, hospital)"
       }
     ]
   },

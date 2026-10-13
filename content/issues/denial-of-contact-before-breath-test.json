@@ -14,6 +14,25 @@
         {
           "question": "q_encounter_events",
           "op": "includes",
+          "value": "arrest"
+        },
+        {
+          "any": [
+            {
+              "question": "q_arrest_offense",
+              "op": "includes",
+              "value": "dui"
+            },
+            {
+              "question": "q_arrest_offense",
+              "op": "includes",
+              "value": "refusal"
+            }
+          ]
+        },
+        {
+          "question": "q_chemical_tests",
+          "op": "includes",
           "value": "breath_test"
         },
         {
@@ -232,6 +251,7 @@
   ],
   "practice_notes": [],
   "_author_notes": [
-    "private_communication is new wording for Farrell's proposition (previously summarized as 'police must make reasonable effort to accommodate private consultation'). Verify against the opinion."
+    "private_communication is new wording for Farrell's proposition (previously summarized as 'police must make reasonable effort to accommodate private consultation'). Verify against the opinion.",
+    "2026-10-12: breath tests are no longer an encounter event. The trigger is now an arrest, a DUI or refusal charge, and a breath test in q_chemical_tests."
   ]
 }

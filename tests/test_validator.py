@@ -142,7 +142,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_capitalized_yes_no(self):
         def f(d):
-            d["trigger"]["match_condition"]["all"][0]["value"] = "Yes"
+            next(c for c in d["trigger"]["match_condition"]["all"] if c.get("question") == "q_materiality")["value"] = "Yes"
         self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "not valid option ids")
 
     def test_unknown_question(self):
@@ -295,7 +295,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_defendant_in_option_label(self):
         def f(qs):
-            next(q for q in qs if q["id"] == "q_encounter_events")["options"][0]["label"] = "The defendant was stopped"
+            next(q for q in qs if q["id"] == "q_searched")["options"][0]["label"] = "The defendant was searched"
         self.assertError(self.run_with("content/questions/case-setup.json", f), "say 'your client'")
 
     def test_client_in_motion_text(self):
@@ -356,11 +356,6 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
                 {"when": {"question": "q_encounter_events", "op": "empty"}, "flag": "no_events", "display_note": "x"})
         self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f), "encounter event didn't happen")
 
-    def test_warrant_not_a_search_justification(self):
-        def f(qs):
-            qs[0]["options"].insert(0, {"id": "warrant", "label": "A search warrant"})
-        self.assertError(self.run_with("content/questions/search-justification.json", f), "warrantless searches only")
-
     def test_unknown_event_group(self):
         def f(d):
             d["trigger"]["match_condition"]["all"][0] = {"event_group": "any_serch"}
@@ -371,7 +366,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
                          "'search_boat' isn't an option of q_encounter_events")
 
     def test_unused_event_group(self):
-        self.assertWarning(self.run_with("content/config.json", lambda c: c["event_groups"].update({"any_test": ["breath_test"]})),
+        self.assertWarning(self.run_with("content/config.json", lambda c: c["event_groups"].update({"any_test": ["statements"]})),
                            "group 'any_test' isn't used by any issue")
 
     def test_contradiction_still_caught_with_grouped_events(self):
@@ -484,6 +479,28 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             q = next(q for q in qs if q["id"] == "q_occupant_role")
             q["options"][0] = "Driver"
         self.assertError(self.run_with("content/questions/vehicle-occupants.json", f), "exactly {id, label}")
+
+    # ---- the opening (q_encounter_events is derived from it)
+
+    def test_condition_on_an_opening_question(self):
+        def f(d):
+            d["trigger"]["match_condition"]["all"].append({"question": "q_arrested", "op": "equals", "value": "yes"})
+        self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "it's an opening question")
+
+    def test_event_in_two_categories(self):
+        def f(qs):
+            next(q for q in qs if q["id"] == "q_searched")["options"].append({"id": "vehicle_stop", "label": "x"})
+        self.assertError(self.run_with("content/questions/case-setup.json", f), "comes from more than one place")
+
+    def test_encounter_events_defined_as_a_question(self):
+        def f(qs):
+            qs.append({"id": "q_encounter_events", "type": "multi_select", "prompt": "What happened?",
+                       "options": [{"id": "statements", "label": "Statements"}]})
+        self.assertError(self.run_with("content/questions/case-setup.json", f), "is derived from the opening questions")
+
+    def test_encounter_events_in_a_session(self):
+        r = self.run_with("examples/sessions/state-dui.json", lambda s: s["answers"].update({"q_encounter_events": ["arrest"]}))
+        self.assertError(r, "is derived from the opening questions; answer those instead")
 
     # ---- paragraphs (replaced the flat rule_statements list)
 
@@ -645,7 +662,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_silent_exclusion_on_unknown_is_an_error(self):
         # Original bug: Franks excluded on q_intent = unknown with nothing in the memo.
         def f(d):
-            intent = next(c for c in d["trigger"]["match_condition"]["all"] if c["question"] == "q_intent")
+            intent = next(c for c in d["trigger"]["match_condition"]["all"] if c.get("question") == "q_intent")
             intent["value"] = ["deliberate", "reckless"]
             del d["trigger"]["review_conditions"]
         self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "silently excludes")
@@ -676,7 +693,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_silent_exclusion_resolved_by_excluded_explanation(self):
         def f(d):
-            intent = next(c for c in d["trigger"]["match_condition"]["all"] if c["question"] == "q_intent")
+            intent = next(c for c in d["trigger"]["match_condition"]["all"] if c.get("question") == "q_intent")
             intent["value"] = ["deliberate", "reckless"]
             del d["trigger"]["review_conditions"]
             d["trigger"]["excluded_explanations"].append(

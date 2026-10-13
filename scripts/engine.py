@@ -19,7 +19,8 @@ KIND_RANK = {"scotus": 0, "circuit": 1, "state": 2}
 
 SCOTUS = "scotus"
 FILING_COURT = "q_filing_court"  # answer is the state or circuit court code whose law binds, besides SCOTUS
-ENCOUNTER_EVENTS = "q_encounter_events"  # what happened in the encounter; every issue requires one of these
+ENCOUNTER_EVENTS = "q_encounter_events"  # what happened in the encounter; every issue requires one of these.
+# It's derived from the opening questions (config.encounter), never asked or stored directly.
 
 CLIENT_PRONOUNS = "q_client_pronouns"  # which pronouns the motion uses for the client; read only by the engine
 
@@ -68,9 +69,102 @@ def load_repo(root):
     for path in content_files(root, "questions"):
         for q in load_json(path):
             questions[q["id"]] = q
+    questions[ENCOUNTER_EVENTS] = events_question(config, questions)
     groups = config.get("event_groups", {})
     issues = [expand_issue(load_json(path), groups)[0] for path in content_files(root, "issues")]
     return config, questions, ordered_issues(config, issues)
+
+
+# --------------------------------------------------------------------------- encounter events
+#
+# The opening asks what happened in steps: a gateway checklist of categories (config.encounter.gateway),
+# then each checked category's detail questions. A category is either a single event (checking it in
+# the gateway is the event) or a list of detail questions: a checklist whose options are events, or a
+# yes/no question that records one event on "yes" (config.encounter.yes_events). The events from all
+# of these, together, are q_encounter_events, which is what conditions use.
+
+def encounter_categories(config):
+    return config["encounter"]["categories"]
+
+
+def opening_questions(config):
+    """Every question in the hand-written opening, in asking order (not counting which are skipped)."""
+    out = [FILING_COURT, CLIENT_PRONOUNS, config["encounter"]["gateway"]]
+    for cat in encounter_categories(config):
+        out += cat.get("questions", [])
+    return out
+
+
+def events_question(config, questions):
+    """q_encounter_events as a question (for conditions, the validator, and labels): every event, in
+    the order the opening asks about them."""
+    enc = config["encounter"]
+    gateway = {o["id"]: o["label"] for o in questions[enc["gateway"]]["options"]}
+    options = []
+    for cat in encounter_categories(config):
+        if "event" in cat:
+            options.append({"id": cat["event"], "label": gateway.get(cat["option"], cat["event"])})
+        for qid in cat.get("questions", []):
+            q = questions[qid]
+            if q["type"] == "multi_select":
+                options += [dict(o) for o in q["options"]]
+            else:
+                ye = enc["yes_events"][qid]
+                options.append({"id": ye["event"], "label": ye["label"]})
+    return {"id": ENCOUNTER_EVENTS, "type": "multi_select", "options": options,
+            "prompt": "What happened during the encounter? (derived from the opening questions)"}
+
+
+def with_events(config, answers):
+    """answers plus q_encounter_events, derived from the opening questions once they're all answered.
+    Until then (or if q_encounter_events is already given, as in tests), answers is returned as is."""
+    if ENCOUNTER_EVENTS in answers:
+        return answers
+    enc = config["encounter"]
+    if enc["gateway"] not in answers:
+        return answers
+    events = []
+    for cat in encounter_categories(config):
+        if cat["option"] not in answers[enc["gateway"]]:
+            continue
+        if "event" in cat:
+            events.append(cat["event"])
+        for qid in cat.get("questions", []):
+            if qid not in answers:
+                return answers  # this category's details aren't answered yet
+            a = answers[qid]
+            if isinstance(a, list):
+                events += a
+            elif a == "yes":
+                events.append(enc["yes_events"][qid]["event"])
+    return {**answers, ENCOUNTER_EVENTS: events}
+
+
+def answers_for_events(config, questions, events):
+    """The opening answers that produce exactly these events (for simulations and tests)."""
+    enc = config["encounter"]
+    events = set(events)
+    out, checked = {}, []
+    for cat in encounter_categories(config):
+        mine = set()
+        if "event" in cat:
+            mine = {cat["event"]} & events
+        for qid in cat.get("questions", []):
+            q = questions[qid]
+            if q["type"] == "multi_select":
+                mine |= {o["id"] for o in q["options"]} & events
+            elif enc["yes_events"][qid]["event"] in events:
+                mine.add(enc["yes_events"][qid]["event"])
+        if mine:
+            checked.append(cat["option"])
+            for qid in cat.get("questions", []):
+                q = questions[qid]
+                if q["type"] == "multi_select":
+                    out[qid] = [o["id"] for o in q["options"] if o["id"] in events]
+                else:
+                    out[qid] = "yes" if enc["yes_events"][qid]["event"] in events else "no"
+    out[enc["gateway"]] = checked
+    return out
 
 
 def motion_order(config):
@@ -327,13 +421,10 @@ def has_cited(sentences):
 
 # --------------------------------------------------------------------------- the interview (decision tree)
 #
-# The top of the interview is hand-written (TOP_QUESTIONS); everything after it is derived from the
+# The opening of the interview is hand-written (opening_questions); everything after it is derived from the
 # issues' conditions. A question is asked only if it appears in a condition that is still undecided
 # and still matters to the output. Answers so far are the only state: an absent question hasn't been
 # asked yet. Every question asked gets a real answer (there's no "skip").
-
-TOP_QUESTIONS = (FILING_COURT, CLIENT_PRONOUNS, ENCOUNTER_EVENTS)
-
 
 def _eval3(cond, answers):
     """(value, open questions): value as in eval3; open questions are the unasked ones that can still
@@ -391,14 +482,26 @@ def issue_open_questions(issue, answers, courts):
     return out
 
 
-def next_question(issues, answers):
+def next_question(config, issues, answers):
     """The id of the next question to ask, or None when the interview is done.
 
-    The hand-written top comes first. Then issues are taken one at a time in motion order (issues
-    must already be ordered, as load_repo returns them), asking each one's open questions in order."""
-    for qid in TOP_QUESTIONS:
+    The hand-written opening comes first: filing court, pronouns, the encounter gateway, then the
+    detail questions of each category checked there. Then issues are taken one at a time in motion
+    order (issues must already be ordered, as load_repo returns them), asking each one's open
+    questions in order."""
+    for qid in (FILING_COURT, CLIENT_PRONOUNS):
         if qid not in answers:
             return qid
+    if ENCOUNTER_EVENTS not in answers:
+        enc = config["encounter"]
+        if enc["gateway"] not in answers:
+            return enc["gateway"]
+        for cat in encounter_categories(config):
+            if cat["option"] in answers[enc["gateway"]]:
+                for qid in cat.get("questions", []):
+                    if qid not in answers:
+                        return qid
+        answers = with_events(config, answers)
     courts = binding_courts(answers)
     for issue in issues:
         for qid in issue_open_questions(issue, answers, courts):
@@ -411,7 +514,7 @@ def next_question(issues, answers):
 
 def evaluate_session(config, issues, session):
     """Evaluate every issue for one case. Returns a structured result for rendering."""
-    answers = session.get("answers", {})
+    answers = with_events(config, session.get("answers", {}))
     courts = binding_courts(answers)
     specific = courts[1]
     result = {"courts": courts, "pronouns": answers.get(CLIENT_PRONOUNS),

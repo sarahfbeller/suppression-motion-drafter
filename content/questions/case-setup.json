@@ -38,73 +38,17 @@
     ]
   },
   {
-    "id": "q_encounter_events",
+    "id": "q_encounter",
     "type": "multi_select",
     "prompt": "What happened during the encounter? Select all that apply.",
     "options": [
       {
-        "id": "vehicle_stop",
-        "label": "Police stopped a vehicle your client was driving or riding in"
+        "id": "stop",
+        "label": "Police stopped or approached your client"
       },
       {
-        "id": "pedestrian_stop",
-        "label": "Police approached, stopped, or detained your client on foot"
-      },
-      {
-        "id": "welfare_check",
-        "label": "Police contact started as a welfare check or a response to a call for help"
-      },
-      {
-        "id": "field_sobriety_tests",
-        "label": "Your client performed field sobriety tests"
-      },
-      {
-        "id": "frisk",
-        "label": "Police patted down your client"
-      },
-      {
-        "id": "arrest",
-        "label": "Your client was arrested"
-      },
-      {
-        "id": "search_person",
-        "label": "Police searched your client's person (beyond a pat-down)"
-      },
-      {
-        "id": "search_vehicle",
-        "label": "Police searched a vehicle"
-      },
-      {
-        "id": "entry_home",
-        "label": "Police entered or searched a home, its yard, or another dwelling"
-      },
-      {
-        "id": "search_other_place",
-        "label": "Police searched another place (business, storage unit, hotel room)"
-      },
-      {
-        "id": "search_container",
-        "label": "Police opened a closed container (bag, backpack, purse, box)"
-      },
-      {
-        "id": "digital_device",
-        "label": "Police searched or seized a digital device (phone, computer, hard drive)"
-      },
-      {
-        "id": "third_party_data",
-        "label": "Police got digital data from a third party (cell phone provider, online account, license plate readers)"
-      },
-      {
-        "id": "police_surveillance",
-        "label": "Police tracked or watched your client using technology (GPS tracker, pole camera, drone, cell-site simulator)"
-      },
-      {
-        "id": "dog_sniff",
-        "label": "A drug dog was used"
-      },
-      {
-        "id": "warrant",
-        "label": "Police obtained a warrant (search or arrest)"
+        "id": "search",
+        "label": "Police searched something"
       },
       {
         "id": "statements",
@@ -112,16 +56,81 @@
       },
       {
         "id": "identification",
-        "label": "A witness identified your client (lineup, photo array, show-up)"
-      },
-      {
-        "id": "breath_test",
-        "label": "Your client was asked to take a breath test (took it or refused)"
-      },
-      {
-        "id": "blood_draw",
-        "label": "Your client's blood was drawn"
+        "label": "A witness identified your client"
       }
+    ],
+    "_author_notes": [
+      "The encounter gateway (2026-10-12): replaced the single 20-option q_encounter_events checklist. q_encounter_events is now derived from this question and the detail questions below; see config.encounter."
+    ]
+  },
+  {
+    "id": "q_contact_start",
+    "type": "multi_select",
+    "prompt": "How did the contact start? Select all that apply.",
+    "options": [
+      {
+        "id": "vehicle_stop",
+        "label": "Vehicle stop"
+      },
+      {
+        "id": "pedestrian_stop",
+        "label": "Stopped or approached on foot"
+      }
+    ]
+  },
+  {
+    "id": "q_arrested",
+    "type": "yes_no",
+    "prompt": "Was your client arrested?"
+  },
+  {
+    "id": "q_searched",
+    "type": "multi_select",
+    "prompt": "What did police search? Select all that apply.",
+    "options": [
+      {
+        "id": "frisk",
+        "label": "Your client's person, a pat-down/frisk"
+      },
+      {
+        "id": "search_person",
+        "label": "Your client's person, a full search beyond a pat-down"
+      },
+      {
+        "id": "search_vehicle",
+        "label": "A vehicle"
+      },
+      {
+        "id": "entry_home",
+        "label": "A home or its yard"
+      },
+      {
+        "id": "search_other_place",
+        "label": "Another place (e.g. business, storage unit, hotel room)"
+      },
+      {
+        "id": "search_container",
+        "label": "A closed container"
+      },
+      {
+        "id": "digital_device",
+        "label": "A phone, computer, or other device"
+      },
+      {
+        "id": "third_party_data",
+        "label": "Digital data from a third party (e.g. phone company, online account)"
+      },
+      {
+        "id": "police_surveillance",
+        "label": "Your client's movements, tracked by police (e.g. GPS tracker, pole camera)"
+      },
+      {
+        "id": "communications",
+        "label": "Your client's communications (e.g. wiretap, intercepted messages)"
+      }
+    ],
+    "_author_notes": [
+      "'communications' (wiretaps, intercepted messages) was added 2026-10-12 at the maintainer's request; no issue uses it yet. The maintainer will add Title III issues later."
     ]
   }
 ]

@@ -1,7 +1,9 @@
 """Simulated interviews, for testing the decision tree and for the interview audit report.
 
-A simulated case is a complete set of answers, every question answered. An interview asks next_question() repeatedly, answering from that set, until
-the tree says it's done. Standard library only.
+A simulated case is a complete set of answers, every question answered. Its encounter events are
+chosen first (as q_encounter_events), and the opening questions are answered to match them. An
+interview asks next_question() repeatedly, answering from that set, until the tree says it's done.
+Standard library only.
 """
 import random
 
@@ -35,11 +37,16 @@ def gate_events(issue, rng):
     return out
 
 
-def run_interview(issues, full):
+def with_opening(config, questions, full):
+    """full, with the opening questions answered to match its q_encounter_events."""
+    return {**full, **E.answers_for_events(config, questions, full[E.ENCOUNTER_EVENTS])}
+
+
+def run_interview(config, issues, full):
     """Answer next_question() from `full` until done. Returns (answers given, questions asked in order)."""
     answers, asked = {}, []
     while True:
-        qid = E.next_question(issues, answers)
+        qid = E.next_question(config, issues, answers)
         if qid is None:
             return answers, asked
         if qid in answers:
@@ -48,9 +55,10 @@ def run_interview(issues, full):
         asked.append(qid)
 
 
-def all_open(issues, answers):
-    """Every question that could still be asked, given these answers."""
-    if any(q not in answers for q in E.TOP_QUESTIONS):
+def all_open(config, issues, answers):
+    """Every question that could still be asked once the opening is done (None before that)."""
+    answers = E.with_events(config, answers)
+    if any(q not in answers for q in (E.FILING_COURT, E.CLIENT_PRONOUNS, E.ENCOUNTER_EVENTS)):
         return None
     courts = E.binding_courts(answers)
     return {q for i in issues for q in E.issue_open_questions(i, answers, courts) if q not in answers}
@@ -70,7 +78,7 @@ def matching_answers(questions, issue, full, rng):
     return None
 
 
-def cases(questions, issues, per_issue, seed=0):
+def cases(config, questions, issues, per_issue, seed=0):
     """Random complete answer sets, per_issue for each issue plus per_issue fully random ones. Half of
     each issue's cases have its event happening; the other half start from answers that make it match
     (so an issue with a narrow trigger still gets its deeper questions exercised), with every other
@@ -83,6 +91,6 @@ def cases(questions, issues, per_issue, seed=0):
                 witness = matching_answers(questions, issue, full, rng)
                 if witness is not None:
                     full.update(witness)
-            yield issue["id"], full
+            yield issue["id"], with_opening(config, questions, full)
     for _ in range(per_issue):
-        yield None, random_answers(questions, rng)
+        yield None, with_opening(config, questions, random_answers(questions, rng))

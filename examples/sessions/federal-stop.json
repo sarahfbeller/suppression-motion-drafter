@@ -3,11 +3,17 @@
   "answers": {
     "q_filing_court": "9th_cir",
     "q_client_pronouns": "he_him",
-    "q_encounter_events": [
-      "vehicle_stop",
+    "q_encounter": [
+      "stop",
+      "search"
+    ],
+    "q_contact_start": [
+      "vehicle_stop"
+    ],
+    "q_arrested": "no",
+    "q_searched": [
       "frisk",
-      "dog_sniff",
-      "warrant"
+      "search_vehicle"
     ],
     "q_extension_event": [
       "canine_sniff",
@@ -27,6 +33,9 @@
     "q_stop_reasons": [
       "traffic_violation"
     ],
-    "q_cited_conduct_happened": "yes"
+    "q_cited_conduct_happened": "yes",
+    "q_search_justification": [
+      "warrant"
+    ]
   }
 }

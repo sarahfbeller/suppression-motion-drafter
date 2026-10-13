@@ -64,10 +64,24 @@ The validator enforces:
 
 ## Encounter events
 
-`q_encounter_events` (in `content/questions/case-setup.json`) is a multi-select checklist of what
-happened in the encounter: stops and contacts, searches, statements and identifications, chemical
-tests. It's the hand-written top of the decision tree; everything below it will be derived from
-issue conditions.
+`q_encounter_events` is the list of what happened in the encounter: stops, arrests, searches,
+statements, identifications. Conditions use it, but it's never asked or stored directly: it's
+derived from the opening questions in `content/questions/case-setup.json`, as `config.encounter`
+describes.
+
+- **The gateway** (`config.encounter.gateway`, `q_encounter`): a short checklist of categories:
+  stopped or approached, searched something, statements, identification.
+- **Categories** (`config.encounter.categories`, one per gateway option, in order): either a single
+  event (`"event"`: checking the gateway option is the event), or detail questions (`"questions"`)
+  asked only when the category is checked. A checklist detail question's options are events; a
+  yes/no detail question records one event on "yes" (`config.encounter.yes_events`, e.g.
+  `q_arrested` → `arrest`).
+- `q_encounter_events` is the union of those events, in that order (`engine.with_events`). Each event
+  comes from exactly one place. Conditions can't use the opening questions themselves; they use
+  `q_encounter_events`.
+- Some things that used to be events are now follow-up questions asked when they're relevant:
+  chemical tests and field sobriety tests (for a DUI or refusal arrest), and warrants (the search
+  justification, and whether the arrest was on a warrant).
 
 - Events are facts, not legal conclusions ("police stopped a vehicle," not "seizure"), and the
   attorney checks all that apply (a bag opened in a car is both `search_vehicle` and
@@ -87,7 +101,8 @@ every member is an encounter event and warns about groups no issue uses.
 ## Case session
 
 A case session is `{ answers }`: question id → answer (see question types). It must answer
-`q_filing_court`. A question the interview didn't ask is absent, and every condition leaf on it is
+`q_filing_court`. It stores the opening answers (the encounter gateway and details), never
+`q_encounter_events`, which is derived from them. A question the interview didn't ask is absent, and every condition leaf on it is
 false. Every question that was asked has a real answer: there's no "skip", and the validator rejects
 `null`. Where the attorney may not know, the question offers "not sure".
 
@@ -97,7 +112,8 @@ false. Every question that was asked has a real answer: there's no "skip", and t
 interview is done. It keeps no state: the answers so far decide everything, so changing an earlier
 answer just changes what comes next.
 
-- **The top is hand-written:** `q_filing_court`, `q_client_pronouns`, `q_encounter_events`, in that order.
+- **The opening is hand-written:** `q_filing_court`, `q_client_pronouns`, the encounter gateway, then
+  the detail questions of each category checked there.
 - **Everything after it is derived from conditions.** A question is asked only if it appears in a
   condition that is still undecided (three-valued: true, false, or not yet known) and still matters:
   - the `match_condition` of an issue that applies in this forum and hasn't been decided;

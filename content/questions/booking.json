@@ -24,7 +24,7 @@
   {
     "id": "q_bail_established",
     "type": "multiple_choice",
-    "prompt": "When your client was brought to jail, was there an established bail they could have posted (for example, set on the warrant or by a bail schedule)?",
+    "prompt": "When your client was brought to jail, was there an established bail they could have posted (e.g. set on the warrant or by a bail schedule)?",
     "options": [
       {
         "id": "yes",

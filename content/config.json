@@ -65,10 +65,40 @@
     "any_stop_or_contact": [
       "vehicle_stop",
       "pedestrian_stop",
-      "welfare_check",
-      "field_sobriety_tests",
       "frisk",
       "arrest"
     ]
+  },
+  "encounter": {
+    "gateway": "q_encounter",
+    "categories": [
+      {
+        "option": "stop",
+        "questions": [
+          "q_contact_start",
+          "q_arrested"
+        ]
+      },
+      {
+        "option": "search",
+        "questions": [
+          "q_searched"
+        ]
+      },
+      {
+        "option": "statements",
+        "event": "statements"
+      },
+      {
+        "option": "identification",
+        "event": "identification"
+      }
+    ],
+    "yes_events": {
+      "q_arrested": {
+        "event": "arrest",
+        "label": "Your client was arrested"
+      }
+    }
   }
 }

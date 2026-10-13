@@ -26,13 +26,13 @@ class SimulatedInterviews(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.config, cls.questions, cls.issues = E.load_repo(ROOT)
-        cls.cases = list(S.cases(cls.questions, cls.issues, PER_ISSUE))
+        cls.cases = list(S.cases(cls.config, cls.questions, cls.issues, PER_ISSUE))
 
     def test_skipped_questions_never_change_the_output(self):
         # Interview each case, answering from its complete answers; the motion and memo must be exactly
         # what the complete answers produce. If the tree skips a question that matters, this fails.
         for target, full in self.cases:
-            answers, asked = S.run_interview(self.issues, full)
+            answers, asked = S.run_interview(self.config, self.issues, full)
             if rendered(self.config, self.issues, answers) != rendered(self.config, self.issues, full):
                 skipped = sorted(set(full) - set(answers))
                 self.fail(f"interview for {target or 'a random case'} changed the output. "
@@ -40,8 +40,8 @@ class SimulatedInterviews(unittest.TestCase):
 
     def test_top_questions_come_first(self):
         _, full = self.cases[0]
-        _, asked = S.run_interview(self.issues, full)
-        self.assertEqual(asked[:3], list(E.TOP_QUESTIONS))
+        _, asked = S.run_interview(self.config, self.issues, full)
+        self.assertEqual(asked[:3], ["q_filing_court", "q_client_pronouns", "q_encounter"])
 
     def test_answering_never_reopens_a_question(self):
         # The set of questions that could still be asked only shrinks as answers come in, so the
@@ -50,10 +50,10 @@ class SimulatedInterviews(unittest.TestCase):
             answers = {}
             before = None
             while True:
-                now = S.all_open(self.issues, answers)
+                now = S.all_open(self.config, self.issues, answers)
                 if before is not None and now is not None:
                     self.assertLessEqual(now, before, f"{target}: answering reopened {sorted(now - before)}")
-                qid = E.next_question(self.issues, answers)
+                qid = E.next_question(self.config, self.issues, answers)
                 if qid is None:
                     break
                 answers[qid] = full[qid]
@@ -62,7 +62,7 @@ class SimulatedInterviews(unittest.TestCase):
     def test_unused_questions_are_never_asked(self):
         asked = set()
         for _, full in self.cases:
-            asked |= set(S.run_interview(self.issues, full)[1])
+            asked |= set(S.run_interview(self.config, self.issues, full)[1])
         self.assertNotIn("q_duration", asked)
 
 
@@ -75,7 +75,7 @@ class InterviewDetails(unittest.TestCase):
         checked, for a checklist)."""
         answers = dict(answers)
         asked = []
-        while (qid := E.next_question(self.issues, answers)) is not None:
+        while (qid := E.next_question(self.config, self.issues, answers)) is not None:
             asked.append(qid)
             q = self.questions[qid]
             answers[qid] = ([] if q["type"] == "multi_select" else
@@ -108,6 +108,30 @@ class AuditReport(unittest.TestCase):
             self.assertIn(heading, text)
 
 
+class Opening(unittest.TestCase):
+    """The opening asks what happened in steps; q_encounter_events is derived from the answers."""
+
+    def setUp(self):
+        self.config, self.questions, self.issues = E.load_repo(ROOT)
+
+    def test_only_checked_categories_get_detail_questions(self):
+        a = {"q_filing_court": "ak", "q_client_pronouns": "he_him", "q_encounter": ["search"]}
+        self.assertEqual(E.next_question(self.config, self.issues, a), "q_searched")
+
+    def test_events_derived_from_the_opening(self):
+        a = {"q_encounter": ["stop", "statements"], "q_contact_start": ["vehicle_stop"], "q_arrested": "yes"}
+        self.assertEqual(E.with_events(self.config, a)["q_encounter_events"], ["vehicle_stop", "arrest", "statements"])
+
+    def test_not_derived_until_details_are_answered(self):
+        a = {"q_encounter": ["stop"], "q_contact_start": ["vehicle_stop"]}
+        self.assertNotIn("q_encounter_events", E.with_events(self.config, a))
+
+    def test_answers_for_events_round_trip(self):
+        events = ["pedestrian_stop", "arrest", "frisk", "identification"]
+        a = E.answers_for_events(self.config, self.questions, events)
+        self.assertEqual(sorted(E.with_events(self.config, a)["q_encounter_events"]), sorted(events))
+
+
 class CommandLineInterviewer(unittest.TestCase):
     def test_scripted_interview(self):
         import interview as I
@@ -115,7 +139,22 @@ class CommandLineInterviewer(unittest.TestCase):
         out = []
         answers = I.run(ROOT, {}, read=lambda _prompt: next(replies), write=out.append)
         self.assertEqual(answers, {"q_filing_court": "9th_cir", "q_client_pronouns": "no_pronouns",
-                                   "q_encounter_events": []})
+                                   "q_encounter": []})
+
+    def test_back_reasks_the_previous_question(self):
+        import interview as I
+        # Answer the court, then change our mind about it: b, then a different court.
+        replies = iter(["1", "b", "2", "4", ""])
+        answers = I.run(ROOT, {}, read=lambda _prompt: next(replies), write=lambda _m: None)
+        self.assertEqual(answers["q_filing_court"], "9th_cir")
+        self.assertEqual(answers["q_client_pronouns"], "no_pronouns")
+
+    def test_back_at_the_start_does_nothing(self):
+        import interview as I
+        out = []
+        replies = iter(["b", "2", "4", ""])
+        I.run(ROOT, {}, read=lambda _prompt: next(replies), write=out.append)
+        self.assertIn("Nothing to go back to.", out)
 
     def test_invalid_reply_is_asked_again(self):
         import interview as I

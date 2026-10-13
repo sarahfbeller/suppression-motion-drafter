@@ -9,6 +9,10 @@
         "label": "DUI"
       },
       {
+        "id": "refusal",
+        "label": "Refusal to submit to a chemical test"
+      },
+      {
         "id": "drugs",
         "label": "A drug offense"
       },
@@ -21,6 +25,11 @@
         "label": "Something else"
       }
     ]
+  },
+  {
+    "id": "q_arrest_warrant",
+    "type": "yes_no",
+    "prompt": "Was your client arrested on a warrant?"
   },
   {
     "id": "q_dui_driving",
@@ -171,14 +180,14 @@
       },
       {
         "id": "innocent_explanation",
-        "label": "Another explanation for the signs the officer saw (allergies, fatigue, contact lenses, medical condition)"
+        "label": "Another explanation for the signs the officer saw (e.g. allergies, fatigue, contact lenses, medical condition)"
       }
     ]
   },
   {
     "id": "q_dui_fsts_given",
     "type": "multi_select",
-    "prompt": "Which field sobriety tests were given? Select all that apply.",
+    "prompt": "Which field sobriety tests were given? Select all that apply; leave blank if none.",
     "options": [
       {
         "id": "hgn",

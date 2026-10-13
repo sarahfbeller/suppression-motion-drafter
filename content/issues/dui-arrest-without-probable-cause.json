@@ -98,11 +98,6 @@
         {
           "any": [
             {
-              "question": "q_encounter_events",
-              "op": "not_includes",
-              "value": "field_sobriety_tests"
-            },
-            {
               "question": "q_dui_fsts_given",
               "op": "empty"
             },
@@ -263,7 +258,7 @@
   ],
   "practice_notes": [],
   "_author_notes": [
-    "REVIEW CAREFULLY (provisional rule, legal judgment not yet reviewed): this issue is suggested on a DUI arrest when the officer observed none of the bad-driving options and the field sobriety tests don't add up to failure (no tests given, none failed, or something affected them). Observations after the stop don't affect whether it's suggested yet; they drive memo notes. Drafted by Claude on 2026-10-12 as a placeholder until the maintainer supplies Alaska cases with the factors that mattered, which should replace this rule (and print case paragraphs keyed to matching factors).",
+    "REVIEW CAREFULLY (provisional rule, legal judgment not yet reviewed): this issue is suggested on a DUI arrest when the officer observed none of the bad-driving options and the field sobriety tests don't add up to failure (no tests given, none failed, or something affected them). Field sobriety tests are no longer an encounter event (2026-10-12): q_dui_fsts_given is asked for every DUI arrest, blank if none. Observations after the stop don't affect whether it's suggested yet; they drive memo notes. Drafted by Claude on 2026-10-12 as a placeholder until the maintainer supplies Alaska cases with the factors that mattered, which should replace this rule (and print case paragraphs keyed to matching factors).",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Devenpeck v. Alford, Beck v. Ohio. Unverified; pincites empty.",
     "The three review notes (dui_signs_observed, dui_helpful_facts, dui_fst_problems) are Claude's drafts. applicable_courts is ['scotus'] for now; Alaska-only paragraphs will get ['ak']."
   ]

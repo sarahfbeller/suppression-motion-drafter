@@ -6,7 +6,7 @@ Usage (from the repo root):
 
 Each question is asked only if its answer can still change the output (see next_question in
 engine.py). Answer by number; for a checklist, give numbers separated by commas, or press Enter
-for none. Every question needs an answer.
+for none. Every question needs an answer. Type b to go back to the previous question.
 --resume starts from a saved session's answers; --save writes the session when you finish.
 """
 import json
@@ -24,17 +24,22 @@ def options_of(q):
     return [(o["id"], o["label"]) for o in q.get("options", [])]
 
 
+BACK = object()  # what ask() returns when the attorney types b
+
+
 def ask(q, read=input, write=print):
-    """Ask one question until the reply is valid. Returns the answer."""
+    """Ask one question until the reply is valid. Returns the answer, or BACK."""
     opts = options_of(q)
     multi = q["type"] == "multi_select"
     write("")
     write(q["prompt"])
     for n, (_, label) in enumerate(opts, 1):
         write(f"  {n}. {label}")
-    hint = "numbers separated by commas, or Enter for none" if multi else "a number"
+    hint = ("numbers separated by commas, or Enter for none" if multi else "a number") + "; b to go back"
     while True:
         reply = read(f"[{hint}] > ").strip()
+        if reply.lower() == "b":
+            return BACK
         if q["type"] == "short_text":
             return reply
         if multi and reply == "":
@@ -54,8 +59,19 @@ def ask(q, read=input, write=print):
 def run(root, answers, read=input, write=print):
     """Ask questions until the interview is done. Returns the answers."""
     config, questions, issues = E.load_repo(root)
-    while (qid := E.next_question(issues, answers)) is not None:  # answers is filled in place
-        answers[qid] = ask(questions[qid], read, write)
+    history = list(answers)  # questions answered so far, in order (including any resumed ones)
+    while (qid := E.next_question(config, issues, answers)) is not None:  # answers is filled in place
+        reply = ask(questions[qid], read, write)
+        if reply is BACK:
+            if not history:
+                write("Nothing to go back to.")
+                continue
+            # The next question depends only on the answers so far, so removing the last answer
+            # brings that question back.
+            del answers[history.pop()]
+            continue
+        answers[qid] = reply
+        history.append(qid)
     return answers
 
 

@@ -251,7 +251,7 @@ class EventGroups(unittest.TestCase):
 
     def test_plain_view_starts_from_any_member_of_either_group(self):
         facts = {"q_how_found": ["plain_view"], "q_officer_vantage": "inside_building", "q_officer_access": "no_stated_reason"}
-        for event in ("digital_device", "field_sobriety_tests", "entry_home"):
+        for event in ("digital_device", "frisk", "entry_home"):
             with self.subTest(event=event):
                 self.assertIn("plain-view-not-lawfully-present",
                               self.included({**STATE, "q_encounter_events": [event], **facts}))
@@ -266,7 +266,8 @@ class NearMisses(unittest.TestCase):
     """A near-miss explanation shows only when the issue's encounter event happened."""
 
     # Franks explains a near miss when the affiant was only negligent.
-    FACTS = {"q_affidavit_accuracy": "false_statement", "q_intent": "negligent", "q_materiality": "no"}
+    FACTS = {"q_affidavit_accuracy": "false_statement", "q_intent": "negligent", "q_materiality": "no",
+             "q_search_justification": ["warrant"]}
 
     def setUp(self):
         self.config, _questions, issues = E.load_repo(ROOT)
@@ -277,10 +278,10 @@ class NearMisses(unittest.TestCase):
         return {nm["issue"]["id"] for nm in result["near_misses"]}
 
     def test_no_near_miss_without_the_event(self):
-        self.assertEqual(self.near_misses({"q_encounter_events": ["breath_test"]}), set())
+        self.assertEqual(self.near_misses({"q_encounter_events": ["statements"]}), set())
 
     def test_near_miss_when_the_event_happened(self):
-        self.assertIn("franks-violation", self.near_misses({"q_encounter_events": ["warrant"]}))
+        self.assertIn("franks-violation", self.near_misses({"q_encounter_events": ["search_vehicle"]}))
 
 
 class MatchedButNoParagraph(unittest.TestCase):

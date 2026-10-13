@@ -26,7 +26,7 @@
       },
       {
         "id": "closed_container",
-        "label": "A closed container (a bag, purse, box, or a car's console or other compartment)"
+        "label": "A closed container (e.g. a bag, purse, box, or a car's console)"
       },
       {
         "id": "later_or_elsewhere",

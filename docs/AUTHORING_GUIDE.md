@@ -85,5 +85,4 @@ Not read by the app — this is for whoever (you) is authoring content.
 
 ## Open items / things not yet decided
 
-- Decision tree: the top layer (`q_encounter_events`) exists; the derived part that picks the
-  next question hasn't been built.
+- Decision tree: built; see "The interview" in `docs/SCHEMA.md`.

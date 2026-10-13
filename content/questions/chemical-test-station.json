@@ -1,5 +1,20 @@
 [
   {
+    "id": "q_chemical_tests",
+    "type": "multi_select",
+    "prompt": "Which chemical tests was your client asked to take? Select all that apply.",
+    "options": [
+      {
+        "id": "breath_test",
+        "label": "A breath test (taken or refused)"
+      },
+      {
+        "id": "blood_draw",
+        "label": "A blood draw"
+      }
+    ]
+  },
+  {
     "id": "q_contact_requested",
     "type": "multi_select",
     "prompt": "Before deciding whether to take the breath test, did your client ask to contact anyone? Select all that apply.",

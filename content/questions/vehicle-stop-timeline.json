@@ -10,7 +10,7 @@
       },
       {
         "id": "unrelated_questioning",
-        "label": "Questioning unrelated to the stop (travel plans, contents of vehicle, etc.)"
+        "label": "Questioning unrelated to the stop (e.g. travel plans, contents of vehicle)"
       },
       {
         "id": "search_request",

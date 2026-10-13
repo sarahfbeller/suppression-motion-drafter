@@ -14,6 +14,25 @@
         {
           "question": "q_encounter_events",
           "op": "includes",
+          "value": "arrest"
+        },
+        {
+          "any": [
+            {
+              "question": "q_arrest_offense",
+              "op": "includes",
+              "value": "dui"
+            },
+            {
+              "question": "q_arrest_offense",
+              "op": "includes",
+              "value": "refusal"
+            }
+          ]
+        },
+        {
+          "question": "q_chemical_tests",
+          "op": "includes",
           "value": "breath_test"
         },
         {
@@ -69,6 +88,7 @@
   "_author_notes": [
     "Created 2026-10-09 at the maintainer's request. The maintainer supplied the rule (the breath test is suppressed if the officer dissuaded the arrestee from getting an independent test) and the three cases. The sentence's wording is mine, from that summary; pincites are empty. Verify the wording against each case, and add pincites (and a signal, if any case supports it only indirectly).",
     "Gated on q_breath_test_completed = yes, since the remedy is suppressing the breath test result; if no test was completed there's nothing to suppress. Whether another remedy applies then (like the Nelson/Snyder presumption in the advisement issue) wasn't supplied, so it isn't covered.",
-    "q_independent_test_dissuaded was drafted by me."
+    "q_independent_test_dissuaded was drafted by me.",
+    "2026-10-12: breath tests are no longer an encounter event. The trigger is now an arrest, a DUI or refusal charge, and a breath test in q_chemical_tests."
   ]
 }

@@ -74,6 +74,7 @@ class QuestionBank(dict):
     def __init__(self):
         super().__init__()
         self.broken = set()
+        self.opening = set()  # the encounter gateway and its detail questions
 
 
 class Report:
@@ -177,7 +178,8 @@ def check_config(r, root):
     c = load_or_report(r, root, where)
     if c is None:
         return None
-    if not check_keys(r, where, c, {"courts", "motion_order", "event_groups"}, ["courts", "motion_order"]):
+    if not check_keys(r, where, c, {"courts", "motion_order", "event_groups", "encounter"},
+                      ["courts", "motion_order", "encounter"]):
         return None
 
     courts = {k: v for k, v in c["courts"].items() if not k.startswith("_")}
@@ -227,19 +229,65 @@ def check_client_pronouns(r, questions):
         r.err(where, f"must be multiple_choice with exactly the options {list(E.PRONOUN_OPTIONS)}")
 
 
-def check_encounter_events(r, questions):
-    where = f"question {E.ENCOUNTER_EVENTS}"
-    q = questions.get(E.ENCOUNTER_EVENTS)
-    if q is None:
-        if E.ENCOUNTER_EVENTS not in questions.broken:
-            r.err(where, "missing — every issue's match_condition starts from an encounter event")
-    elif q["type"] != "multi_select":
-        r.err(where, "must be multi_select")
-    sj = questions.get("q_search_justification")
-    if sj and any(o["id"] == "warrant" for o in sj.get("options", [])):
-        r.err("question q_search_justification", "has a 'warrant' option — warrants are recorded by the "
-                                                 f"'warrant' option of {E.ENCOUNTER_EVENTS}, and this question "
-                                                 "covers warrantless searches only")
+def check_encounter(r, questions, config):
+    """config.encounter: the opening questions that q_encounter_events is derived from. Returns True
+    if q_encounter_events can be built from it."""
+    where = "content/config.json encounter"
+    enc = config.get("encounter")
+    if not check_keys(r, where, enc, {"gateway", "categories", "yes_events"}, ["gateway", "categories"]):
+        return False
+    if E.ENCOUNTER_EVENTS in questions or E.ENCOUNTER_EVENTS in questions.broken:
+        r.err(f"question {E.ENCOUNTER_EVENTS}", "is derived from the opening questions (config.encounter); "
+                                                "don't define it in a question file")
+        return False
+    ok = True
+    gw = questions.get(enc["gateway"])
+    if gw is None or gw["type"] != "multi_select":
+        r.err(where, f"gateway {enc['gateway']!r} must be a multi_select question")
+        return False
+    gw_options = [o["id"] for o in gw["options"]]
+    cats = enc["categories"]
+    if [c.get("option") for c in cats] != gw_options:
+        r.err(where, f"categories must list the gateway's options, in order: {gw_options}")
+        ok = False
+    yes_events = enc.get("yes_events", {})
+    events, details = [], []
+    for c in cats:
+        cw = f"{where} category {c.get('option')!r}"
+        if not check_keys(r, cw, c, {"option", "event", "questions"}, ["option"]) or ("event" in c) == ("questions" in c):
+            r.err(cw, "needs either 'event' (the category is one event) or 'questions' (its detail questions), not both")
+            ok = False
+            continue
+        if "event" in c:
+            events.append(c["event"])
+        for qid in c.get("questions", []):
+            q = questions.get(qid)
+            details.append(qid)
+            if q is None:
+                r.err(cw, f"detail question {qid!r} doesn't exist")
+                ok = False
+            elif q["type"] == "multi_select":
+                events += [o["id"] for o in q["options"]]
+            elif q["type"] == "yes_no":
+                ye = yes_events.get(qid)
+                if not (isinstance(ye, dict) and ye.get("event") and ye.get("label")):
+                    r.err(cw, f"yes/no detail question {qid!r} needs yes_events.{qid} = {{event, label}}")
+                    ok = False
+                else:
+                    events.append(ye["event"])
+            else:
+                r.err(cw, f"detail question {qid!r} must be multi_select or yes_no")
+                ok = False
+    for qid in yes_events:
+        if qid not in details:
+            r.err(where, f"yes_events names {qid!r}, which isn't a detail question")
+    for e in sorted({e for e in events if events.count(e) > 1}):
+        r.err(where, f"event {e!r} comes from more than one place; each event belongs to exactly one category")
+        ok = False
+    for e in events:
+        if not OPTION_ID_RE.match(str(e)):
+            r.err(where, f"event id {e!r} must be snake_case")
+    return ok
 
 
 def check_event_groups(r, questions, config):
@@ -446,6 +494,10 @@ def check_condition(r, where, cond, questions):
     if qid == E.FILING_COURT:
         r.err(where, f"conditions can't use {qid} — where an issue or paragraph is the law "
                      f"goes in its applicable_courts")
+        return False
+    if qid in getattr(questions, "opening", ()):
+        r.err(where, f"conditions can't use {qid} — it's an opening question; use {E.ENCOUNTER_EVENTS} "
+                     f"(derived from the opening questions) instead")
         return False
     if qid == E.CLIENT_PRONOUNS:
         r.err(where, f"conditions can't use {qid} — it only decides how pronoun tokens print")
@@ -1232,6 +1284,9 @@ def check_sessions(r, root, config, questions):
             if q is None:
                 r.err(where, f"answer for unknown question {qid!r}")
                 continue
+            if qid == E.ENCOUNTER_EVENTS:
+                r.err(where, f"{qid} is derived from the opening questions; answer those instead")
+                continue
             if ans is None:
                 r.err(where, f"{qid} is null — every question asked gets a real answer; a question "
                              f"that wasn't asked is left out")
@@ -1259,7 +1314,11 @@ def validate(root, only=None):
         return r
     questions = check_questions(r, root)
     check_filing_court(r, questions, config)
-    check_encounter_events(r, questions)
+    if check_encounter(r, questions, config):
+        questions[E.ENCOUNTER_EVENTS] = E.events_question(config, questions)
+        questions.opening = set(E.opening_questions(config)) - {E.FILING_COURT, E.CLIENT_PRONOUNS}
+    else:
+        questions.broken.add(E.ENCOUNTER_EVENTS)
     check_client_pronouns(r, questions)
     check_event_groups(r, questions, config)
     groups_used = set()
@@ -1292,7 +1351,7 @@ def validate(root, only=None):
     for name in sorted(set(config["event_groups"]) - groups_used):
         r.warn("content/config.json event_groups", f"group {name!r} isn't used by any issue")
     for qid, q in sorted(questions.items()):
-        if qid not in used and qid not in (E.FILING_COURT, E.CLIENT_PRONOUNS):
+        if qid not in used and qid not in (E.FILING_COURT, E.CLIENT_PRONOUNS) and qid not in questions.opening:
             if q["type"] == "short_text":
                 r.warn(f"question {qid}", "short_text answer is collected but nothing uses it yet")
             else:

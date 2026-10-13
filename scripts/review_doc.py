@@ -26,6 +26,7 @@ def load_raw(root):
         files.append((rel, [q["id"] for q in qs]))
         for q in qs:
             questions[q["id"]] = {**q, "_file": rel}
+    questions[E.ENCOUNTER_EVENTS] = {**E.events_question(config, questions), "_file": "(derived: config.encounter)"}
     issues = {}
     for path in E.content_files(root, "issues"):
         issue = E.load_json(path)
@@ -215,6 +216,10 @@ def build(root):
             "mention the question. Options no condition mentions are marked; on a checklist they can still "
             "matter for “anything checked” / “nothing checked.”", ""]
     q = questions.get(E.ENCOUNTER_EVENTS)
+    if q:
+        out += [f"**`{E.ENCOUNTER_EVENTS}`** is derived from the opening questions (`content/config.json` "
+                f"encounter), not asked directly. Its events:", ""]
+        out += [f"- `{o['id']}`: {o['label']}" for o in q["options"]] + [""]
     if groups and q:
         out += ["**Event groups** (`content/config.json`):", ""]
         for name, members in groups.items():

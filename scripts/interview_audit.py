@@ -20,12 +20,13 @@ import simulate as S  # noqa: E402
 import validate as V  # noqa: E402
 
 
-def facts(answers):
+def facts(answers, skip):
     """The answers given so far, as short facts ("q_x = yes", "q_y includes z"), leaving out the
-    events (reported separately) and pronouns (they don't change what's asked)."""
+    questions in skip: the opening (its events are reported separately) and pronouns (they don't
+    change what's asked)."""
     out = set()
     for qid, a in answers.items():
-        if qid in (E.ENCOUNTER_EVENTS, E.CLIENT_PRONOUNS):
+        if qid in skip:
             continue
         if isinstance(a, list):
             out |= {f"{qid} includes {o}" for o in a} if a else {f"{qid}: nothing checked"}
@@ -42,17 +43,19 @@ def build(root, per_issue):
     facts_with = {}  # question -> answers already given every time it was asked
     times = {}
     lengths = {}  # issue id (or None for random cases) -> interview lengths after the top questions
-    for target, full in S.cases(questions, issues, per_issue, seed=1):
-        _, asked = S.run_interview(issues, full)
+    opening = set(E.opening_questions(config))
+    skip = (opening - {E.FILING_COURT}) | {E.ENCOUNTER_EVENTS}
+    for target, full in S.cases(config, questions, issues, per_issue, seed=1):
+        _, asked = S.run_interview(config, issues, full)
         events = set(full[E.ENCOUNTER_EVENTS] or [])
         for n, qid in enumerate(asked):
-            known = facts({q: full[q] for q in asked[:n]})
+            known = facts({q: full[q] for q in asked[:n]}, skip)
             facts_with[qid] = facts_with[qid] & known if qid in facts_with else known
             times[qid] = times.get(qid, 0) + 1
             asked_with[qid] = asked_with[qid] & events if qid in asked_with else set(events)
             present = {g for g, members in groups.items() if events & set(members)}
             group_with[qid] = group_with[qid] & present if qid in group_with else present
-        lengths.setdefault(target, []).append(len(asked) - len(E.TOP_QUESTIONS))
+        lengths.setdefault(target, []).append(len([q for q in asked if q not in opening]))
 
     used = set()
     for issue in issues:
@@ -77,7 +80,7 @@ def build(root, per_issue):
            "| Question | Asked in | Always with | Always with one of | Always after these answers | Prompt |",
            "|---|---|---|---|---|---|"]
     for qid, q in questions.items():
-        if qid in E.TOP_QUESTIONS or qid not in times:
+        if qid in opening or qid == E.ENCOUNTER_EVENTS or qid not in times:
             continue
         always = ", ".join(f"`{e}`" for e in sorted(asked_with[qid])) or "—"
         one_of = ", ".join(f"`{g}`" for g in sorted(group_with[qid])) or "—"
@@ -89,12 +92,12 @@ def build(root, per_issue):
     found = [(i["id"], *f) for i in issues for f in V.inconsistent_preconditions(i)]
     out += [f"- `{iid}`: `{qid}` is reached only after `{guard}` in {', '.join(has)}, but not in "
             f"{', '.join(lacks)}" for iid, qid, guard, has, lacks in found] or ["None."]
-    never = sorted(q for q in used if q not in times and q not in E.TOP_QUESTIONS)
+    never = sorted(q for q in used if q not in times and q not in opening and q != E.ENCOUNTER_EVENTS)
     out += ["", "## Used by a condition but never asked", ""]
     out += [f"- `{q}`" for q in never] if never else ["None."]
 
     out += ["", "## Interview length", "",
-            "Questions asked after the three opening questions.", "",
+            "Questions asked after the opening (court, pronouns, and what happened).", "",
             "| Cases | Mean | Median | Max |", "|---|---|---|---|"]
     for target in [i["id"] for i in issues] + [None]:
         ls = lengths.get(target)
