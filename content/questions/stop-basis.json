@@ -113,5 +113,10 @@
         "label": "General only: race, sex, age range, or similar"
       }
     ]
+  },
+  {
+    "id": "q_warrant_found",
+    "type": "yes_no",
+    "prompt": "Did police find an outstanding warrant for your client?"
   }
 ]

@@ -12,7 +12,6 @@
     "q_extension_event": [
       "wait_for_backup_or_k9"
     ],
-    "q_independent_suspicion": "no",
     "q_duration": "About 12 minutes",
     "q_occupant_role": "driver",
     "q_contact_requested": [

@@ -19,7 +19,6 @@
       "canine_sniff",
       "unrelated_questioning"
     ],
-    "q_independent_suspicion": "no",
     "q_occupant_role": "passenger",
     "q_passenger_ordered_out": "yes",
     "q_frisk_suspicion_basis": "generalized_only",

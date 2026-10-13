@@ -240,6 +240,15 @@
         },
         "flag": "other_stop_basis",
         "display_note": "The officer gave a reason for the stop that isn't on the list. Expect the prosecution to rely on it, or on a different justification such as community caretaking; this section argues only that reasonable suspicion was lacking, so evaluate that reason and address any other justification separately."
+      },
+      {
+        "when": {
+          "question": "q_warrant_found",
+          "op": "equals",
+          "value": "yes"
+        },
+        "flag": "strieff_attenuation",
+        "display_note": "Police found an outstanding warrant for your client. Expect the prosecution to argue under Utah v. Strieff that the warrant attenuates the connection between the stop and the evidence."
       }
     ]
   },
@@ -700,6 +709,8 @@
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Delaware v. Prouse, Brendlin v. California, United States v. Cortez, Terry v. Ohio, Brown v. Texas, Florida v. J.L. Unverified; pincites empty.",
     "Gated on vehicle_stop only, per the maintainer ('traffic stop'). Pedestrian stops would need their own gate or issue.",
     "alaska_coleman_standard was supplied by the maintainer (2026-10-08) from one of their filed motions, with its citations and pincites. Alaska only. It applies to all investigative stops (the maintainer, 2026-10-08), so it has no condition on q_stop_type.",
-    "Redesigned 2026-10-10 on the 'facts in, issues out' principle: q_stop_basis_problems (a legal-conclusion question) and q_stop_type were replaced by q_stop_reasons (what the officer said the stop was based on) plus factual follow-ups. The thresholds for suggesting this section were drafted by me and built at the maintainer's request, pending legal review (see the REVIEW CAREFULLY note): no reason given; only weak reasons (high-crime area, nervousness, time of day, furtive movements, something else); bad driving with no violation or vehicle problem; a traffic violation or vehicle problem that didn't happen (or not sure); an unidentified, uncorroborated tip; a known vehicle or person where the officer had reason to think it was someone else; a general-only description. Flight and an observed crime don't trigger it alone, and count as real reasons."
+    "Redesigned 2026-10-10 on the 'facts in, issues out' principle: q_stop_basis_problems (a legal-conclusion question) and q_stop_type were replaced by q_stop_reasons (what the officer said the stop was based on) plus factual follow-ups. The thresholds for suggesting this section were drafted by me and built at the maintainer's request, pending legal review (see the REVIEW CAREFULLY note): no reason given; only weak reasons (high-crime area, nervousness, time of day, furtive movements, something else); bad driving with no violation or vehicle problem; a traffic violation or vehicle problem that didn't happen (or not sure); an unidentified, uncorroborated tip; a known vehicle or person where the officer had reason to think it was someone else; a general-only description. Flight and an observed crime don't trigger it alone, and count as real reasons.",
+    "strieff_attenuation review note (2026-10-12): drafted by Claude. Strieff (2016) as I recall it: discovering a valid, pre-existing arrest warrant after an unlawful stop attenuated the connection to evidence found in the search incident to the arrest. From memory, unverified. The maintainer chose to show the note in both courts for now.",
+    "TO CHECK (the maintainer, 2026-10-12): does Alaska follow Strieff under the Alaska Constitution, or has it rejected or limited it? The strieff_attenuation note prints in state court until this is checked."
   ]
 }

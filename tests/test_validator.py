@@ -79,10 +79,10 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     # ---- dead conditions (found twice during design)
 
     def test_review_condition_contradicting_match(self):
-        # Original bug: review note on q_independent_suspicion == yes, while match requires no.
+        # Original bug: a review note on independent suspicion == yes, while the match required no.
         def f(d):
             d["trigger"].setdefault("review_conditions", []).append(
-                {"when": {"question": "q_independent_suspicion", "op": "equals", "value": "yes"},
+                {"when": {"question": "q_encounter_events", "op": "not_includes", "value": "vehicle_stop"},
                  "flag": "suspicion_found", "display_note": "x"})
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "can never fire on an included issue")
 
@@ -103,7 +103,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     def test_paragraph_when_that_contradicts_match(self):
         def f(d):
             para(d, "dog_sniff_no_added_time")["when"] = {
-                "question": "q_independent_suspicion", "op": "equals", "value": "yes"}
+                "question": "q_encounter_events", "op": "not_includes", "value": "vehicle_stop"}
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "never renders")
 
     def test_match_condition_that_is_never_true(self):
@@ -510,7 +510,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertError(self.run_with(f"{ISSUES}/prolonged-stop.json", f), "was replaced by law_paragraphs")
 
     def test_condition_on_a_sentence(self):
-        for field, value in (("when", {"question": "q_independent_suspicion", "op": "equals", "value": "yes"}),
+        for field, value in (("when", {"question": "q_warrant_found", "op": "equals", "value": "yes"}),
                              ("applicable_courts", ["ak"])):
             with self.subTest(field=field):
                 self.setUp()

@@ -76,10 +76,10 @@ class Paragraphs(unittest.TestCase):
         self.assertEqual(text, "One. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\nTwo. *C v. D*, 1 P.3d 1 (Alaska 2000)." + GENERIC)
 
     def test_when_gates_the_whole_paragraph(self):
-        para = {"id": "a", "when": {"question": "q_independent_suspicion", "op": "equals", "value": "yes"},
+        para = {"id": "a", "when": {"question": "q_warrant_found", "op": "equals", "value": "yes"},
                 "sentences": [{"id": "x", "text": "One.", "authorities": [case("A v. B")]}]}
-        self.assertEqual(self.render(para, answers={**STATE, "q_independent_suspicion": "no"}), ("", []))
-        self.assertIn("One.", self.render(para, answers={**STATE, "q_independent_suspicion": "yes"})[0])
+        self.assertEqual(self.render(para, answers={**STATE, "q_warrant_found": "no"}), ("", []))
+        self.assertIn("One.", self.render(para, answers={**STATE, "q_warrant_found": "yes"})[0])
 
     def test_argument_sentence_renders_without_citation_and_is_not_a_gap(self):
         text, gaps = self.render({"id": "a", "sentences": [
@@ -122,8 +122,8 @@ class FillIns(unittest.TestCase):
 
     def test_generic_comes_back_when_the_own_fill_in_does_not_apply(self):
         text = self.render({"id": "apply", "fill_in": "Explain the hunch.",
-                            "when": {"question": "q_independent_suspicion", "op": "equals", "value": "yes"}},
-                           answers={**STATE, "q_independent_suspicion": "no"})
+                            "when": {"question": "q_warrant_found", "op": "equals", "value": "yes"}},
+                           answers={**STATE, "q_warrant_found": "no"})
         self.assertTrue(text.endswith(GENERIC))
         self.assertNotIn("hunch", text)
 

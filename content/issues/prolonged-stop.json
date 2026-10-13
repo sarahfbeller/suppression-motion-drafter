@@ -46,13 +46,6 @@
               ]
             }
           ]
-        },
-        {
-          "question": "q_independent_suspicion",
-          "op": "in",
-          "value": [
-            "no"
-          ]
         }
       ]
     },
@@ -65,6 +58,58 @@
         },
         "flag": "other_extension_activity",
         "display_note": "You said police did something else during the stop. Before filing, check that it wasn't part of handling the reason for the stop (e.g. writing the ticket or checking the driver's license); if it was, it doesn't support this argument."
+      },
+      {
+        "when": {
+          "any": [
+            {
+              "question": "q_extension_reasons",
+              "op": "includes",
+              "value": "nervousness"
+            },
+            {
+              "question": "q_extension_reasons",
+              "op": "includes",
+              "value": "seen_in_vehicle"
+            },
+            {
+              "question": "q_extension_reasons",
+              "op": "includes",
+              "value": "odor"
+            },
+            {
+              "question": "q_extension_reasons",
+              "op": "includes",
+              "value": "criminal_history"
+            },
+            {
+              "question": "q_extension_reasons",
+              "op": "includes",
+              "value": "tip_or_officer_info"
+            },
+            {
+              "question": "q_extension_reasons",
+              "op": "includes",
+              "value": "furtive_movements"
+            },
+            {
+              "question": "q_extension_reasons",
+              "op": "includes",
+              "value": "other"
+            }
+          ]
+        },
+        "flag": "extension_reason_timing",
+        "display_note": "Check that the officer noticed the reasons you listed before beginning the extra investigation. A reason that came up only afterward doesn't justify it."
+      },
+      {
+        "when": {
+          "question": "q_warrant_found",
+          "op": "equals",
+          "value": "yes"
+        },
+        "flag": "strieff_attenuation",
+        "display_note": "Police found an outstanding warrant for your client. Expect the prosecution to argue under Utah v. Strieff that the warrant attenuates the connection between the stop and the evidence."
       }
     ]
   },
@@ -216,11 +261,14 @@
     "If a K-9 unit was called before the original tasks were done, that timing itself can be favorable — it suggests intent to prolong regardless of what happened later."
   ],
   "_author_notes": [
-    "Timing redesign 2026-10-08 (the maintainer): Rodriguez forbids adding time with unrelated inquiries whenever they happen, not only after the stop's tasks are done. q_original_purpose_completed was removed, and q_extension_event and q_independent_suspicion were reworded to drop the before/after framing.",
+    "Timing redesign 2026-10-08 (the maintainer): Rodriguez forbids adding time with unrelated inquiries whenever they happen, not only after the stop's tasks are done. q_original_purpose_completed was removed, and q_extension_event and q_independent_suspicion were reworded to drop the before/after framing (q_independent_suspicion was later replaced by q_extension_reasons).",
     "passenger_identification: text and citation supplied by the maintainer (2026-10-08). Perozzo is a prolongation case: an unnecessary passenger ID and warrants check is one way of unlawfully prolonging the stop. Alaska only (no federal authority yet). Two open items: the quote needs its quoting parenthetical for the 'fishing expedition' language (the maintainer will supply it); and 'We [] conclude' is kept exactly as given, but the empty brackets look like a lost omission marker. Inner quotation marks were alternated (double outside, then single, then double) because the passage is now itself a quotation.",
-    "Perozzo's 'no other case-specific justification' is covered by q_independent_suspicion, which the match already requires to be no.",
+    "Perozzo's 'no other case-specific justification': since 2026-10-12 nothing in the match requires a lack of justification. q_extension_reasons collects the officer's stated reasons.",
     "least_intrusive_means: text and citation (Royer at 500) supplied by the maintainer, 2026-10-08. Verify: as I recall, the part of Royer containing this passage was a plurality opinion (four Justices). Not checked against the opinion.",
     "TO CHECK (the maintainer, 2026-10-12): does a driver have standing to challenge a stop prolonged by a passenger's ID and warrants check? The maintainer's gut says maybe. For now the passenger-ID path requires q_occupant_role passenger, so a driver client never gets it.",
-    "2026-10-12 (the maintainer): q_extension_event reworded to drop 'unrelated' and 'added time' (attorneys lack solid intuition about what is related, e.g. passenger ID). 'Something else (e.g. investigating a different crime)' gets the other_extension_activity review note (Claude draft). The note's examples of mission tasks (ticket, driver's license) are from Rodriguez as I recall it; check before relying on it."
+    "2026-10-12 (the maintainer): q_extension_event reworded to drop 'unrelated' and 'added time' (attorneys lack solid intuition about what is related, e.g. passenger ID). 'Something else (e.g. investigating a different crime)' gets the other_extension_activity review note (Claude draft). The note's examples of mission tasks (ticket, driver's license) are from Rodriguez as I recall it; check before relying on it.",
+    "2026-10-12 (the maintainer chose option A, to revisit during legal review): q_independent_suspicion ('did the officer have independent reasonable suspicion?') asked for a legal conclusion and was replaced by q_extension_reasons, the officer's stated reasons for beginning to investigate another crime. The reasons never remove the issue; for now they only add the extension_reason_timing review note (Claude draft). Option B, where strong reasons remove the issue, would need thresholds from the maintainer. Paragraphs keyed to particular reasons (e.g. nervousness) can be added when the maintainer supplies the law.",
+    "strieff_attenuation review note (2026-10-12): drafted by Claude. Strieff (2016) as I recall it: discovering a valid, pre-existing arrest warrant after an unlawful stop attenuated the connection to evidence found in the search incident to the arrest. From memory, unverified. The maintainer chose to show the note in both courts for now.",
+    "TO CHECK (the maintainer, 2026-10-12): does Alaska follow Strieff under the Alaska Constitution, or has it rejected or limited it? The strieff_attenuation note prints in state court until this is checked."
   ]
 }

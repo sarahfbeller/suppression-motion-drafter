@@ -27,17 +27,45 @@
     ]
   },
   {
-    "id": "q_independent_suspicion",
-    "type": "multiple_choice",
-    "prompt": "Before that unrelated activity began, did the officer have independent reasonable suspicion of other criminal activity?",
+    "id": "q_extension_reasons",
+    "type": "multi_select",
+    "prompt": "What did the officer say led them to begin investigating another crime? Select all that apply.",
     "options": [
       {
-        "id": "yes",
-        "label": "Yes"
+        "id": "no_reason",
+        "label": "No reason given"
       },
       {
-        "id": "no",
-        "label": "No"
+        "id": "nervousness",
+        "label": "Nervousness"
+      },
+      {
+        "id": "seen_in_vehicle",
+        "label": "Something seen in the vehicle (e.g. cash, air fresheners)"
+      },
+      {
+        "id": "odor",
+        "label": "An odor (e.g. drugs)"
+      },
+      {
+        "id": "criminal_history",
+        "label": "Criminal history"
+      },
+      {
+        "id": "tip_or_officer_info",
+        "label": "A tip or information from another officer"
+      },
+      {
+        "id": "furtive_movements",
+        "label": "Furtive movements or reaching"
+      },
+      {
+        "id": "other",
+        "label": "Something else"
+      },
+      {
+        "id": "not_sure",
+        "label": "Not sure yet"
       }
     ]
   },
