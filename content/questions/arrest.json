@@ -23,25 +23,233 @@
     ]
   },
   {
-    "id": "q_dui_pc_disputed",
-    "type": "multiple_choice",
-    "prompt": "Is there reason to dispute that the officer had probable cause to arrest your client for DUI?",
+    "id": "q_dui_driving",
+    "type": "multi_select",
+    "prompt": "What driving did the officer observe before the stop? Select all that apply; leave blank if none.",
     "options": [
       {
-        "id": "yes",
-        "label": "Yes"
+        "id": "weaving",
+        "label": "Weaving within the lane"
       },
       {
-        "id": "no",
-        "label": "No — probable cause looks solid"
+        "id": "straddling_line",
+        "label": "Straddling a lane line"
       },
       {
-        "id": "not_sure",
-        "label": "Not sure yet"
+        "id": "crossed_center",
+        "label": "Crossing the center line"
+      },
+      {
+        "id": "on_shoulder",
+        "label": "Driving on the shoulder"
+      },
+      {
+        "id": "wrong_lane",
+        "label": "Driving in the wrong lane"
+      },
+      {
+        "id": "no_headlights",
+        "label": "No headlights at night"
+      },
+      {
+        "id": "no_signal",
+        "label": "Not using a turn signal"
+      },
+      {
+        "id": "ran_stop_sign",
+        "label": "Running a stop sign"
+      },
+      {
+        "id": "ran_red_light",
+        "label": "Running a red light"
+      },
+      {
+        "id": "speeding",
+        "label": "Speeding"
+      },
+      {
+        "id": "too_slow",
+        "label": "Driving inappropriately slowly"
+      },
+      {
+        "id": "slow_to_respond",
+        "label": "Slow to respond to signals (e.g. sat at a green light)"
+      },
+      {
+        "id": "collision",
+        "label": "A near collision or a collision"
+      },
+      {
+        "id": "failed_to_stop_for_officer",
+        "label": "Failure to stop at the officer's signal"
+      },
+      {
+        "id": "pulled_over_promptly",
+        "label": "Pulled over promptly and safely when signaled"
       }
     ],
     "_author_notes": [
-      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note dui_pc_unknown in dui-arrest-without-probable-cause."
+      "Replaced q_dui_pc_disputed on 2026-10-12 (facts in, issues out). Factors supplied by the maintainer; helpful facts suggested by Claude and chosen by the maintainer. Labels are short by the maintainer's choice."
+    ]
+  },
+  {
+    "id": "q_dui_observations",
+    "type": "multi_select",
+    "prompt": "What did the officer observe about your client after the stop? Select all that apply; leave blank if none.",
+    "options": [
+      {
+        "id": "red_eyes",
+        "label": "Red eyes"
+      },
+      {
+        "id": "watery_eyes",
+        "label": "Watery eyes"
+      },
+      {
+        "id": "bloodshot_eyes",
+        "label": "Bloodshot eyes"
+      },
+      {
+        "id": "lack_of_dexterity",
+        "label": "Lack of dexterity (e.g. fumbling with license or registration)"
+      },
+      {
+        "id": "swaying",
+        "label": "Swaying"
+      },
+      {
+        "id": "stumbling",
+        "label": "Stumbling"
+      },
+      {
+        "id": "slurred_speech",
+        "label": "Slurred speech"
+      },
+      {
+        "id": "confusion",
+        "label": "Confusion"
+      },
+      {
+        "id": "belligerent",
+        "label": "Belligerent or aggressive"
+      },
+      {
+        "id": "admitted_drinking",
+        "label": "Admitted drinking"
+      },
+      {
+        "id": "open_container",
+        "label": "An open container in the car"
+      },
+      {
+        "id": "odor_alcohol",
+        "label": "Odor of alcohol"
+      },
+      {
+        "id": "lucid_speech",
+        "label": "Lucid speech"
+      },
+      {
+        "id": "steady_balance",
+        "label": "Steady balance; walked normally"
+      },
+      {
+        "id": "exited_normally",
+        "label": "Got out of the vehicle without difficulty"
+      },
+      {
+        "id": "produced_documents",
+        "label": "Produced license and registration without difficulty"
+      },
+      {
+        "id": "answered_appropriately",
+        "label": "Answered questions appropriately and was oriented (knew the time and place)"
+      },
+      {
+        "id": "cooperative",
+        "label": "Cooperative and polite"
+      },
+      {
+        "id": "innocent_explanation",
+        "label": "Another explanation for the signs the officer saw (allergies, fatigue, contact lenses, medical condition)"
+      }
+    ]
+  },
+  {
+    "id": "q_dui_fsts_given",
+    "type": "multi_select",
+    "prompt": "Which field sobriety tests were given? Select all that apply.",
+    "options": [
+      {
+        "id": "hgn",
+        "label": "Horizontal gaze nystagmus (HGN)"
+      },
+      {
+        "id": "ols",
+        "label": "One-leg stand (OLS)"
+      },
+      {
+        "id": "wat",
+        "label": "Walk and turn (WAT)"
+      },
+      {
+        "id": "other",
+        "label": "Other (e.g. alphabet, counting backward)"
+      }
+    ]
+  },
+  {
+    "id": "q_dui_fsts_failed",
+    "type": "multi_select",
+    "prompt": "Which tests did the officer say your client failed? Select all that apply; leave blank if none.",
+    "options": [
+      {
+        "id": "hgn",
+        "label": "Horizontal gaze nystagmus (HGN)"
+      },
+      {
+        "id": "ols",
+        "label": "One-leg stand (OLS)"
+      },
+      {
+        "id": "wat",
+        "label": "Walk and turn (WAT)"
+      },
+      {
+        "id": "other",
+        "label": "Other (e.g. alphabet, counting backward)"
+      }
+    ]
+  },
+  {
+    "id": "q_dui_fst_problems",
+    "type": "multi_select",
+    "prompt": "Did any of these affect the field sobriety tests? Select all that apply; leave blank if none.",
+    "options": [
+      {
+        "id": "uneven_surface",
+        "label": "Uneven or sloped surface"
+      },
+      {
+        "id": "weather_or_lighting",
+        "label": "Bad weather or poor lighting"
+      },
+      {
+        "id": "footwear",
+        "label": "Footwear"
+      },
+      {
+        "id": "physical_condition",
+        "label": "A medical condition, injury, age, or weight"
+      },
+      {
+        "id": "instructions",
+        "label": "Instructions unclear or not demonstrated"
+      },
+      {
+        "id": "not_standard",
+        "label": "Officer didn't follow standard procedure"
+      }
     ]
   }
 ]

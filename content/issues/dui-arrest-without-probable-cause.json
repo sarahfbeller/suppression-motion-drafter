@@ -22,11 +22,98 @@
           "value": "dui"
         },
         {
-          "question": "q_dui_pc_disputed",
-          "op": "in",
-          "value": [
-            "yes",
-            "not_sure"
+          "all": [
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "weaving"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "straddling_line"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "crossed_center"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "on_shoulder"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "wrong_lane"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "no_headlights"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "no_signal"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "ran_stop_sign"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "ran_red_light"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "speeding"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "too_slow"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "slow_to_respond"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "collision"
+            },
+            {
+              "question": "q_dui_driving",
+              "op": "not_includes",
+              "value": "failed_to_stop_for_officer"
+            }
+          ]
+        },
+        {
+          "any": [
+            {
+              "question": "q_encounter_events",
+              "op": "not_includes",
+              "value": "field_sobriety_tests"
+            },
+            {
+              "question": "q_dui_fsts_given",
+              "op": "empty"
+            },
+            {
+              "question": "q_dui_fsts_failed",
+              "op": "empty"
+            },
+            {
+              "question": "q_dui_fst_problems",
+              "op": "not_empty"
+            }
           ]
         }
       ]
@@ -34,12 +121,110 @@
     "review_conditions": [
       {
         "when": {
-          "question": "q_dui_pc_disputed",
-          "op": "equals",
-          "value": "not_sure"
+          "any": [
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "lack_of_dexterity"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "swaying"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "stumbling"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "slurred_speech"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "confusion"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "admitted_drinking"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "open_container"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "odor_alcohol"
+            }
+          ]
         },
-        "flag": "dui_pc_unknown",
-        "display_note": "You aren't sure yet whether probable cause for the DUI arrest holds up. This section was drafted anyway; review the officer's observations, the field sobriety tests, and any video before filing, or cut this section."
+        "flag": "dui_signs_observed",
+        "display_note": "The officer observed signs the prosecution will rely on (such as odor, speech, balance, or an admission to drinking). Address each one in the argument, including any innocent explanation and anything on video that contradicts it."
+      },
+      {
+        "when": {
+          "any": [
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "lucid_speech"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "steady_balance"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "exited_normally"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "produced_documents"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "answered_appropriately"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "cooperative"
+            },
+            {
+              "question": "q_dui_observations",
+              "op": "includes",
+              "value": "innocent_explanation"
+            }
+          ]
+        },
+        "flag": "dui_helpful_facts",
+        "display_note": "Some of what the officer observed cuts against impairment (such as lucid speech, steady balance, or handling documents without difficulty). Make sure those facts are in the record, from the video or the officer's own report, and use them in the argument."
+      },
+      {
+        "when": {
+          "all": [
+            {
+              "question": "q_dui_fsts_failed",
+              "op": "not_empty"
+            },
+            {
+              "question": "q_dui_fst_problems",
+              "op": "not_empty"
+            }
+          ]
+        },
+        "flag": "dui_fst_problems",
+        "display_note": "The officer says your client failed at least one field sobriety test, but something may have affected the tests (surface, weather, footwear, a physical condition, instructions, or procedure). Get the video and the officer's training records, and argue the results deserve little weight."
       }
     ]
   },
@@ -78,7 +263,8 @@
   ],
   "practice_notes": [],
   "_author_notes": [
+    "REVIEW CAREFULLY (provisional rule, legal judgment not yet reviewed): this issue is suggested on a DUI arrest when the officer observed none of the bad-driving options and the field sobriety tests don't add up to failure (no tests given, none failed, or something affected them). Observations after the stop don't affect whether it's suggested yet; they drive memo notes. Drafted by Claude on 2026-10-12 as a placeholder until the maintainer supplies Alaska cases with the factors that mattered, which should replace this rule (and print case paragraphs keyed to matching factors).",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Devenpeck v. Alford, Beck v. Ohio. Unverified; pincites empty.",
-    "Skeleton only (2026-09-27). The maintainer will add the DUI probable-cause factors as a large multi-select and the Alaska case law, likely replacing q_dui_pc_disputed as the gating question. applicable_courts is ['scotus'] for now; Alaska-only statements get applicable_courts ['ak']."
+    "The three review notes (dui_signs_observed, dui_helpful_facts, dui_fst_problems) are Claude's drafts. applicable_courts is ['scotus'] for now; Alaska-only paragraphs will get ['ak']."
   ]
 }

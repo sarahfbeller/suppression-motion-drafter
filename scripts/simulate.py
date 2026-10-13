@@ -6,6 +6,7 @@ the tree says it's done. Standard library only.
 import random
 
 import engine as E
+import validate as V
 
 
 def random_answers(questions, rng, events=()):
@@ -55,12 +56,33 @@ def all_open(issues, answers):
     return {q for i in issues for q in E.issue_open_questions(i, answers, courts) if q not in answers}
 
 
+def matching_answers(questions, issue, full, rng):
+    """Answers that make the issue match while agreeing with as much of `full` as possible: the search
+    keeps a random part of full's answers fixed, and keeps less if that can't match. Varying what's
+    kept gives varied matching cases, not the same one every time."""
+    match = issue["trigger"]["match_condition"]
+    qids = [q for q in E.condition_questions(match)]
+    for share in (0.6, 0.3, 0.0):
+        kept = {q: full[q] for q in qids if rng.random() < share}
+        found = V.satisfy(V.F_cond(match, kept), questions)
+        if found is not None:
+            return {**kept, **found}
+    return None
+
+
 def cases(questions, issues, per_issue, seed=0):
-    """Random complete answer sets: per_issue of them with each issue's event happening, plus
-    per_issue fully random ones."""
+    """Random complete answer sets, per_issue for each issue plus per_issue fully random ones. Half of
+    each issue's cases have its event happening; the other half start from answers that make it match
+    (so an issue with a narrow trigger still gets its deeper questions exercised), with every other
+    question random."""
     rng = random.Random(seed)
     for issue in issues:
-        for _ in range(per_issue):
-            yield issue["id"], random_answers(questions, rng, gate_events(issue, rng))
+        for n in range(per_issue):
+            full = random_answers(questions, rng, gate_events(issue, rng))
+            if n % 2:
+                witness = matching_answers(questions, issue, full, rng)
+                if witness is not None:
+                    full.update(witness)
+            yield issue["id"], full
     for _ in range(per_issue):
         yield None, random_answers(questions, rng)
