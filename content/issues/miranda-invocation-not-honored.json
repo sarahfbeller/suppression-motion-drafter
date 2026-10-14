@@ -26,12 +26,7 @@
             {
               "question": "q_custody_circumstances",
               "op": "includes",
-              "value": "restrained"
-            },
-            {
-              "question": "q_custody_circumstances",
-              "op": "includes",
-              "value": "confined"
+              "value": "restrained_or_confined"
             },
             {
               "all": [
@@ -117,12 +112,7 @@
             {
               "question": "q_custody_circumstances",
               "op": "not_includes",
-              "value": "restrained"
-            },
-            {
-              "question": "q_custody_circumstances",
-              "op": "not_includes",
-              "value": "confined"
+              "value": "restrained_or_confined"
             },
             {
               "all": [
@@ -180,12 +170,7 @@
                 {
                   "question": "q_custody_circumstances",
                   "op": "includes",
-                  "value": "restrained"
-                },
-                {
-                  "question": "q_custody_circumstances",
-                  "op": "includes",
-                  "value": "confined"
+                  "value": "restrained_or_confined"
                 }
               ]
             }
@@ -278,6 +263,7 @@
   "practice_notes": [],
   "_author_notes": [
     "REVIEW CAREFULLY (legal judgment not yet reviewed): custody is treated as shown when q_custody_circumstances includes a formal arrest, restraint, or confinement (even if police said your client was free to leave, at the maintainer's instruction), or any softer fact (station or jail, told not free to leave, long questioning, several officers or weapons) without being told they were free to leave. 'Not sure yet' keeps the issue, with the custody_unknown note. Drafted by Claude on 2026-10-12; the custody_totality and custody_told_free_but_restrained review notes are Claude's drafts too. Not yet legally agreed.",
-    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Michigan v. Mosley, Edwards v. Arizona, Minnick v. Mississippi. Unverified; pincites empty."
+    "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Michigan v. Mosley, Edwards v. Arizona, Minnick v. Mississippi. Unverified; pincites empty.",
+    "2026-10-13 (the maintainer): q_custody_circumstances options restrained + confined merged into restrained_or_confined (both strong custody facts with the same effect). Conditions were rewritten to match; behavior is unchanged."
   ]
 }

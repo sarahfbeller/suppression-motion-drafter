@@ -26,12 +26,7 @@
             {
               "question": "q_custody_circumstances",
               "op": "includes",
-              "value": "restrained"
-            },
-            {
-              "question": "q_custody_circumstances",
-              "op": "includes",
-              "value": "confined"
+              "value": "restrained_or_confined"
             },
             {
               "all": [
@@ -146,12 +141,7 @@
             {
               "question": "q_custody_circumstances",
               "op": "not_includes",
-              "value": "restrained"
-            },
-            {
-              "question": "q_custody_circumstances",
-              "op": "not_includes",
-              "value": "confined"
+              "value": "restrained_or_confined"
             },
             {
               "all": [
@@ -209,12 +199,7 @@
                 {
                   "question": "q_custody_circumstances",
                   "op": "includes",
-                  "value": "restrained"
-                },
-                {
-                  "question": "q_custody_circumstances",
-                  "op": "includes",
-                  "value": "confined"
+                  "value": "restrained_or_confined"
                 }
               ]
             }
@@ -328,6 +313,7 @@
     "REVIEW CAREFULLY (legal judgment not yet reviewed): this issue is suggested when ANY q_waiver_circumstances option is checked, including the implied-waiver option alone (with the implied_waiver review note). Drafted by Claude on 2026-10-11 and built at the maintainer's request; the maintainer hasn't agreed with these thresholds legally. Consider whether some facts should print their own paragraphs (e.g. juvenile, limited English, police deception).",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Moran v. Burbine, Stansbury v. California. Unverified; pincites empty.",
     "implied_waiver review note: drafted by Claude from general knowledge of implied-waiver doctrine (Berghuis v. Thompkins, not cited in the note). Unverified.",
-    "2026-10-13 (the maintainer): q_interrogation (which recited the Innis test) was replaced by q_statement_prompt, a checklist of what led to the statements. Answered questions, responded to something police said or did, or not sure includes the issue; volunteered alone leaves it out with the all_volunteered near-miss note. The functional_equivalent and some_volunteered review notes and the near-miss note are Claude drafts. Unverified, from Claude's understanding: that follow-up questions after a volunteered statement can be interrogation (in the near-miss note)."
+    "2026-10-13 (the maintainer): q_interrogation (which recited the Innis test) was replaced by q_statement_prompt, a checklist of what led to the statements. Answered questions, responded to something police said or did, or not sure includes the issue; volunteered alone leaves it out with the all_volunteered near-miss note. The functional_equivalent and some_volunteered review notes and the near-miss note are Claude drafts. Unverified, from Claude's understanding: that follow-up questions after a volunteered statement can be interrogation (in the near-miss note).",
+    "2026-10-13 (the maintainer): q_custody_circumstances options restrained + confined merged into restrained_or_confined (both strong custody facts with the same effect). Conditions were rewritten to match; behavior is unchanged."
   ]
 }

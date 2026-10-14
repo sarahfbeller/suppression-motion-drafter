@@ -5,36 +5,24 @@
     "prompt": "What reason did the officer give for stopping your client? Select all that apply.",
     "options": [
       {
-        "id": "traffic_violation",
-        "label": "A traffic violation (e.g. speeding, no turn signal)"
+        "id": "traffic_or_vehicle",
+        "label": "A traffic violation or vehicle problem (e.g. speeding, expired registration)"
       },
       {
         "id": "bad_driving",
         "label": "Bad driving that isn't a violation (e.g. weaving within the lane)"
       },
       {
-        "id": "vehicle_problem",
-        "label": "A vehicle problem (e.g. equipment, expired registration)"
-      },
-      {
         "id": "tip",
         "label": "A tip or 911 call"
       },
       {
-        "id": "high_crime_area",
-        "label": "Presence in a high-crime area"
+        "id": "location_or_time",
+        "label": "Location or time (e.g. high-crime area, late at night)"
       },
       {
-        "id": "nervousness",
-        "label": "Nervousness"
-      },
-      {
-        "id": "time_of_day",
-        "label": "Time of day or night"
-      },
-      {
-        "id": "furtive_movements",
-        "label": "Furtive movements or reaching"
+        "id": "nervous_or_furtive",
+        "label": "Nervousness or furtive movements"
       },
       {
         "id": "known_vehicle_or_person",

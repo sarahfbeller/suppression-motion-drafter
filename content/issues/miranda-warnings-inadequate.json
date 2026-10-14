@@ -26,12 +26,7 @@
             {
               "question": "q_custody_circumstances",
               "op": "includes",
-              "value": "restrained"
-            },
-            {
-              "question": "q_custody_circumstances",
-              "op": "includes",
-              "value": "confined"
+              "value": "restrained_or_confined"
             },
             {
               "all": [
@@ -132,12 +127,7 @@
             {
               "question": "q_custody_circumstances",
               "op": "not_includes",
-              "value": "restrained"
-            },
-            {
-              "question": "q_custody_circumstances",
-              "op": "not_includes",
-              "value": "confined"
+              "value": "restrained_or_confined"
             },
             {
               "all": [
@@ -195,12 +185,7 @@
                 {
                   "question": "q_custody_circumstances",
                   "op": "includes",
-                  "value": "restrained"
-                },
-                {
-                  "question": "q_custody_circumstances",
-                  "op": "includes",
-                  "value": "confined"
+                  "value": "restrained_or_confined"
                 }
               ]
             }
@@ -383,6 +368,7 @@
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Stansbury v. California, Rhode Island v. Innis, Florida v. Powell. Unverified; pincites empty.",
     "The 'question-first' (midstream warnings) point is only a practice note, not a rule statement: the leading Supreme Court case is a plurality, and I'm not certain enough of the controlling rule to state it.",
     "alaska_right_to_silence: text and citations supplied by the maintainer, 2026-10-08. Placed right after the first Miranda sentence, which split the old 'main' paragraph: custody_and_interrogation holds its other two sentences. Citations put in Bluebook form and the text reordered to 'United States and Alaska constitutions' to match the citation order (the engine cites Supreme Court authority first), both at the maintainer's request.",
-    "2026-10-13 (the maintainer): q_interrogation (which recited the Innis test) was replaced by q_statement_prompt, a checklist of what led to the statements. Answered questions, responded to something police said or did, or not sure includes the issue; volunteered alone leaves it out with the all_volunteered near-miss note. The functional_equivalent and some_volunteered review notes and the near-miss note are Claude drafts. Unverified, from Claude's understanding: that follow-up questions after a volunteered statement can be interrogation (in the near-miss note)."
+    "2026-10-13 (the maintainer): q_interrogation (which recited the Innis test) was replaced by q_statement_prompt, a checklist of what led to the statements. Answered questions, responded to something police said or did, or not sure includes the issue; volunteered alone leaves it out with the all_volunteered near-miss note. The functional_equivalent and some_volunteered review notes and the near-miss note are Claude drafts. Unverified, from Claude's understanding: that follow-up questions after a volunteered statement can be interrogation (in the near-miss note).",
+    "2026-10-13 (the maintainer): q_custody_circumstances options restrained + confined merged into restrained_or_confined (both strong custody facts with the same effect). Conditions were rewritten to match; behavior is unchanged."
   ]
 }

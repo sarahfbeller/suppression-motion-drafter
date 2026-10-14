@@ -9,12 +9,8 @@
         "label": "Your client was formally arrested"
       },
       {
-        "id": "restrained",
-        "label": "Your client was handcuffed or physically restrained"
-      },
-      {
-        "id": "confined",
-        "label": "Your client was in a patrol car, a locked room, or a cell"
+        "id": "restrained_or_confined",
+        "label": "Your client was handcuffed or restrained, or in a patrol car, a locked room, or a cell"
       },
       {
         "id": "at_station",

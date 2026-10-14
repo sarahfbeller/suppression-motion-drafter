@@ -33,7 +33,7 @@
     ],
     "q_contact_outcome": "denied_outright",
     "q_stop_reasons": [
-      "traffic_violation"
+      "traffic_or_vehicle"
     ],
     "q_cited_conduct_happened": "yes",
     "q_search_justification": [

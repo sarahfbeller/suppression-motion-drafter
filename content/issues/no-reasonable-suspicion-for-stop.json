@@ -30,22 +30,12 @@
                     {
                       "question": "q_stop_reasons",
                       "op": "includes",
-                      "value": "high_crime_area"
+                      "value": "location_or_time"
                     },
                     {
                       "question": "q_stop_reasons",
                       "op": "includes",
-                      "value": "nervousness"
-                    },
-                    {
-                      "question": "q_stop_reasons",
-                      "op": "includes",
-                      "value": "time_of_day"
-                    },
-                    {
-                      "question": "q_stop_reasons",
-                      "op": "includes",
-                      "value": "furtive_movements"
+                      "value": "nervous_or_furtive"
                     },
                     {
                       "question": "q_stop_reasons",
@@ -57,17 +47,12 @@
                 {
                   "question": "q_stop_reasons",
                   "op": "not_includes",
-                  "value": "traffic_violation"
+                  "value": "traffic_or_vehicle"
                 },
                 {
                   "question": "q_stop_reasons",
                   "op": "not_includes",
                   "value": "bad_driving"
-                },
-                {
-                  "question": "q_stop_reasons",
-                  "op": "not_includes",
-                  "value": "vehicle_problem"
                 },
                 {
                   "question": "q_stop_reasons",
@@ -106,30 +91,16 @@
                 {
                   "question": "q_stop_reasons",
                   "op": "not_includes",
-                  "value": "traffic_violation"
-                },
-                {
-                  "question": "q_stop_reasons",
-                  "op": "not_includes",
-                  "value": "vehicle_problem"
+                  "value": "traffic_or_vehicle"
                 }
               ]
             },
             {
               "all": [
                 {
-                  "any": [
-                    {
-                      "question": "q_stop_reasons",
-                      "op": "includes",
-                      "value": "traffic_violation"
-                    },
-                    {
-                      "question": "q_stop_reasons",
-                      "op": "includes",
-                      "value": "vehicle_problem"
-                    }
-                  ]
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "traffic_or_vehicle"
                 },
                 {
                   "question": "q_cited_conduct_happened",
@@ -193,34 +164,16 @@
         {
           "any": [
             {
-              "all": [
-                {
-                  "question": "q_stop_reasons",
-                  "op": "not_includes",
-                  "value": "traffic_violation"
-                },
-                {
-                  "question": "q_stop_reasons",
-                  "op": "not_includes",
-                  "value": "vehicle_problem"
-                }
-              ]
+              "question": "q_stop_reasons",
+              "op": "not_includes",
+              "value": "traffic_or_vehicle"
             },
             {
               "all": [
                 {
-                  "any": [
-                    {
-                      "question": "q_stop_reasons",
-                      "op": "includes",
-                      "value": "traffic_violation"
-                    },
-                    {
-                      "question": "q_stop_reasons",
-                      "op": "includes",
-                      "value": "vehicle_problem"
-                    }
-                  ]
+                  "question": "q_stop_reasons",
+                  "op": "includes",
+                  "value": "traffic_or_vehicle"
                 },
                 {
                   "question": "q_cited_conduct_happened",
@@ -241,18 +194,9 @@
         "when": {
           "all": [
             {
-              "any": [
-                {
-                  "question": "q_stop_reasons",
-                  "op": "includes",
-                  "value": "traffic_violation"
-                },
-                {
-                  "question": "q_stop_reasons",
-                  "op": "includes",
-                  "value": "vehicle_problem"
-                }
-              ]
+              "question": "q_stop_reasons",
+              "op": "includes",
+              "value": "traffic_or_vehicle"
             },
             {
               "question": "q_cited_conduct_happened",
@@ -271,18 +215,9 @@
         "when": {
           "all": [
             {
-              "any": [
-                {
-                  "question": "q_stop_reasons",
-                  "op": "includes",
-                  "value": "traffic_violation"
-                },
-                {
-                  "question": "q_stop_reasons",
-                  "op": "includes",
-                  "value": "vehicle_problem"
-                }
-              ]
+              "question": "q_stop_reasons",
+              "op": "includes",
+              "value": "traffic_or_vehicle"
             },
             {
               "question": "q_cited_conduct_happened",
@@ -318,18 +253,9 @@
         "when": {
           "all": [
             {
-              "any": [
-                {
-                  "question": "q_stop_reasons",
-                  "op": "includes",
-                  "value": "traffic_violation"
-                },
-                {
-                  "question": "q_stop_reasons",
-                  "op": "includes",
-                  "value": "vehicle_problem"
-                }
-              ]
+              "question": "q_stop_reasons",
+              "op": "includes",
+              "value": "traffic_or_vehicle"
             },
             {
               "question": "q_cited_conduct_happened",
@@ -401,18 +327,9 @@
     {
       "id": "traffic_basis",
       "when": {
-        "any": [
-          {
-            "question": "q_stop_reasons",
-            "op": "includes",
-            "value": "traffic_violation"
-          },
-          {
-            "question": "q_stop_reasons",
-            "op": "includes",
-            "value": "vehicle_problem"
-          }
-        ]
+        "question": "q_stop_reasons",
+        "op": "includes",
+        "value": "traffic_or_vehicle"
       },
       "sentences": [
         {
@@ -447,22 +364,12 @@
           {
             "question": "q_stop_reasons",
             "op": "includes",
-            "value": "high_crime_area"
+            "value": "location_or_time"
           },
           {
             "question": "q_stop_reasons",
             "op": "includes",
-            "value": "nervousness"
-          },
-          {
-            "question": "q_stop_reasons",
-            "op": "includes",
-            "value": "time_of_day"
-          },
-          {
-            "question": "q_stop_reasons",
-            "op": "includes",
-            "value": "furtive_movements"
+            "value": "nervous_or_furtive"
           },
           {
             "question": "q_stop_reasons",
@@ -656,22 +563,12 @@
                   {
                     "question": "q_stop_reasons",
                     "op": "includes",
-                    "value": "high_crime_area"
+                    "value": "location_or_time"
                   },
                   {
                     "question": "q_stop_reasons",
                     "op": "includes",
-                    "value": "nervousness"
-                  },
-                  {
-                    "question": "q_stop_reasons",
-                    "op": "includes",
-                    "value": "time_of_day"
-                  },
-                  {
-                    "question": "q_stop_reasons",
-                    "op": "includes",
-                    "value": "furtive_movements"
+                    "value": "nervous_or_furtive"
                   },
                   {
                     "question": "q_stop_reasons",
@@ -683,17 +580,12 @@
               {
                 "question": "q_stop_reasons",
                 "op": "not_includes",
-                "value": "traffic_violation"
+                "value": "traffic_or_vehicle"
               },
               {
                 "question": "q_stop_reasons",
                 "op": "not_includes",
                 "value": "bad_driving"
-              },
-              {
-                "question": "q_stop_reasons",
-                "op": "not_includes",
-                "value": "vehicle_problem"
               },
               {
                 "question": "q_stop_reasons",
@@ -803,6 +695,7 @@
     "Redesigned 2026-10-10 on the 'facts in, issues out' principle: q_stop_basis_problems (a legal-conclusion question) and q_stop_type were replaced by q_stop_reasons (what the officer said the stop was based on) plus factual follow-ups. The thresholds for suggesting this section were drafted by me and built at the maintainer's request, pending legal review (see the REVIEW CAREFULLY note): no reason given; only weak reasons (high-crime area, nervousness, time of day, furtive movements, something else); bad driving with no violation or vehicle problem; a traffic violation or vehicle problem that didn't happen (or not sure); an unidentified, uncorroborated tip; a known vehicle or person where the officer had reason to think it was someone else; a general-only description. Flight and an observed crime don't trigger it alone, and count as real reasons.",
     "strieff_attenuation review note (2026-10-12): drafted by Claude. Strieff (2016) as I recall it: discovering a valid, pre-existing arrest warrant after an unlawful stop attenuated the connection to evidence found in the search incident to the arrest. From memory, unverified. The maintainer chose to show the note in both courts for now.",
     "TO CHECK (the maintainer, 2026-10-12): does Alaska follow Strieff under the Alaska Constitution, or has it rejected or limited it? The strieff_attenuation note prints in state court until this is checked.",
-    "REVIEW CAREFULLY (2026-10-13, the maintainer): a confirmed traffic violation or vehicle problem (q_cited_conduct_happened yes) now removes the issue, even when another branch (e.g. a recognized person with a mismatch, or an anonymous tip) would fire it. The cited_conduct_happened near-miss note explains this (Claude draft; its 'generally justifies the stop, whatever other reasons the officer gave' is from memory of Whren and unverified for Alaska). The cited_conduct_unknown review note now requires a traffic violation or vehicle problem, so the interview no longer asks whether the violation happened when only bad driving was given."
+    "REVIEW CAREFULLY (2026-10-13, the maintainer): a confirmed traffic violation or vehicle problem (q_cited_conduct_happened yes) now removes the issue, even when another branch (e.g. a recognized person with a mismatch, or an anonymous tip) would fire it. The cited_conduct_happened near-miss note explains this (Claude draft; its 'generally justifies the stop, whatever other reasons the officer gave' is from memory of Whren and unverified for Alaska). The cited_conduct_unknown review note now requires a traffic violation or vehicle problem, so the interview no longer asks whether the violation happened when only bad driving was given.",
+    "2026-10-13 (the maintainer): q_stop_reasons options merged where the conditions treated them identically: traffic_violation + vehicle_problem → traffic_or_vehicle, high_crime_area + time_of_day → location_or_time, nervousness + furtive_movements → nervous_or_furtive. Conditions were rewritten to match; behavior is unchanged."
   ]
 }

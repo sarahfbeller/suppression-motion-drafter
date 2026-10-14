@@ -26,7 +26,7 @@
     "q_independent_test_type_limited": "yes",
     "q_comprehension_barrier": "language",
     "q_stop_reasons": [
-      "traffic_violation"
+      "traffic_or_vehicle"
     ],
     "q_cited_conduct_happened": "yes",
     "q_arrest_offense": [

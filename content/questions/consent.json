@@ -5,12 +5,8 @@
     "prompt": "What were the circumstances when consent was given? Select all that apply.",
     "options": [
       {
-        "id": "many_officers",
-        "label": "Several officers were present"
-      },
-      {
-        "id": "show_of_force",
-        "label": "Weapons were drawn, or there was another show of force"
+        "id": "officers_or_weapons",
+        "label": "Several officers were present, or weapons were drawn"
       },
       {
         "id": "claim_of_authority",
