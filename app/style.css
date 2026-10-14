@@ -102,10 +102,20 @@ h1 { font-size: 34px; line-height: 1.2; letter-spacing: -.02em; margin: 0 0 16px
 .rv-a ul { margin: 0; padding-left: 18px; }
 .none { color: var(--muted); }
 
+/* Privacy page */
+.prose { max-width: 720px; }
+.prose h2 { font-size: 22px; letter-spacing: -.01em; margin: 40px 0 10px; font-weight: 650; }
+.prose ul { margin: 0; padding-left: 22px; }
+.prose li { margin-bottom: 10px; }
+.prose p { margin: 0 0 12px; }
+.prose .small { margin-top: 48px; }
+
 /* Footer */
 .foot { border-top: 1px solid var(--line); }
-.foot-inner { max-width: 1080px; margin: 0 auto; padding: 20px 32px 32px; font-size: 14px; color: var(--muted); }
-.foot-note { color: var(--faint); margin-left: 8px; }
+.foot-inner { max-width: 1080px; margin: 0 auto; padding: 20px 32px 32px; font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 0; }
+.foot-count { margin-left: auto; padding-left: 24px; color: var(--faint); }
+.foot-count b { color: var(--muted); font-weight: 600; }
+.foot-sep { margin: 0 12px; color: var(--faint); }
 
 /* Done */
 .done-wrap { max-width: 760px; }

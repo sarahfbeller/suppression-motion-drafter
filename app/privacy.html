@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · Suppression Motion Drafter</title>
+<meta name="description" content="How the Suppression Motion Drafter keeps your client's information on your computer.">
+<link rel="stylesheet" href="style.css?v=__BUILD__">
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="./">Suppression Motion Drafter</a>
+  </div>
+</header>
+
+<main>
+<div class="prose">
+  <h1>Privacy</h1>
+  <p class="lede">What you type stays on your computer. Nothing you enter is sent anywhere, stored by us, or read by AI.</p>
+
+  <h2>Your answers never leave your computer</h2>
+  <ul>
+    <li>The whole drafter runs as code inside your web browser: the questions, the rules that decide which issues apply, and the Word files. There's no server that receives your answers.</li>
+    <li>When you download the motion and memo, your browser builds them on your computer. Their contents are never sent anywhere.</li>
+    <li>The site never asks for your client's name or case details. The motion says "[Client]" wherever a name goes, for you to fill in.</li>
+    <li>The site doesn't save your answers in your browser: no cookies, no browser storage. When you close the tab, they're gone, unless you saved a case file.</li>
+  </ul>
+
+  <h2>No AI</h2>
+  <p>No artificial intelligence reads your answers or writes text from them. The motion is assembled from paragraphs written in advance, using fixed rules to decide which paragraphs apply to your answers. You can read every rule and paragraph in the source code (below).</p>
+
+  <h2>What we count</h2>
+  <ul>
+    <li>We count two things: visits to the site and motions downloaded. The totals appear at the bottom of the drafter.</li>
+    <li>Counting uses <a href="https://www.goatcounter.com">GoatCounter</a>, a privacy-focused service. When the drafter loads and when you download a motion, your browser tells GoatCounter the page address, the page title, the site that linked you here (if any), and your screen size. GoatCounter also receives what any website receives: your IP address and your browser type.</li>
+    <li>According to <a href="https://www.goatcounter.com/help/privacy">GoatCounter's privacy policy</a>, it doesn't store IP addresses or set cookies, and keeps only totals, like "Chrome, 12 visits on Tuesday."</li>
+    <li>None of this includes your answers or anything in your documents.</li>
+  </ul>
+
+  <h2>Other services that see your visit</h2>
+  <ul>
+    <li><strong>Cloudflare</strong> hosts the site's files. Like any web host, it sees requests for those files: your IP address and which files your browser loaded. It never sees your answers, because they're never sent.</li>
+    <li><strong>Google</strong> runs the feedback form, which you only reach if you click the feedback link. If you click it from a question, the form fills in the question you're on, never your answers. Don't put confidential information in the form.</li>
+    <li>The site loads no other outside scripts, fonts, or ads. Everything it runs, including the Python engine (<a href="https://pyodide.org">Pyodide</a>) and the counting script, is served from this site.</li>
+  </ul>
+
+  <h2>What's yours to protect</h2>
+  <p>Once a file is on your computer, it's under your control like any other work document.</p>
+  <ul>
+    <li>The motion and memo you download.</li>
+    <li>A saved case file, which contains your answers. Store it like any confidential file.</li>
+    <li>On a shared or public computer, delete your downloads when you're done.</li>
+    <li>Browser extensions can read any page you visit, including this one.</li>
+  </ul>
+
+  <h2>Check it yourself</h2>
+  <ul>
+    <li>The source code is public: <a href="https://github.com/sarahfbeller/suppression-motion-drafter">github.com/sarahfbeller/suppression-motion-drafter</a>.</li>
+    <li>To watch what the page sends, right-click the page, choose <strong>Inspect</strong>, and open the <strong>Network</strong> tab. (In Safari, first turn on "Show features for web developers" in Settings → Advanced.) Then fill out a case. You'll see the site's own files load and a few requests to GoatCounter, and nothing carrying your answers.</li>
+  </ul>
+
+  <p class="small">Last updated October 14, 2026.</p>
+</div>
+</main>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <span><a href="./">Back to the drafter</a></span>
+  </div>
+</footer>
+</body>
+</html>

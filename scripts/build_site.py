@@ -43,6 +43,11 @@ VENDOR = [
      "3fd478f3250fbbbfd3b94fe1e985955737c145627498896a8a6bf81f4baf66c7"),
 ]
 
+# GoatCounter's counting script (visit and motion-download counts), pinned to a version and served from
+# the site itself. It sends only the page path, title, referrer, and screen size: never anything typed.
+COUNTER = ("count.js", "https://gc.zgo.at/count.v5.js",
+           "9e4391f5c18cb24de433b6ef31d8b1f1c85ee41c6f0ad274b28664168063725a")
+
 # The Python the page runs, from scripts/.
 PYTHON = ["engine.py", "render.py", "docx_render.py", "site_api.py"]
 
@@ -100,17 +105,19 @@ def main():
     os.makedirs(os.path.join(DIST, "pyodide"))
     for name, url, digest in VENDOR:
         shutil.copy(vendor_file(name, url, digest), os.path.join(DIST, "pyodide", name))
+    shutil.copy(vendor_file("goatcounter-" + COUNTER[0], *COUNTER[1:]), os.path.join(DIST, COUNTER[0]))
 
     data = json.dumps(bundle(), ensure_ascii=False, separators=(",", ":"))
     with open(os.path.join(DIST, "bundle.json"), "w", encoding="utf-8") as f:
         f.write(data)
 
     # A build id in the page's links, so browsers fetch the new files after an update.
-    page = "".join(read(os.path.join(ROOT, "app", n)) for n in ("index.html", "style.css"))
+    pages = sorted(n for n in os.listdir(os.path.join(ROOT, "app")) if n.endswith((".html", ".css")))
+    page = "".join(read(os.path.join(ROOT, "app", n)) for n in pages)
     build = hashlib.sha256((data + app_js + page).encode()).hexdigest()[:12]
     for name in os.listdir(os.path.join(ROOT, "app")):
         src = os.path.join(ROOT, "app", name)
-        if name == "index.html":
+        if name.endswith(".html"):
             with open(os.path.join(DIST, name), "w", encoding="utf-8") as f:
                 f.write(read(src).replace("__BUILD__", build))
         elif os.path.isfile(src):

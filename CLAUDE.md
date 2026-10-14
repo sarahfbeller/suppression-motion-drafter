@@ -87,5 +87,6 @@ call per sentence).
   `scripts/build_site.py`, see "The website" in `README.md`). It runs entirely in the browser:
   never add anything that sends answers off the page. The motion and memo download as .docx,
   with each sentence's citations in a footnote. The footer links to a Google Form for feedback
-  (pre-filling only the current question, never answers). Next: visit/motion counts (counts only,
-  never answers).
+  (pre-filling only the current question, never answers). GoatCounter counts visits and motion
+  downloads, shown in the footer (counts only, never answers). `app/privacy.html` promises exactly
+  what the site loads and sends, and that no AI reads answers: any change to either must update it.

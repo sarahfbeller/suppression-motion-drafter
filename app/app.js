@@ -13,6 +13,11 @@ const YES_NO = [["yes", "Yes"], ["no", "No"]];
 const FEEDBACK_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSdJGxS_RZy5EQrs42alklXfvKMKUqnlubWFXfk10HqzL7C70A/viewform";
 const FEEDBACK_QUESTION_FIELD = "entry.959751634";
 
+// Public counts (GoatCounter). The page counts itself as a visit when it loads (count.js, in
+// index.html); a motion download is counted as the event below. Nothing else is ever sent.
+const COUNTER = "https://issuespotter.goatcounter.com";
+const MOTION_EVENT = "motion-downloaded";
+
 // ---------------------------------------------------------------- Python
 
 let api = null;         // scripts/site_api.py
@@ -293,8 +298,11 @@ function renderDone() {
   const names = ["suppression-motion.docx", "suppression-memo.docx"];
   const buttons = app.querySelectorAll("[data-doc]");
   const status = document.getElementById("doc-status");
-  buttons.forEach(b => b.onclick = () => download(docs[b.dataset.doc], names[b.dataset.doc],
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+  buttons.forEach(b => b.onclick = () => {
+    download(docs[b.dataset.doc], names[b.dataset.doc],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+    if (b.dataset.doc === "0") countMotion();
+  });
   document.getElementById("save-done").onclick = saveCase;
   document.getElementById("back-review").onclick = () => show(REVIEW);
   document.getElementById("new-case").onclick = () => startOver();
@@ -315,6 +323,34 @@ function renderDone() {
       status.textContent = "The documents couldn't be made. Save your case to a file, reload the page, and try again.";
     }
   })();
+}
+
+// ---------------------------------------------------------------- counts
+
+function countMotion() {
+  if (window.goatcounter && window.goatcounter.count) {
+    window.goatcounter.count({ path: MOTION_EVENT, title: "Motion downloaded", event: true });
+  }
+}
+
+// "1,204 visits · 318 motions drafted" in the footer. GoatCounter only serves these once "Allow adding
+// visitor counts on your website" is on in its settings; until then (or if it's unreachable) the
+// footer just leaves them out. Its numbers can lag by a few hours.
+async function showCounts() {
+  const get = async path => {
+    const r = await fetch(`${COUNTER}/counter/${encodeURIComponent(path)}.json`);
+    if (r.status === 404) return "0";  // nothing counted yet
+    if (!r.ok) throw new Error(`counter ${r.status}`);
+    return (await r.json()).count;
+  };
+  try {
+    const [visits, motions] = await Promise.all([get("/"), get(MOTION_EVENT)]);
+    const el = document.getElementById("counts");
+    el.innerHTML = `<b>${esc(visits)}</b> visits · <b>${esc(motions)}</b> motions drafted`;
+    el.classList.remove("hidden");
+  } catch (e) {
+    // Counts are a nicety; leave them out.
+  }
 }
 
 // ---------------------------------------------------------------- files
@@ -377,3 +413,4 @@ window.addEventListener("beforeunload", e => {
 });
 
 show("start");
+showCounts();

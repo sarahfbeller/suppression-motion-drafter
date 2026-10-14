@@ -21,8 +21,8 @@
 
 <footer class="foot">
   <div class="foot-inner">
-    Feedback or requests? <a id="feedback" href="#" target="_blank" rel="noopener">Tell us</a>.
-    <span class="foot-note">Opens a Google Form. Don't include confidential information.</span>
+    <span><a id="feedback" href="#" target="_blank" rel="noopener">Feedback or requests</a><span class="foot-sep" aria-hidden="true">•</span><a href="privacy.html" target="_blank" rel="noopener">Privacy</a></span>
+    <span class="foot-count hidden" id="counts"></span>
   </div>
 </footer>
 
@@ -34,7 +34,7 @@
     <h1>Draft a suppression motion</h1>
     <p class="lede">Answer questions about what happened. You'll get a draft motion and a memo for you, both as Word files.</p>
     <div class="notice"><strong>Your answers stay on your computer.</strong>
-      <p>The site doesn't store or send anything you enter, and it never asks for your client's name or case details.</p></div>
+      <p>The site doesn't store or send anything you enter, and it never asks for your client's name or case details. It only counts visits and motions drafted. <a href="privacy.html" target="_blank" rel="noopener">How your answers stay private</a></p></div>
     <div class="notice"><strong>This is a starting point, not legal advice.</strong>
       <p>Before filing, read every cited case, confirm it supports the sentence it's attached to, check that it's still good law, and edit the motion to fit your case.</p></div>
     <div class="notice"><strong>Still being built.</strong>
@@ -47,6 +47,8 @@
   </div>
 </template>
 
+<!-- Counts visits and downloaded motions (GoatCounter); never anything typed on the page. -->
+<script data-goatcounter="https://issuespotter.goatcounter.com/count" async src="count.js"></script>
 <script src="pyodide/pyodide.js"></script>
 <script src="app.js?v=__BUILD__"></script>
 </body>
