@@ -1,4 +1,4 @@
-# Suppression motion generator
+# Suppression motion drafter
 
 A question wizard for defense attorneys. From the answers, it produces two documents:
 a **motion** (court-facing argument sections with rule paragraphs and citations) and an
