@@ -47,25 +47,26 @@
     ]
   },
   {
-    "id": "q_interrogation",
-    "type": "multiple_choice",
-    "prompt": "Were the statements a response to police questioning, or to words or actions police should have known were likely to draw an incriminating response (as opposed to volunteered)?",
+    "id": "q_statement_prompt",
+    "type": "multi_select",
+    "prompt": "What led to your client's statements? Select all that apply.",
     "options": [
       {
-        "id": "yes",
-        "label": "Yes"
+        "id": "answered_questions",
+        "label": "Your client answered police questions"
       },
       {
-        "id": "no",
-        "label": "No"
+        "id": "responded_to_police",
+        "label": "Your client responded to something police said or did (e.g. confronted with evidence, officers talking to each other in front of your client)"
+      },
+      {
+        "id": "volunteered",
+        "label": "Your client spoke without being asked or prompted"
       },
       {
         "id": "not_sure",
         "label": "Not sure yet"
       }
-    ],
-    "_author_notes": [
-      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'not_sure') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note interrogation_unknown in miranda-warnings-inadequate; review note interrogation_unknown in miranda-waiver-invalid."
     ]
   },
   {

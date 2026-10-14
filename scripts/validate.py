@@ -1275,15 +1275,18 @@ def check_reachability(r, where, trig, paragraphs, questions):
                 alts.append({qid: []})
             answer = f"{qid} = {uid!r}" + (" (checked alone)" if multi else "")
             what = f"what answering {answer} does"
+            # Only a note that looks at this question counts: one that fires for other reasons (e.g.
+            # a note shown whenever the issue is included) doesn't tell the attorney about this answer.
+            about = lambda notes: [n for n in notes if qid in E.condition_questions(n["when"])]
             silent_exclusion = F_and(F_not(F_cond(match, u)), F_or(*[F_cond(match, alt) for alt in alts]),
-                                     *[F_not(near_miss(e["when"], u)) for e in excluded])
+                                     *[F_not(near_miss(e["when"], u)) for e in about(excluded)])
             a, skipped = search(r, where, what, silent_exclusion, questions)
             if not skipped and a is not None:
                 r.err(where, f"answering {answer} silently excludes this issue (a different "
                              f"answer would have included it, and no excluded_explanation fires). "
                              f"Include it with a review note (the default), or add an excluded_explanation.")
             silent_inclusion = F_and(F_cond(match, u), F_or(*[F_not(F_cond(match, alt)) for alt in alts]),
-                                     *[F_not(F_cond(n["when"], u)) for n in reviews])
+                                     *[F_not(F_cond(n["when"], u)) for n in about(reviews)])
             a, skipped = search(r, where, what, silent_inclusion, questions)
             if not skipped and a is not None:
                 r.err(where, f"answering {answer} can include this issue with no review note firing, so "

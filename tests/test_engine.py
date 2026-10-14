@@ -265,8 +265,8 @@ class EventGroups(unittest.TestCase):
 class NearMisses(unittest.TestCase):
     """A near-miss explanation shows only when the issue's encounter event happened."""
 
-    # Franks explains a near miss when the affiant was only negligent.
-    FACTS = {"q_affidavit_accuracy": "false_statement", "q_intent": "negligent", "q_materiality": "no",
+    # Franks explains a near miss when the only problem looks like a clerical error.
+    FACTS = {"q_affidavit_accuracy": "false_statement", "q_affiant_knowledge": ["clerical_error"],
              "q_search_justification": ["warrant"]}
 
     def setUp(self):

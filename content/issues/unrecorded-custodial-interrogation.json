@@ -210,6 +210,7 @@
   "practice_notes": [],
   "_author_notes": [
     "REVIEW CAREFULLY (legal judgment not yet reviewed): custody is treated as shown when q_custody_circumstances includes a formal arrest, restraint, or confinement (even if police said your client was free to leave, at the maintainer's instruction), or any softer fact (station or jail, told not free to leave, long questioning, several officers or weapons) without being told they were free to leave. 'Not sure yet' keeps the issue, with the custody_unknown note. Drafted by Claude on 2026-10-12; the custody_totality and custody_told_free_but_restrained review notes are Claude's drafts too. Not yet legally agreed.",
-    "Alaska-only issue added at the maintainer's request (Stephan). Both statements were written from general knowledge and have no authorities: Alaska citations aren't covered by the Supreme Court citation policy. Unverified; add Stephan and later cases, and check that the statements (feasibility, the remedy, and whether suppression is limited to the unrecorded portion) match Alaska law."
+    "Alaska-only issue added at the maintainer's request (Stephan). Both statements were written from general knowledge and have no authorities: Alaska citations aren't covered by the Supreme Court citation policy. Unverified; add Stephan and later cases, and check that the statements (feasibility, the remedy, and whether suppression is limited to the unrecorded portion) match Alaska law.",
+    "TO CHECK (the maintainer, 2026-10-13): this issue doesn't look at q_statement_prompt, so it fires even when every statement at the place of detention was volunteered. Should it require questioning or other police prompting, like the Miranda issues? The maintainer doesn't know yet what Stephan requires."
   ]
 }

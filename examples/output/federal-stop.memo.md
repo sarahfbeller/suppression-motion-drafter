@@ -44,6 +44,7 @@
 - This section's legal content has not yet been reviewed by an attorney. Check every proposition and citation before filing.
 - This section cites only U.S. Supreme Court authority; no Ninth Circuit authority is cited. Consider adding a Ninth Circuit case if one exists.
 - A proposition relevant to these facts was left out of the motion because no authority for this forum is available yet: "The same analysis applies to material omissions from the affidavit, not just affirmative false statements."
+- *Franks* also requires that the corrected affidavit fail to establish probable cause. Before filing, rewrite the affidavit without the false statement, and with any omitted facts added, and check whether what's left still supports the warrant.
 
 **Practice notes:**
 

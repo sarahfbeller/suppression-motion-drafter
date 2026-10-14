@@ -17,7 +17,9 @@
     "q_contact_requested": [
       "relative_or_friend"
     ],
-    "q_contact_purpose": "defense_related",
+    "q_contact_reason": [
+      "test_advice"
+    ],
     "q_contact_outcome": "denied_outright",
     "q_breath_test_completed": "yes",
     "q_independent_test_advisement": "clear_advisement",

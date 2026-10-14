@@ -63,41 +63,174 @@
           ]
         },
         {
-          "question": "q_intent",
-          "op": "in",
-          "value": [
-            "deliberate",
-            "reckless",
-            "unknown"
+          "any": [
+            {
+              "question": "q_affiant_knowledge",
+              "op": "includes",
+              "value": "contradicted_by_own_records"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "includes",
+              "value": "knew_omitted_fact"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "includes",
+              "value": "other_officers_knew"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "includes",
+              "value": "doubtful_source"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "includes",
+              "value": "no_source"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "includes",
+              "value": "other"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "includes",
+              "value": "not_sure"
+            }
           ]
-        },
-        {
-          "question": "q_materiality",
-          "op": "equals",
-          "value": "no"
         }
       ]
     },
     "review_conditions": [
       {
         "when": {
-          "question": "q_intent",
-          "op": "equals",
-          "value": "unknown"
+          "question": "q_affiant_knowledge",
+          "op": "includes",
+          "value": "not_sure"
         },
         "flag": "franks_intent_unknown",
         "display_note": "The affiant's intent is unknown. This section was drafted anyway, but a *Franks* hearing requires a substantial preliminary showing that the false statement or omission was deliberate or made with reckless disregard for the truth; negligence or innocent mistake isn't enough. Develop evidence of intent before filing, or cut this section."
+      },
+      {
+        "when": {
+          "question": "q_affiant_knowledge",
+          "op": "includes",
+          "value": "other_officers_knew"
+        },
+        "flag": "franks_other_officers",
+        "display_note": "The affiant may not have known what other officers knew. Check when other officers' knowledge can support a *Franks* challenge."
+      },
+      {
+        "when": {
+          "all": [
+            {
+              "question": "q_affiant_knowledge",
+              "op": "includes",
+              "value": "clerical_error"
+            },
+            {
+              "any": [
+                {
+                  "question": "q_affiant_knowledge",
+                  "op": "includes",
+                  "value": "contradicted_by_own_records"
+                },
+                {
+                  "question": "q_affiant_knowledge",
+                  "op": "includes",
+                  "value": "knew_omitted_fact"
+                },
+                {
+                  "question": "q_affiant_knowledge",
+                  "op": "includes",
+                  "value": "other_officers_knew"
+                },
+                {
+                  "question": "q_affiant_knowledge",
+                  "op": "includes",
+                  "value": "doubtful_source"
+                },
+                {
+                  "question": "q_affiant_knowledge",
+                  "op": "includes",
+                  "value": "no_source"
+                },
+                {
+                  "question": "q_affiant_knowledge",
+                  "op": "includes",
+                  "value": "other"
+                }
+              ]
+            }
+          ]
+        },
+        "flag": "franks_mistake_argument",
+        "display_note": "Expect the prosecution to call this an innocent mistake. Lead with the facts showing the affiant knew, or should have known, the truth."
+      },
+      {
+        "when": {
+          "question": "q_affidavit_accuracy",
+          "op": "in",
+          "value": [
+            "false_statement",
+            "material_omission",
+            "both"
+          ]
+        },
+        "flag": "franks_materiality",
+        "display_note": "*Franks* also requires that the corrected affidavit fail to establish probable cause. Before filing, rewrite the affidavit without the false statement, and with any omitted facts added, and check whether what's left still supports the warrant."
       }
     ],
     "excluded_explanations": [
       {
         "when": {
-          "question": "q_intent",
-          "op": "equals",
-          "value": "negligent"
+          "all": [
+            {
+              "question": "q_affiant_knowledge",
+              "op": "includes",
+              "value": "clerical_error"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "not_includes",
+              "value": "contradicted_by_own_records"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "not_includes",
+              "value": "knew_omitted_fact"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "not_includes",
+              "value": "other_officers_knew"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "not_includes",
+              "value": "doubtful_source"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "not_includes",
+              "value": "no_source"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "not_includes",
+              "value": "other"
+            },
+            {
+              "question": "q_affiant_knowledge",
+              "op": "not_includes",
+              "value": "not_sure"
+            }
+          ]
         },
         "flag": "franks_intent_insufficient",
-        "display_note": "The available evidence suggests simple negligence or mistake by the affiant, which does not meet the *Franks* standard (requires deliberate falsehood or reckless disregard for the truth). If discovery reveals greater culpability, this issue may become viable."
+        "display_note": "The false statement or omission looks like a clerical error. *Franks* requires deliberate falsehood or reckless disregard for the truth, not a mistake. If discovery shows more, this issue may become viable."
       }
     ]
   },
@@ -159,6 +292,7 @@
   "_author_notes": [
     "omissions_extension has no authority yet, so it never renders. Franks itself addresses false statements; the omissions extension is circuit-level doctrine. A possible 9th Circuit source is United States v. Stanert, 762 F.2d 775 (9th Cir. 1985) — unverified. Alaska authority not yet researched.",
     "The franks_intent_unknown review note states the Franks intent standard from general knowledge; it hasn't been checked against the opinion. Unverified.",
-    "2026-10-12: warrants are no longer an encounter event. The trigger is a search with a search warrant (q_search_justification), or an arrest on an arrest warrant (q_arrest_warrant); each warrant question is reached only after its event."
+    "2026-10-12: warrants are no longer an encounter event. The trigger is a search with a search warrant (q_search_justification), or an arrest on an arrest warrant (q_arrest_warrant); each warrant question is reached only after its event.",
+    "REVIEW CAREFULLY (2026-10-13, the maintainer chose option A): q_intent (deliberate / reckless / negligent, a mental-state conclusion) was replaced by q_affiant_knowledge, a checklist of facts about what the affiant knew; anything but a clerical error alone includes the issue, and clerical_error alone gives the franks_intent_insufficient near miss. q_materiality ('would the affidavit still establish probable cause?', the court's question, required 'no') was removed: materiality is now the franks_materiality review note, shown whenever the issue is included. q_affidavit_accuracy was reworded to drop 'material' (ids unchanged). The franks_other_officers, franks_mistake_argument, franks_materiality and reworded near-miss notes are Claude drafts. Claude doesn't know how the Ninth Circuit or Alaska treat other officers' knowledge, so that note tells the attorney to check."
   ]
 }

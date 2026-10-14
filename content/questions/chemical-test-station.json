@@ -30,25 +30,34 @@
     ]
   },
   {
-    "id": "q_contact_purpose",
-    "type": "multiple_choice",
-    "prompt": "If a relative or friend was requested, what was the stated or apparent purpose of that request?",
+    "id": "q_contact_reason",
+    "type": "multi_select",
+    "prompt": "Why did your client want to contact the relative or friend? Select all that apply.",
     "options": [
       {
-        "id": "defense_related",
-        "label": "To get advice on whether to take the test, or what to do (defense-related)"
+        "id": "test_advice",
+        "label": "To ask whether to take the test, or what to do"
       },
       {
-        "id": "purely_personal",
-        "label": "Purely personal — e.g. arranging bail, notifying family, emotional support — no defense-related purpose apparent"
+        "id": "case_help",
+        "label": "To get help with the case (e.g. finding a lawyer, arranging an independent test)"
       },
       {
-        "id": "unclear",
+        "id": "bail_or_ride",
+        "label": "To arrange bail or a ride"
+      },
+      {
+        "id": "family_or_support",
+        "label": "To let family know what happened, or for support"
+      },
+      {
+        "id": "didnt_say",
+        "label": "Your client didn't say"
+      },
+      {
+        "id": "not_sure",
         "label": "Not sure yet"
       }
-    ],
-    "_author_notes": [
-      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'unclear') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: near-miss purpose_unclear_needs_development in denial-of-contact-before-breath-test."
     ]
   },
   {

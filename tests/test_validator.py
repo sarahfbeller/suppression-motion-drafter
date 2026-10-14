@@ -90,7 +90,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         # Original bug: Franks negligence note filed as a review condition, but negligence fails the match.
         def f(d):
             d["trigger"]["review_conditions"] = [
-                {"when": {"question": "q_intent", "op": "equals", "value": "negligent"},
+                {"when": {"question": "q_affiant_knowledge", "op": "empty"},
                  "flag": "intent_below_standard", "display_note": "Negligence isn't enough."}]
         self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "can never fire on an included issue")
 
@@ -142,7 +142,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_capitalized_yes_no(self):
         def f(d):
-            next(c for c in d["trigger"]["match_condition"]["all"] if c.get("question") == "q_materiality")["value"] = "Yes"
+            d["trigger"]["match_condition"]["all"].append({"question": "q_arrest_warrant", "op": "equals", "value": "Yes"})
         self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "not valid option ids")
 
     def test_unknown_question(self):
@@ -483,8 +483,8 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_duplicate_option_id(self):
         def f(qs):
-            q = next(q for q in qs if q["id"] == "q_intent")
-            q["options"][1]["id"] = "deliberate"
+            q = next(q for q in qs if q["id"] == "q_affiant_knowledge")
+            q["options"][1]["id"] = q["options"][0]["id"]
         self.assertError(self.run_with("content/questions/warrant-affidavit.json", f), "duplicate option id")
 
     def test_option_as_plain_string(self):
@@ -678,10 +678,10 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
     # ---- unknown-answer policy
 
     def test_silent_exclusion_on_unknown_is_an_error(self):
-        # Original bug: Franks excluded on q_intent = unknown with nothing in the memo.
+        # Original bug: Franks excluded on intent = unknown with nothing in the memo.
         def f(d):
-            intent = next(c for c in d["trigger"]["match_condition"]["all"] if c.get("question") == "q_intent")
-            intent["value"] = ["deliberate", "reckless"]
+            knowledge = d["trigger"]["match_condition"]["all"][-1]["any"]
+            knowledge[:] = [c for c in knowledge if c["value"] != "not_sure"]
             del d["trigger"]["review_conditions"]
         self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f), "silently excludes")
 
@@ -700,7 +700,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
             d["trigger"]["review_conditions"] = [
                 n for n in d["trigger"]["review_conditions"] if n["flag"] != "franks_intent_unknown"]
         self.assertError(self.run_with(f"{ISSUES}/franks-violation.json", f),
-                         "q_intent = 'unknown' can include this issue with no review note")
+                         "q_affiant_knowledge = 'not_sure' (checked alone) can include this issue with no review note")
 
     def test_uncertain_inclusion_without_review_note_on_checklist(self):
         def f(d):
@@ -711,11 +711,11 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
 
     def test_silent_exclusion_resolved_by_excluded_explanation(self):
         def f(d):
-            intent = next(c for c in d["trigger"]["match_condition"]["all"] if c.get("question") == "q_intent")
-            intent["value"] = ["deliberate", "reckless"]
+            knowledge = d["trigger"]["match_condition"]["all"][-1]["any"]
+            knowledge[:] = [c for c in knowledge if c["value"] != "not_sure"]
             del d["trigger"]["review_conditions"]
             d["trigger"]["excluded_explanations"].append(
-                {"when": {"question": "q_intent", "op": "equals", "value": "unknown"},
+                {"when": {"question": "q_affiant_knowledge", "op": "includes", "value": "not_sure"},
                  "flag": "intent_unknown", "display_note": "Intent is unknown; develop it in discovery."})
         r = self.run_with(f"{ISSUES}/franks-violation.json", f)
         self.assertFalse(any("silently excludes" in e for e in r.errors), "\n".join(r.errors))

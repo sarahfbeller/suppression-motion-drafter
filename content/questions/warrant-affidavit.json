@@ -2,19 +2,19 @@
   {
     "id": "q_affidavit_accuracy",
     "type": "multiple_choice",
-    "prompt": "Is there any indication the affidavit contained a false statement, or omitted material information?",
+    "prompt": "Did the affidavit say anything false, or leave out something police knew?",
     "options": [
       {
         "id": "no_known_issues",
-        "label": "No known issues"
+        "label": "No"
       },
       {
         "id": "false_statement",
-        "label": "Possible false statement by affiant"
+        "label": "It said something false"
       },
       {
         "id": "material_omission",
-        "label": "Possible material omission by affiant"
+        "label": "It left out something police knew"
       },
       {
         "id": "both",
@@ -23,34 +23,42 @@
     ]
   },
   {
-    "id": "q_intent",
-    "type": "multiple_choice",
-    "prompt": "Does the available evidence suggest the affiant acted with...",
+    "id": "q_affiant_knowledge",
+    "type": "multi_select",
+    "prompt": "Which of these apply to the false statement or omission? Select all that apply.",
     "options": [
       {
-        "id": "deliberate",
-        "label": "Deliberate falsehood"
+        "id": "contradicted_by_own_records",
+        "label": "The affiant's own report, notes, or recordings contradict it"
       },
       {
-        "id": "reckless",
-        "label": "Reckless disregard for the truth"
+        "id": "knew_omitted_fact",
+        "label": "The affiant knew the omitted fact when writing the affidavit (e.g. it's in their own report)"
       },
       {
-        "id": "negligent",
-        "label": "Simple negligence/mistake"
+        "id": "other_officers_knew",
+        "label": "Other officers on the case knew the truth"
       },
       {
-        "id": "unknown",
+        "id": "doubtful_source",
+        "label": "It came from a source the affiant had reason to doubt (e.g. an informant with a history of bad information)"
+      },
+      {
+        "id": "no_source",
+        "label": "The affiant stated it as fact with no source for it"
+      },
+      {
+        "id": "clerical_error",
+        "label": "It looks like a typo or clerical error (e.g. wrong date or address)"
+      },
+      {
+        "id": "other",
+        "label": "Something else"
+      },
+      {
+        "id": "not_sure",
         "label": "Not sure yet"
       }
-    ],
-    "_author_notes": [
-      "To review later (the maintainer, 2026-10-10): decide whether to keep this question's 'Not sure yet' option (id 'unknown') or cut it, as was done for 17 other questions. Cutting it means also deleting what fires on that answer: review note franks_intent_unknown in franks-violation."
     ]
-  },
-  {
-    "id": "q_materiality",
-    "type": "yes_no",
-    "prompt": "If the false statement were removed (or the omission included), would the affidavit still establish probable cause?"
   }
 ]

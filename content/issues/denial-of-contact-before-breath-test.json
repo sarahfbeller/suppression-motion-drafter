@@ -63,9 +63,18 @@
                   "value": "relative_or_friend"
                 },
                 {
-                  "question": "q_contact_purpose",
-                  "op": "equals",
-                  "value": "defense_related"
+                  "any": [
+                    {
+                      "question": "q_contact_reason",
+                      "op": "includes",
+                      "value": "test_advice"
+                    },
+                    {
+                      "question": "q_contact_reason",
+                      "op": "includes",
+                      "value": "case_help"
+                    }
+                  ]
                 }
               ]
             }
@@ -108,9 +117,38 @@
               "value": "attorney"
             },
             {
-              "question": "q_contact_purpose",
-              "op": "equals",
-              "value": "purely_personal"
+              "any": [
+                {
+                  "question": "q_contact_reason",
+                  "op": "includes",
+                  "value": "bail_or_ride"
+                },
+                {
+                  "question": "q_contact_reason",
+                  "op": "includes",
+                  "value": "family_or_support"
+                }
+              ]
+            },
+            {
+              "question": "q_contact_reason",
+              "op": "not_includes",
+              "value": "test_advice"
+            },
+            {
+              "question": "q_contact_reason",
+              "op": "not_includes",
+              "value": "case_help"
+            },
+            {
+              "question": "q_contact_reason",
+              "op": "not_includes",
+              "value": "didnt_say"
+            },
+            {
+              "question": "q_contact_reason",
+              "op": "not_includes",
+              "value": "not_sure"
             }
           ]
         },
@@ -131,9 +169,28 @@
               "value": "attorney"
             },
             {
-              "question": "q_contact_purpose",
-              "op": "equals",
-              "value": "unclear"
+              "any": [
+                {
+                  "question": "q_contact_reason",
+                  "op": "includes",
+                  "value": "didnt_say"
+                },
+                {
+                  "question": "q_contact_reason",
+                  "op": "includes",
+                  "value": "not_sure"
+                }
+              ]
+            },
+            {
+              "question": "q_contact_reason",
+              "op": "not_includes",
+              "value": "test_advice"
+            },
+            {
+              "question": "q_contact_reason",
+              "op": "not_includes",
+              "value": "case_help"
             }
           ]
         },
@@ -252,6 +309,8 @@
   "practice_notes": [],
   "_author_notes": [
     "private_communication is new wording for Farrell's proposition (previously summarized as 'police must make reasonable effort to accommodate private consultation'). Verify against the opinion.",
-    "2026-10-12: breath tests are no longer an encounter event. The trigger is now an arrest, a DUI or refusal charge, and a breath test in q_chemical_tests."
+    "2026-10-12: breath tests are no longer an encounter event. The trigger is now an arrest, a DUI or refusal charge, and a breath test in q_chemical_tests.",
+    "REVIEW CAREFULLY (2026-10-13, the maintainer): q_contact_purpose (defense-related / purely personal / unclear, the Zsupnik category) was replaced by q_contact_reason, a checklist of your client's reasons. test_advice or case_help includes the issue on the relative-or-friend path; bail_or_ride or family_or_support alone gives the non_defense_purpose_remedy_undecided near miss; didnt_say or not_sure (without a defense reason) gives purpose_unclear_needs_development (the maintainer chose a near miss for didnt_say). Treating case_help (e.g. finding a lawyer, arranging an independent test) as defense-related is Claude's extension, not checked against Zsupnik or Winfrey.",
+    "REVIEW (the maintainer, 2026-10-13): look at the reasonable_time sentence ('The right is not absolute and does not permit indefinite delay; what counts as a reasonable opportunity is balanced against the state's need to administer the test in a timely manner.'). It helps the prosecution. It prints only when timing is at issue, but decide whether to keep it, reword it, or pair it with a defense-side point."
   ]
 }

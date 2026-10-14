@@ -74,11 +74,22 @@
           ]
         },
         {
-          "question": "q_interrogation",
-          "op": "in",
-          "value": [
-            "yes",
-            "not_sure"
+          "any": [
+            {
+              "question": "q_statement_prompt",
+              "op": "includes",
+              "value": "answered_questions"
+            },
+            {
+              "question": "q_statement_prompt",
+              "op": "includes",
+              "value": "responded_to_police"
+            },
+            {
+              "question": "q_statement_prompt",
+              "op": "includes",
+              "value": "not_sure"
+            }
           ]
         },
         {
@@ -99,8 +110,8 @@
       },
       {
         "when": {
-          "question": "q_interrogation",
-          "op": "equals",
+          "question": "q_statement_prompt",
+          "op": "includes",
           "value": "not_sure"
         },
         "flag": "interrogation_unknown",
@@ -211,6 +222,54 @@
         },
         "flag": "custody_told_free_but_restrained",
         "display_note": "Police told your client they were free to leave, but your client was arrested, restrained, or confined. Expect the prosecution to rely on that statement; the restraint is what a reasonable person would have experienced."
+      },
+      {
+        "when": {
+          "question": "q_statement_prompt",
+          "op": "includes",
+          "value": "responded_to_police"
+        },
+        "flag": "functional_equivalent",
+        "display_note": "Some statements came in response to something police said or did, not a question. Expect the prosecution to argue there was no interrogation; the argument is that police should have known their words or actions were reasonably likely to draw an incriminating response."
+      },
+      {
+        "when": {
+          "question": "q_statement_prompt",
+          "op": "includes",
+          "value": "volunteered"
+        },
+        "flag": "some_volunteered",
+        "display_note": "Some of your client's statements were volunteered. *Miranda* doesn't cover those, only the ones that responded to questioning or other police prompting. Identify which statements this section asks the court to suppress."
+      }
+    ],
+    "excluded_explanations": [
+      {
+        "when": {
+          "all": [
+            {
+              "question": "q_statement_prompt",
+              "op": "includes",
+              "value": "volunteered"
+            },
+            {
+              "question": "q_statement_prompt",
+              "op": "not_includes",
+              "value": "answered_questions"
+            },
+            {
+              "question": "q_statement_prompt",
+              "op": "not_includes",
+              "value": "responded_to_police"
+            },
+            {
+              "question": "q_statement_prompt",
+              "op": "not_includes",
+              "value": "not_sure"
+            }
+          ]
+        },
+        "flag": "all_volunteered",
+        "display_note": "Your client's statements were volunteered, not a response to police questioning or prompting, so *Miranda* doesn't apply. If police followed up with questions after a volunteered statement, the answers to those questions may be covered; if so, change your answer."
       }
     ]
   },
@@ -268,6 +327,7 @@
     "REVIEW CAREFULLY (legal judgment not yet reviewed): custody is treated as shown when q_custody_circumstances includes a formal arrest, restraint, or confinement (even if police said your client was free to leave, at the maintainer's instruction), or any softer fact (station or jail, told not free to leave, long questioning, several officers or weapons) without being told they were free to leave. 'Not sure yet' keeps the issue, with the custody_unknown note. Drafted by Claude on 2026-10-12; the custody_totality and custody_told_free_but_restrained review notes are Claude's drafts too. Not yet legally agreed.",
     "REVIEW CAREFULLY (legal judgment not yet reviewed): this issue is suggested when ANY q_waiver_circumstances option is checked, including the implied-waiver option alone (with the implied_waiver review note). Drafted by Claude on 2026-10-11 and built at the maintainer's request; the maintainer hasn't agreed with these thresholds legally. Consider whether some facts should print their own paragraphs (e.g. juvenile, limited English, police deception).",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Miranda v. Arizona, Moran v. Burbine, Stansbury v. California. Unverified; pincites empty.",
-    "implied_waiver review note: drafted by Claude from general knowledge of implied-waiver doctrine (Berghuis v. Thompkins, not cited in the note). Unverified."
+    "implied_waiver review note: drafted by Claude from general knowledge of implied-waiver doctrine (Berghuis v. Thompkins, not cited in the note). Unverified.",
+    "2026-10-13 (the maintainer): q_interrogation (which recited the Innis test) was replaced by q_statement_prompt, a checklist of what led to the statements. Answered questions, responded to something police said or did, or not sure includes the issue; volunteered alone leaves it out with the all_volunteered near-miss note. The functional_equivalent and some_volunteered review notes and the near-miss note are Claude drafts. Unverified, from Claude's understanding: that follow-up questions after a volunteered statement can be interrogation (in the near-miss note)."
   ]
 }

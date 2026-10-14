@@ -25,8 +25,9 @@
       "no_reason_or_officer_safety"
     ],
     "q_affidavit_accuracy": "material_omission",
-    "q_intent": "reckless",
-    "q_materiality": "no",
+    "q_affiant_knowledge": [
+      "knew_omitted_fact"
+    ],
     "q_contact_requested": [
       "attorney"
     ],
