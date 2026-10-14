@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" data-build="__BUILD__">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suppression Motion Drafter</title>
+<meta name="description" content="Draft a suppression motion and an attorney memo from the facts of your case. Everything runs in your browser.">
+<link rel="stylesheet" href="style.css?v=__BUILD__">
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="#" id="home">Suppression Motion Drafter</a>
+    <button class="linkish hidden" id="save" type="button">Save case to a file</button>
+  </div>
+</header>
+
+<main id="app">
+  <noscript><p>This site needs JavaScript turned on.</p></noscript>
+</main>
+
+<input type="file" id="open-file" accept=".json,application/json" class="hidden">
+
+<!-- The first screen. app.js shows it, and wires up its buttons. -->
+<template id="start-screen">
+  <div class="start">
+    <h1>Draft a suppression motion</h1>
+    <p class="lede">Answer questions about what happened. You'll get a draft motion and a memo for you, both as Word files.</p>
+    <div class="notice"><strong>Your answers stay on your computer.</strong>
+      <p>The site doesn't store or send anything you enter, and it never asks for your client's name or case details.</p></div>
+    <div class="notice"><strong>This is a starting point, not legal advice.</strong>
+      <p>Before filing, read every cited case, confirm it supports the sentence it's attached to, check that it's still good law, and edit the motion to fit your case.</p></div>
+    <div class="notice"><strong>Still being built.</strong>
+      <p>It currently covers motions in Alaska state court, citing Alaska and U.S. Supreme Court law, and in federal court, citing U.S. Supreme Court law only. Ninth Circuit authority is coming. It doesn't cover any other state's law.</p></div>
+    <div class="actions">
+      <button class="btn btn-primary" id="begin" type="button">Start</button>
+      <button class="linkish" id="open" type="button">Open a saved case</button>
+    </div>
+    <p class="status" id="load-status" aria-live="polite"></p>
+  </div>
+</template>
+
+<script src="pyodide/pyodide.js"></script>
+<script src="app.js?v=__BUILD__"></script>
+</body>
+</html>

@@ -178,8 +178,8 @@ def check_config(r, root):
     c = load_or_report(r, root, where)
     if c is None:
         return None
-    if not check_keys(r, where, c, {"courts", "motion_order", "event_groups", "encounter"},
-                      ["courts", "motion_order", "encounter"]):
+    if not check_keys(r, where, c, {"courts", "motion_order", "phase_names", "event_groups", "encounter"},
+                      ["courts", "motion_order", "phase_names", "encounter"]):
         return None
 
     courts = {k: v for k, v in c["courts"].items() if not k.startswith("_")}
@@ -213,6 +213,17 @@ def check_config(r, root):
             r.err(where, f"motion_order lists {iid!r}, but there's no content/issues/{iid}.json")
         for iid in sorted(files - seen):
             r.err(where, f"content/issues/{iid}.json isn't in motion_order — add it where it belongs in the motion")
+
+    names = c["phase_names"]
+    if not isinstance(names, dict):
+        r.err(where, "phase_names must be an object mapping each motion_order phase to its display name")
+    else:
+        for ph in c["motion_order"]:
+            if not (isinstance(names.get(ph), str) and names[ph].strip()):
+                r.err(where, f"phase_names has no display name for motion_order phase {ph!r}")
+        for ph in names:
+            if not ph.startswith("_") and ph not in c["motion_order"]:
+                r.err(where, f"phase_names names {ph!r}, which isn't a motion_order phase")
 
     return c
 

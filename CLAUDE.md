@@ -83,6 +83,8 @@ call per sentence).
 - Decision tree: built (`engine.next_question`; see "The interview" in `docs/SCHEMA.md`). Try it
   with `scripts/interview.py`; review its behavior with `scripts/interview_audit.py`. Next: use it
   as an attorney and see how the order and prompts feel.
-- Output should be formatted .docx for both the motion and the memo, with each
-  sentence's citations in a footnote. Likely front-end work; the engine already returns
-  sentence text and authorities separately.
+- Website: built (`app/`, `scripts/site_api.py`, `scripts/docx_render.py`; build with
+  `scripts/build_site.py`, see "The website" in `README.md`). It runs entirely in the browser:
+  never add anything that sends answers off the page. The motion and memo download as .docx,
+  with each sentence's citations in a footnote. Next: a feedback link, and visit/motion counts
+  (counts only, never answers).

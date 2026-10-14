@@ -53,6 +53,15 @@
       "independent-test-dissuasion"
     ]
   },
+  "phase_names": {
+    "stop-initiation": "The stop",
+    "stop-conduct": "During the stop",
+    "arrest": "The arrest",
+    "warrant-issuance": "The warrant",
+    "search": "The search",
+    "interrogation": "Statements",
+    "post-arrest-testing": "Breath test"
+  },
   "event_groups": {
     "any_search": [
       "search_person",

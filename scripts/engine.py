@@ -489,25 +489,69 @@ def next_question(config, issues, answers):
     detail questions of each category checked there. Then issues are taken one at a time in motion
     order (issues must already be ordered, as load_repo returns them), asking each one's open
     questions in order."""
+    return next_step(config, issues, answers)[0]
+
+
+OPENING = "opening"  # the phase of the hand-written opening questions
+
+
+def issue_phases(config):
+    """Issue id -> its config.motion_order phase."""
+    return {iid: phase for phase, ids in config["motion_order"].items() for iid in ids}
+
+
+def next_step(config, issues, answers):
+    """(next question, the phase asking it), as next_question; the phase is OPENING for the opening.
+    (None, None) when the interview is done."""
     for qid in (FILING_COURT, CLIENT_PRONOUNS):
         if qid not in answers:
-            return qid
+            return qid, OPENING
     if ENCOUNTER_EVENTS not in answers:
         enc = config["encounter"]
         if enc["gateway"] not in answers:
-            return enc["gateway"]
+            return enc["gateway"], OPENING
         for cat in encounter_categories(config):
             if cat["option"] in answers[enc["gateway"]]:
                 for qid in cat.get("questions", []):
                     if qid not in answers:
-                        return qid
+                        return qid, OPENING
         answers = with_events(config, answers)
     courts = binding_courts(answers)
+    phase = issue_phases(config)
     for issue in issues:
         for qid in issue_open_questions(issue, answers, courts):
             if qid not in answers:
-                return qid
-    return None
+                return qid, phase[issue["id"]]
+    return None, None
+
+
+def interview_path(config, issues, answers):
+    """Replay the interview against saved answers. Returns (path, pending, asked):
+    - path: the questions asked so far, in order, as (question, phase);
+    - pending: the next question to ask, as (question, phase), or (None, None) when done;
+    - asked: the answers to the questions on the path.
+
+    Answers to questions off the path (left over after the attorney changed an earlier answer) are
+    ignored, so evaluate the case on `asked`, never on the raw answers."""
+    asked, path = {}, []
+    while True:
+        qid, phase = next_step(config, issues, asked)
+        if qid is None or qid not in answers:
+            return path, (qid, phase), asked
+        asked[qid] = answers[qid]
+        path.append((qid, phase))
+
+
+def possible_phases(config, issues, answers):
+    """The motion_order phases that could still ask a question, in order. Before the filing court is
+    known, that's every phase. Answering only ever removes phases (see next_question)."""
+    if FILING_COURT not in answers:
+        return list(config["motion_order"])
+    answers = with_events(config, answers)
+    courts = binding_courts(answers)
+    phase = issue_phases(config)
+    live = {phase[i["id"]] for i in issues if issue_open_questions(i, answers, courts)}
+    return [p for p in config["motion_order"] if p in live]
 
 
 # --------------------------------------------------------------------------- session evaluation

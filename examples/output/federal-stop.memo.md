@@ -2,6 +2,8 @@
 
 *For the attorney only. Do not file.*
 
+This draft is a starting point, not legal advice. Before filing, read every cited case, confirm it supports the sentence it's attached to, check that it's still good law, and edit the motion to fit your case.
+
 **Forum:** Federal court (Ninth Circuit). **Authority cited:** U.S. Supreme Court and Ninth Circuit.
 
 **Fill in the application:** the motion has 3 bracketed [Fill in: …] prompts. Replace each with your own argument applying the law to your client's facts, and delete the prompt.

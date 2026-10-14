@@ -106,6 +106,9 @@ def render_memo(result, config, motion=""):
 
     lines = ["# Attorney memo: suppression issues", "",
              "*For the attorney only. Do not file.*", "",
+             "This draft is a starting point, not legal advice. Before filing, read every cited case, "
+             "confirm it supports the sentence it's attached to, check that it's still good law, and edit "
+             "the motion to fit your case.", "",
              f"**Forum:** {forum} ({specific_name}). **Authority cited:** {cited}.", ""]
     f = motion.count("[Fill in:")
     if f:

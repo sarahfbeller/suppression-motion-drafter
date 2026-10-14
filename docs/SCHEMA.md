@@ -8,7 +8,7 @@ file disagrees with them, the code wins and this file should be corrected.
 
 | File | Contents |
 |---|---|
-| `content/config.json` | `courts`, `motion_order`, and `event_groups` |
+| `content/config.json` | `courts`, `motion_order`, `phase_names`, `event_groups`, and `encounter` |
 | `content/questions/*.json` | The question bank, grouped by topic. Every file in the directory is loaded. |
 | `content/issues/*.json` | One issue per file; the file name is the issue id. Every file in the directory is loaded. |
 
@@ -129,6 +129,13 @@ answer just changes what comes next.
 - **Answering never makes an earlier topic relevant again:** the set of questions that could still be
   asked only shrinks.
 
+**Replaying saved answers.** The website keeps every answer the attorney gives, including ones that
+stop applying after an earlier answer changes. `engine.interview_path` replays the interview against
+those answers: it returns the questions asked, each with the phase that asked it, the next question,
+and the answers on that path, and the case is evaluated on those answers alone. `engine.possible_phases`
+lists the phases that could still ask a question; the website's step list is the opening, the phases
+asked so far, and those (named by `config.phase_names`).
+
 Because an unasked question renders as false, skipping it never changes the output; the tests check
 this on simulated interviews. The flip side: **a condition must state every fact its question
 assumes.** A paragraph `when` of "your client was a passenger" with no vehicle stop makes the
@@ -175,6 +182,11 @@ order, to the issues in that phase, in the order they appear in the motion. Ever
 be listed exactly once; the validator checks both directions. Where an issue goes is a judgment
 call, so a new issue isn't done until it's placed. Attorneys reorder sections in their own
 documents; the app doesn't.
+
+**Phase names.** `config.phase_names` gives each `motion_order` phase the short name the website
+shows in its list of interview steps (e.g. `"stop-conduct": "During the stop"`). The interview asks
+questions one issue at a time in motion order, so the steps always move forward. Every phase needs
+one; the validator checks both directions.
 
 **`applicable_courts`.** `["scotus"]` means the issue applies in every forum; don't also list the
 circuit or state. List a specific court alone (e.g. `["ak"]`) when the issue rests on that court's

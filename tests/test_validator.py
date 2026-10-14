@@ -437,6 +437,14 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertError(self.run_with("content/config.json", lambda c: c["motion_order"]["arrest"].append("prolonged-stop")),
                          "more than once")
 
+    def test_phase_without_display_name(self):
+        self.assertError(self.run_with("content/config.json", lambda c: c["phase_names"].pop("arrest")),
+                         "no display name for motion_order phase 'arrest'")
+
+    def test_display_name_for_unknown_phase(self):
+        self.assertError(self.run_with("content/config.json", lambda c: c["phase_names"].update({"trial": "Trial"})),
+                         "'trial', which isn't a motion_order phase")
+
     # ---- filing court
 
     def test_session_json_reintroduced(self):
