@@ -102,6 +102,11 @@ h1 { font-size: 34px; line-height: 1.2; letter-spacing: -.02em; margin: 0 0 16px
 .rv-a ul { margin: 0; padding-left: 18px; }
 .none { color: var(--muted); }
 
+/* Footer */
+.foot { border-top: 1px solid var(--line); }
+.foot-inner { max-width: 1080px; margin: 0 auto; padding: 20px 32px 32px; font-size: 14px; color: var(--muted); }
+.foot-note { color: var(--faint); margin-left: 8px; }
+
 /* Done */
 .done-wrap { max-width: 760px; }
 .downloads { display: flex; gap: 12px; margin: 28px 0 16px; }

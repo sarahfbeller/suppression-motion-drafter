@@ -8,6 +8,11 @@ const DOCX_WHEEL = "python_docx-1.2.0-py3-none-any.whl";  // scripts/build_site.
 const REVIEW = "review";
 const YES_NO = [["yes", "Yes"], ["no", "No"]];
 
+// The feedback form (a Google Form, so the maintainer's address stays private). On a question screen
+// the link pre-fills the form's "Which question?" field with that question: never any answers.
+const FEEDBACK_FORM = "https://docs.google.com/forms/d/e/1FAIpQLSdJGxS_RZy5EQrs42alklXfvKMKUqnlubWFXfk10HqzL7C70A/viewform";
+const FEEDBACK_QUESTION_FIELD = "entry.959751634";
+
 // ---------------------------------------------------------------- Python
 
 let api = null;         // scripts/site_api.py
@@ -69,9 +74,16 @@ function splitPrompt(prompt) {
   return m ? [m[1], m[2]] : [prompt, ""];
 }
 
+function feedbackLink() {
+  if (screen !== "question" || !QUESTIONS[cur]) return FEEDBACK_FORM;
+  const which = `${splitPrompt(QUESTIONS[cur].prompt)[0]} (${cur})`;
+  return `${FEEDBACK_FORM}?usp=pp_url&${FEEDBACK_QUESTION_FIELD}=${encodeURIComponent(which)}`;
+}
+
 function show(next, { scroll = true } = {}) {
   screen = next;
   document.getElementById("save").classList.toggle("hidden", screen === "start");
+  document.getElementById("feedback").href = feedbackLink();
   try {
     ({ start: renderStart, question: renderQuestion, review: renderReview, done: renderDone })[screen]();
   } catch (e) {

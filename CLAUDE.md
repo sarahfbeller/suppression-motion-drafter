@@ -86,5 +86,6 @@ call per sentence).
 - Website: built (`app/`, `scripts/site_api.py`, `scripts/docx_render.py`; build with
   `scripts/build_site.py`, see "The website" in `README.md`). It runs entirely in the browser:
   never add anything that sends answers off the page. The motion and memo download as .docx,
-  with each sentence's citations in a footnote. Next: a feedback link, and visit/motion counts
-  (counts only, never answers).
+  with each sentence's citations in a footnote. The footer links to a Google Form for feedback
+  (pre-filling only the current question, never answers). Next: visit/motion counts (counts only,
+  never answers).

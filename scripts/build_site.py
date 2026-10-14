@@ -106,7 +106,8 @@ def main():
         f.write(data)
 
     # A build id in the page's links, so browsers fetch the new files after an update.
-    build = hashlib.sha256((data + app_js + read(os.path.join(ROOT, "app", "style.css"))).encode()).hexdigest()[:12]
+    page = "".join(read(os.path.join(ROOT, "app", n)) for n in ("index.html", "style.css"))
+    build = hashlib.sha256((data + app_js + page).encode()).hexdigest()[:12]
     for name in os.listdir(os.path.join(ROOT, "app")):
         src = os.path.join(ROOT, "app", name)
         if name == "index.html":
