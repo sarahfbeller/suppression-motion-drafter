@@ -30,7 +30,7 @@
     ],
     "q_cited_conduct_happened": "yes",
     "q_arrest_offense": [
-      "dui"
+      "dui_or_refusal"
     ],
     "q_chemical_tests": [
       "breath_test"

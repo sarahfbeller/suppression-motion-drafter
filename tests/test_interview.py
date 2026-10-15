@@ -109,7 +109,7 @@ class InterviewDetails(unittest.TestCase):
 
     def test_no_breath_test_questions_after_only_a_blood_draw(self):
         asked = self.interview({"q_filing_court": "ak", "q_client_pronouns": "he_him",
-                                "q_encounter_events": ["arrest"], "q_arrest_offense": ["dui"],
+                                "q_encounter_events": ["arrest"], "q_arrest_offense": ["dui_or_refusal"],
                                 "q_chemical_tests": ["blood_draw"]})
         self.assertEqual([q for q in self.BREATH_TEST if q in asked], [])
 

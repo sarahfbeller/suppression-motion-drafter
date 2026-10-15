@@ -17,18 +17,9 @@
           "value": "arrest"
         },
         {
-          "any": [
-            {
-              "question": "q_arrest_offense",
-              "op": "includes",
-              "value": "dui"
-            },
-            {
-              "question": "q_arrest_offense",
-              "op": "includes",
-              "value": "refusal"
-            }
-          ]
+          "question": "q_arrest_offense",
+          "op": "includes",
+          "value": "dui_or_refusal"
         },
         {
           "question": "q_chemical_tests",
@@ -196,6 +187,7 @@
   "_author_notes": [
     "The two remedy statements (suppression vs. favorable presumption) were previously memo-style notes on this issue and are now court-facing text. Nelson and Snyder address failure to advise; confirm the same remedies apply to an invalid waiver caused by a comprehension barrier.",
     "Nelson/Snyder pincites carried over from independent-test-advisement-failure — verify.",
-    "2026-10-12: breath tests are no longer an encounter event. The trigger is now an arrest, a DUI or refusal charge, and a breath test in q_chemical_tests."
+    "2026-10-12: breath tests are no longer an encounter event. The trigger is now an arrest, a DUI or refusal charge, and a breath test in q_chemical_tests.",
+    "2026-10-14: q_arrest_offense's dui and refusal options were combined into dui_or_refusal at the maintainer's request; the trigger checks that one option. Same results as before."
   ]
 }

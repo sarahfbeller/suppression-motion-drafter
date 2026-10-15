@@ -5,12 +5,8 @@
     "prompt": "What was your client arrested for? Select all that apply.",
     "options": [
       {
-        "id": "dui",
-        "label": "DUI"
-      },
-      {
-        "id": "refusal",
-        "label": "Refusal to submit to a chemical test"
+        "id": "dui_or_refusal",
+        "label": "DUI or refusal to take a chemical test"
       },
       {
         "id": "drugs",

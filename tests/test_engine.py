@@ -270,7 +270,7 @@ class NearMisses(unittest.TestCase):
     FACTS = {"q_affidavit_accuracy": "false_statement", "q_affiant_knowledge": ["clerical_error"],
              "q_search_justification": ["warrant"]}
     # A clear advisement that named only one kind of independent test.
-    BREATH = {"q_encounter_events": ["arrest"], "q_arrest_offense": ["dui"], "q_chemical_tests": ["breath_test"],
+    BREATH = {"q_encounter_events": ["arrest"], "q_arrest_offense": ["dui_or_refusal"], "q_chemical_tests": ["breath_test"],
               "q_independent_test_advisement": "clear_advisement", "q_independent_test_type_limited": "yes"}
     TEST_TYPE = "independent-test-advisement-failure"
 

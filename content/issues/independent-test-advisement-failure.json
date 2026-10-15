@@ -17,18 +17,9 @@
           "value": "arrest"
         },
         {
-          "any": [
-            {
-              "question": "q_arrest_offense",
-              "op": "includes",
-              "value": "dui"
-            },
-            {
-              "question": "q_arrest_offense",
-              "op": "includes",
-              "value": "refusal"
-            }
-          ]
+          "question": "q_arrest_offense",
+          "op": "includes",
+          "value": "dui_or_refusal"
         },
         {
           "question": "q_chemical_tests",
@@ -183,6 +174,7 @@
   ],
   "_author_notes": [
     "Pincites for Nelson (90-91) and Snyder (1278-79) on remedy_presumption_when_no_test come from earlier research notes, not a direct read of the opinions. Verify.",
-    "2026-10-12: breath tests are no longer an encounter event. The trigger is now an arrest, a DUI or refusal charge, and a breath test in q_chemical_tests."
+    "2026-10-12: breath tests are no longer an encounter event. The trigger is now an arrest, a DUI or refusal charge, and a breath test in q_chemical_tests.",
+    "2026-10-14: q_arrest_offense's dui and refusal options were combined into dui_or_refusal at the maintainer's request; the trigger checks that one option. Same results as before."
   ]
 }
