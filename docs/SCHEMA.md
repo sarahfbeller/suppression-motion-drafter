@@ -119,7 +119,9 @@ answer just changes what comes next.
   - the `match_condition` of an issue that applies in this forum and hasn't been decided;
   - the paragraph and review-note `when`s of an issue that can still match (paragraphs that don't
     apply in this forum don't count);
-  - the near-miss `when`s of an issue that isn't included, while its event gate isn't false.
+  - the near-miss conditions of an issue that isn't included (see `excluded_explanations`), so a
+    near miss whose preconditions failed asks nothing, and one whose preconditions the trigger never
+    reached asks them.
   So once the forum is known, the other forum's questions drop out; once the events are known,
   every issue whose event didn't happen drops out with its questions. A question no condition
   uses is never asked.
@@ -199,10 +201,13 @@ issue is skipped entirely: nothing about it is rendered.
   (see above).
 - `review_conditions`: `[{ when, flag, display_note }]`. For an included issue, each note whose
   `when` is true goes in the memo under that issue.
-- `excluded_explanations`: same shape. For an issue that didn't match but whose encounter event
-  did happen (its event gate is true), each note whose `when` is true goes in the memo's
-  "considered but not included" section. With no such event there's no near miss to explain. The
-  validator reports a note that can never fire this way.
+- `excluded_explanations`: same shape. For an issue that didn't match, each note whose `when` is
+  true goes in the memo's "considered but not included" section, but only if the rest of the
+  trigger holds: its event gate, and every other top-level part of `match_condition` that doesn't
+  use any of the `when`'s questions (`engine.near_miss_condition`). A near miss explains why the
+  issue failed on the facts its `when` looks at; if the event didn't happen, or another
+  precondition failed (no DUI arrest, no breath test, no warrant), there's no near miss to explain.
+  The validator reports a note that can never fire this way.
 
 **Uncertain answers never decide an issue silently.** This covers `unknown`, `not_sure`, and
 `unclear` options on single-choice questions, and the same options checked alone on a checklist

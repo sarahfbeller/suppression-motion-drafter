@@ -45,10 +45,10 @@ Not read by the app — this is for whoever (you) is authoring content.
 
 ## Gotchas in the matching logic itself
 
-- **`excluded_explanations` must be checked for every unmatched issue whose encounter event
-  happened, every time — not just when convenient.** The per-issue flow is: check
+- **`excluded_explanations` must be checked for every unmatched issue whose near-miss
+  preconditions hold, every time — not just when convenient.** The per-issue flow is: check
   `match_condition` first; if it passes, check `review_conditions` (memo note); if it fails and
-  the issue's event gate is true, check `excluded_explanations` anyway (memo's near-miss section). It's easy to structurally treat `excluded_explanations` as an afterthought that only
+  the rest of the trigger holds (see `excluded_explanations` in `docs/SCHEMA.md`), check `excluded_explanations` anyway (memo's near-miss section). It's easy to structurally treat `excluded_explanations` as an afterthought that only
   runs "if there's time" — but if it's skipped for any unmatched issue, a documented near-miss
   will silently fail to appear, with no error to signal the gap.
 

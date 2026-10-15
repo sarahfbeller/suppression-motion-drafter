@@ -275,11 +275,29 @@ def event_gate(match):
     return gate
 
 
+_NEAR_MISSES = {}  # (id(match), id(when)) -> (match, when, condition)
+
+
+def near_miss_condition(match, when):
+    """When an excluded explanation fires: its `when`, plus every top-level part of match_condition that
+    doesn't use any of the `when`'s questions (the event gate always counts). A near miss explains why
+    the issue failed on the facts its `when` looks at, so the rest of the trigger (the event, and
+    preconditions like a DUI arrest or a breath test) has to hold; otherwise there's nothing to explain."""
+    key = (id(match), id(when))
+    hit = _NEAR_MISSES.get(key)
+    if hit is not None and hit[0] is match and hit[1] is when:
+        return hit[2]
+    kids = match["all"] if "all" in match else [match]
+    qids = condition_questions(when)
+    gate = [c for c in kids if is_event_gate(c) or not (condition_questions(c) & qids)]
+    cond = {"all": gate + [when]}
+    _NEAR_MISSES[key] = (match, when, cond)
+    return cond
+
+
 def near_miss_fires(match, when, answers):
-    """An excluded explanation fires only when the issue's event happened: a near miss is about an
-    encounter that took place, so with no such event there's nothing to explain."""
-    gate = event_gate(match)
-    return (gate is None or eval_condition(gate, answers)) and eval_condition(when, answers)
+    """Whether an excluded explanation fires (see near_miss_condition)."""
+    return eval_condition(near_miss_condition(match, when), answers)
 
 
 def condition_questions(cond):
@@ -460,19 +478,19 @@ def issue_open_questions(issue, answers, courts):
     """The issue's questions that could still change the output, in asking order: its trigger first,
     then its near-miss explanations, review notes, and paragraphs, in the order they're written.
 
-    An issue that can no longer match keeps only its near-miss questions, and only if its event
-    happened (or may have). Near-miss questions count while the issue is still undecided too, so
-    answering never makes an earlier topic relevant again."""
+    An issue that can no longer match keeps only its near-miss questions: those of each near miss's
+    whole condition (near_miss_condition), so a near miss whose preconditions failed asks nothing, and
+    one whose preconditions the trigger never reached asks them. Near-miss questions count while the
+    issue is still undecided too, so answering never makes an earlier topic relevant again."""
     if not applies_in(issue["applicable_courts"], courts):
         return []
     trig = issue["trigger"]
     match = trig["match_condition"]
     m, match_open = _eval3(match, answers)
-    gate = event_gate(match)
     out = list(match_open)
     conds = []
-    if m is not True and (gate is None or eval3(gate, answers) is not False):
-        conds += [ex["when"] for ex in trig.get("excluded_explanations", [])]
+    if m is not True:
+        conds += [near_miss_condition(match, ex["when"]) for ex in trig.get("excluded_explanations", [])]
     if m is not False:
         conds += [rc["when"] for rc in trig.get("review_conditions", [])]
         conds += [p["when"] for p in issue["law_paragraphs"]

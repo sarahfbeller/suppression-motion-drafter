@@ -263,25 +263,38 @@ class EventGroups(unittest.TestCase):
 
 
 class NearMisses(unittest.TestCase):
-    """A near-miss explanation shows only when the issue's encounter event happened."""
+    """A near-miss explanation shows only when the rest of the issue's trigger holds: its encounter
+    event, and every part that doesn't look at the near miss's own questions."""
 
     # Franks explains a near miss when the only problem looks like a clerical error.
     FACTS = {"q_affidavit_accuracy": "false_statement", "q_affiant_knowledge": ["clerical_error"],
              "q_search_justification": ["warrant"]}
+    # A clear advisement that named only one kind of independent test.
+    BREATH = {"q_encounter_events": ["arrest"], "q_arrest_offense": ["dui"], "q_chemical_tests": ["breath_test"],
+              "q_independent_test_advisement": "clear_advisement", "q_independent_test_type_limited": "yes"}
+    TEST_TYPE = "independent-test-advisement-failure"
 
     def setUp(self):
-        self.config, _questions, issues = E.load_repo(ROOT)
-        self.issues = [i for i in issues if i["id"] == "franks-violation"]
+        self.config, _questions, self.issues = E.load_repo(ROOT)
 
-    def near_misses(self, answers):
-        result = E.evaluate_session(self.config, self.issues, {"answers": {**STATE, **self.FACTS, **answers}})
+    def near_misses(self, answers, facts=FACTS):
+        result = E.evaluate_session(self.config, self.issues, {"answers": {**STATE, **facts, **answers}})
         return {nm["issue"]["id"] for nm in result["near_misses"]}
 
     def test_no_near_miss_without_the_event(self):
-        self.assertEqual(self.near_misses({"q_encounter_events": ["statements"]}), set())
+        self.assertNotIn("franks-violation", self.near_misses({"q_encounter_events": ["statements"]}))
 
     def test_near_miss_when_the_event_happened(self):
         self.assertIn("franks-violation", self.near_misses({"q_encounter_events": ["search_vehicle"]}))
+
+    def test_no_near_miss_without_a_warrant(self):
+        self.assertNotIn("franks-violation", self.near_misses({"q_encounter_events": ["search_vehicle"],
+                                                               "q_search_justification": ["consent"]}))
+
+    def test_near_miss_needs_the_trigger_preconditions(self):
+        self.assertIn(self.TEST_TYPE, self.near_misses({}, self.BREATH))
+        self.assertNotIn(self.TEST_TYPE, self.near_misses({"q_arrest_offense": ["drugs"]}, self.BREATH))
+        self.assertNotIn(self.TEST_TYPE, self.near_misses({"q_chemical_tests": ["blood_draw"]}, self.BREATH))
 
 
 class MatchedButNoParagraph(unittest.TestCase):

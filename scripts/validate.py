@@ -886,11 +886,11 @@ def inconsistent_preconditions(issue):
     trig = issue["trigger"]
     match = trig["match_condition"]
     in_match = frozenset(_atom(x) for x in (match["all"] if "all" in match else [match]))
-    gate = E.event_gate(match)
-    in_gate = frozenset(_atom(x) for x in gate["all"]) if gate else frozenset()
+    def in_gate(when):
+        return frozenset(_atom(x) for x in E.near_miss_condition(match, when)["all"][:-1])
     details = ([("review note " + n["flag"], n["when"], in_match) for n in trig.get("review_conditions", [])]
                + [("paragraph " + p["id"], p["when"], in_match) for p in issue["law_paragraphs"] if "when" in p])
-    nears = [("near-miss " + n["flag"], n["when"], in_gate) for n in trig.get("excluded_explanations", [])]
+    nears = [("near-miss " + n["flag"], n["when"], in_gate(n["when"])) for n in trig.get("excluded_explanations", [])]
     skip = E.condition_questions(match)
     found = []
     def premise(guards, qid):
@@ -1227,10 +1227,8 @@ def check_every_match_has_a_paragraph(r, where, issue, paragraphs, questions, co
 def check_reachability(r, where, trig, paragraphs, questions):
     match = trig["match_condition"]
     M = F_cond(match)
-    gate = E.event_gate(match)
-
     def near_miss(when, ov=None):
-        return F_and(F_cond(gate, ov), F_cond(when, ov)) if gate else F_cond(when, ov)
+        return F_cond(E.near_miss_condition(match, when), ov)
 
     a, skipped = search(r, where, "whether match_condition can ever be true", M, questions)
     if skipped:
@@ -1250,8 +1248,9 @@ def check_reachability(r, where, trig, paragraphs, questions):
                             F_and(F_not(M), near_miss(ex["when"])), questions)
         if not skipped and a is None:
             r.err(f"{where} excluded_explanations[{i}] ({ex['flag']})",
-                  "can never fire — whenever its 'when' is true, either the issue is included or its "
-                  "encounter event didn't happen (near misses show only when the event did)")
+                  "can never fire — whenever its 'when' is true, either the issue is included or the "
+                  "rest of match_condition (its event and other parts that don't use the 'when''s "
+                  "questions) is false; near misses show only when that rest is true")
 
     for p in paragraphs:
         if "when" not in p:

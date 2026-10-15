@@ -367,7 +367,7 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         def f(d):
             d["trigger"].setdefault("excluded_explanations", []).append(
                 {"when": {"question": "q_encounter_events", "op": "empty"}, "flag": "no_events", "display_note": "x"})
-        self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f), "encounter event didn't happen")
+        self.assertError(self.run_with(f"{ISSUES}/plain-view-object-moved.json", f), "near misses show only when that rest is true")
 
     def test_unknown_event_group(self):
         def f(d):

@@ -98,6 +98,35 @@ class InterviewDetails(unittest.TestCase):
                                 "q_encounter_events": ["arrest", "search_person"]})
         self.assertNotIn("q_bail_established", asked)
 
+    # Near misses ask their questions only while the rest of the trigger can still hold.
+    BREATH_TEST = ["q_chemical_tests", "q_contact_requested", "q_contact_reason",
+                   "q_independent_test_advisement", "q_independent_test_type_limited"]
+
+    def test_no_breath_test_questions_without_a_dui_arrest(self):
+        asked = self.interview({"q_filing_court": "ak", "q_client_pronouns": "he_him",
+                                "q_encounter_events": ["arrest"], "q_arrest_offense": ["drugs"]})
+        self.assertEqual([q for q in self.BREATH_TEST if q in asked], [])
+
+    def test_no_breath_test_questions_after_only_a_blood_draw(self):
+        asked = self.interview({"q_filing_court": "ak", "q_client_pronouns": "he_him",
+                                "q_encounter_events": ["arrest"], "q_arrest_offense": ["dui"],
+                                "q_chemical_tests": ["blood_draw"]})
+        self.assertEqual([q for q in self.BREATH_TEST if q in asked], [])
+
+    def test_no_affiant_question_without_a_false_statement(self):
+        asked = self.interview({"q_filing_court": "9th_cir", "q_client_pronouns": "he_him",
+                                "q_encounter_events": ["search_vehicle"], "q_search_justification": ["warrant"],
+                                "q_affidavit_accuracy": "no_known_issues"})
+        self.assertNotIn("q_affiant_knowledge", asked)
+
+    def test_near_miss_asks_preconditions_the_trigger_skipped(self):
+        # Statements all volunteered rule out Miranda before the trigger asks about warnings; the
+        # "volunteered" note needs to know whether warnings were given, so it asks.
+        asked = self.interview({"q_filing_court": "9th_cir", "q_client_pronouns": "he_him",
+                                "q_encounter_events": ["statements"], "q_custody_circumstances": ["formally_arrested"],
+                                "q_statement_prompt": ["volunteered"]})
+        self.assertIn("q_miranda_warnings", asked)
+
 
 class AuditReport(unittest.TestCase):
     def test_builds_with_every_section(self):
