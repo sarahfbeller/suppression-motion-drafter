@@ -346,7 +346,8 @@ async function showCounts() {
   try {
     const [visits, motions] = await Promise.all([get("/"), get(MOTION_EVENT)]);
     const el = document.getElementById("counts");
-    el.innerHTML = `<b>${esc(visits)}</b> visits · <b>${esc(motions)}</b> motions drafted`;
+    el.innerHTML = `<b>${esc(visits)}</b> visits<span class="foot-sep" aria-hidden="true">•</span>` +
+                   `<b>${esc(motions)}</b> motions drafted`;
     el.classList.remove("hidden");
   } catch (e) {
     // Counts are a nicety; leave them out.

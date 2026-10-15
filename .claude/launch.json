@@ -4,8 +4,30 @@
     {
       "name": "site",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8000", "--bind", "127.0.0.1", "--directory", "dist"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8000",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "dist"
+      ],
       "port": 8000
+    },
+    {
+      "name": "site-src",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8001",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "app"
+      ],
+      "port": 8001
     }
   ]
 }
