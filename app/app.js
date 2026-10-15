@@ -335,10 +335,12 @@ function countMotion() {
 
 // "1,204 visits · 318 motions drafted" in the footer. GoatCounter only serves these once "Allow adding
 // visitor counts on your website" is on in its settings; until then (or if it's unreachable) the
-// footer just leaves them out. Its numbers can lag by a few hours.
+// footer just leaves them out. Its numbers can lag by a few hours. GoatCounter lets browsers cache
+// these for hours, and a cached copy without a CORS header for this page (an old 403, or one fetched
+// from another address) makes the fetch fail until it expires, so skip the cache.
 async function showCounts() {
   const get = async path => {
-    const r = await fetch(`${COUNTER}/counter/${encodeURIComponent(path)}.json`);
+    const r = await fetch(`${COUNTER}/counter/${encodeURIComponent(path)}.json`, { cache: "no-store" });
     if (r.status === 404) return "0";  // nothing counted yet
     if (!r.ok) throw new Error(`counter ${r.status}`);
     return (await r.json()).count;
