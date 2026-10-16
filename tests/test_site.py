@@ -125,6 +125,18 @@ class WordFiles(unittest.TestCase):
         self.assertIn("Rodriguez v. United States", notes)
         self.assertNotIn("575 U.S. 348", body)  # citations never in the body text
 
+    def test_generic_fill_in_ends_a_generated_application_paragraph(self):
+        import docx_render as D
+        config, _questions, issues = E.load_repo(ROOT)
+        issue = [i for i in issues if i["id"] == "independent-test-comprehension-barrier"]
+        answers = {"q_filing_court": "ak", "q_encounter_events": ["arrest"], "q_arrest_offense": ["dui_or_refusal"],
+                   "q_chemical_tests": ["breath_test"], "q_independent_test_advisement": "clear_advisement",
+                   "q_comprehension_barrier": "language", "q_breath_test_completed": "yes"}
+        doc = docx.Document(io.BytesIO(D.motion_docx(E.evaluate_session(config, issue, {"answers": answers}))))
+        last = [p.text for p in doc.paragraphs if p.text.strip()][-1]
+        self.assertTrue(last.startswith("[Client] was unable to understand"), last)
+        self.assertTrue(last.endswith("must be suppressed. [Fill in: Apply the law to your client's facts.]"), last)
+
     def test_memo_has_the_memo_text(self):
         body = self.part(self.memo, "word/document.xml")
         self.assertIn("Attorney memo: suppression issues", body)

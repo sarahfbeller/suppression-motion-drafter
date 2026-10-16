@@ -78,6 +78,56 @@
       "arrest"
     ]
   },
+  "option_groups": {
+    "dui_unhelpful_observations": {
+      "question": "q_dui_observations",
+      "options": [
+        "red_eyes",
+        "watery_eyes",
+        "bloodshot_eyes",
+        "lack_of_dexterity",
+        "swaying",
+        "stumbling",
+        "slurred_speech",
+        "confusion",
+        "belligerent",
+        "admitted_drinking",
+        "open_container",
+        "odor_alcohol"
+      ]
+    },
+    "dui_helpful_observations": {
+      "question": "q_dui_observations",
+      "options": [
+        "lucid_speech",
+        "steady_balance",
+        "exited_normally",
+        "produced_documents",
+        "answered_appropriately",
+        "cooperative",
+        "innocent_explanation"
+      ]
+    },
+    "dui_unhelpful_driving": {
+      "question": "q_dui_driving",
+      "options": [
+        "weaving",
+        "straddling_line",
+        "crossed_center",
+        "on_shoulder",
+        "wrong_lane",
+        "no_headlights",
+        "no_signal",
+        "ran_stop_sign",
+        "ran_red_light",
+        "speeding",
+        "too_slow",
+        "slow_to_respond",
+        "collision",
+        "failed_to_stop_for_officer"
+      ]
+    }
+  },
   "encounter": {
     "gateway": "q_encounter",
     "categories": [

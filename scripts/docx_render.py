@@ -124,6 +124,8 @@ def motion_docx(result):
                     cite = R.citation(st["authorities"], previous)
                     notes.add(body, cite + ("" if cite.rstrip("*").endswith(".") else "."))
                     previous = st["authorities"][0] if len(st["authorities"]) == 1 else None
+            if "trailing_fill_in" in para:
+                add_text(body, " " + R.fill_in_marker(para["trailing_fill_in"]), bold=True)
     return save(d)
 
 

@@ -14,6 +14,7 @@ import render as R  # noqa: E402
 
 STATE = {"q_filing_court": "ak"}
 GENERIC = "\n\n**[Fill in: Apply the law to your client's facts.]**"
+INLINE_GENERIC = " **[Fill in: Apply the law to your client's facts.]**"
 FEDERAL = {"q_filing_court": "9th_cir"}
 
 
@@ -91,7 +92,8 @@ class Paragraphs(unittest.TestCase):
     def test_argument_only_paragraph_renders(self):
         text, gaps = self.render({"id": "a", "sentences": [{"id": "x", "text": "Rule.", "authorities": [case("A v. B")]}]},
                                  {"id": "b", "sentences": [{"id": "y", "kind": "argument", "text": "Applied.", "authorities": []}]})
-        self.assertEqual(text, "Rule. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\nApplied." + GENERIC)
+        # The generic fill-in ends the generated application paragraph instead of following it.
+        self.assertEqual(text, "Rule. *A v. B*, 1 P.3d 1 (Alaska 2000).\n\nApplied." + INLINE_GENERIC)
         self.assertEqual(gaps, [])
 
     def test_mixed_paragraph_whose_law_was_all_dropped_does_not_render(self):
@@ -260,6 +262,45 @@ class EventGroups(unittest.TestCase):
         facts = {"q_plain_view_claimed": "yes", "q_officer_vantage": "inside_building", "q_officer_access": "no_stated_reason"}
         self.assertNotIn("plain-view-not-lawfully-present",
                          self.included({**STATE, "q_encounter_events": ["third_party_data"], **facts}))
+
+
+class OptionGroups(unittest.TestCase):
+    CONFIG = {"option_groups": {"g": {"question": "q_x", "options": ["a", "b", "c"]}}}
+
+    def expand(self, cond):
+        used, problems = set(), []
+        out = E.expand_groups(cond, self.CONFIG, used, problems)
+        self.assertEqual(problems, [])
+        return out
+
+    def test_includes_any(self):
+        self.assertEqual(self.expand({"option_group": "g", "op": "includes_any"}),
+                         {"any": [{"question": "q_x", "op": "includes", "value": v} for v in "abc"]})
+
+    def test_includes_none_except_spliced_into_all(self):
+        cond = {"all": [{"question": "q_x", "op": "includes", "value": "a"},
+                        {"option_group": "g", "op": "includes_none", "except": ["a"]}]}
+        self.assertEqual(self.expand(cond), {"all": [{"question": "q_x", "op": "includes", "value": "a"}]
+                                             + [{"question": "q_x", "op": "not_includes", "value": v} for v in "bc"]})
+
+    def test_dui_groups_in_the_memo_and_motion(self):
+        # Bloodshot eyes count as an unhelpful observation; odor alone prints Saucier (Alaska only).
+        config, _questions, issues = E.load_repo(ROOT)
+        issue = [i for i in issues if i["id"] == "dui-arrest-without-probable-cause"]
+        base = {"q_encounter_events": ["arrest"], "q_arrest_offense": ["dui_or_refusal"], "q_dui_driving": [],
+                "q_dui_fsts_given": []}
+
+        def run(court, obs):
+            result = E.evaluate_session(config, issue, {"answers": {**base, "q_filing_court": court,
+                                                                    "q_dui_observations": obs}})
+            entry = (result["included"] + result["no_paragraph"])[0]
+            return entry["review_notes"], R.render_motion(result)
+
+        notes, _ = run("ak", ["bloodshot_eyes"])
+        self.assertTrue(any("signs the prosecution will rely on" in n for n in notes))
+        self.assertIn("Saucier v. State", run("ak", ["odor_alcohol", "lucid_speech"])[1])
+        self.assertNotIn("Saucier v. State", run("ak", ["odor_alcohol", "bloodshot_eyes"])[1])
+        self.assertNotIn("Saucier v. State", run("9th_cir", ["odor_alcohol"])[1])
 
 
 class NearMisses(unittest.TestCase):

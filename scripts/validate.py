@@ -178,7 +178,8 @@ def check_config(r, root):
     c = load_or_report(r, root, where)
     if c is None:
         return None
-    if not check_keys(r, where, c, {"courts", "motion_order", "phase_names", "event_groups", "encounter"},
+    if not check_keys(r, where, c, {"courts", "motion_order", "phase_names", "event_groups", "option_groups",
+                                     "encounter"},
                       ["courts", "motion_order", "phase_names", "encounter"]):
         return None
 
@@ -322,6 +323,47 @@ def check_event_groups(r, questions, config):
         for m in members:
             if q and m not in events:
                 r.err(where, f"group {name!r}: {m!r} isn't an option of {E.ENCOUNTER_EVENTS}")
+
+
+def check_option_groups(r, questions, config):
+    """config.option_groups: name -> {question, options}, a named set of one checklist's options."""
+    where = "content/config.json option_groups"
+    groups = config.setdefault("option_groups", {})
+    if not isinstance(groups, dict):
+        r.err(where, "must be an object mapping each group name to {question, options}")
+        config["option_groups"] = {}
+        return
+    bad = []
+    for name, g in groups.items():
+        gw = f"{where} {name!r}"
+        if not SLUG_RE.match(str(name)) or "-" in str(name):
+            r.err(gw, "group name must be snake_case")
+        if not isinstance(g, dict) or not check_keys(r, gw, g, {"question", "options"}, ["question", "options"]):
+            bad.append(name)
+            continue
+        q = questions.get(g["question"])
+        if q is None:
+            r.err(gw, f"unknown question {g['question']!r}")
+            bad.append(name)
+            continue
+        if q["type"] != "multi_select":
+            r.err(gw, f"{g['question']} is {q['type']}; option groups are for multi_select questions")
+            bad.append(name)
+            continue
+        opts = g["options"]
+        if not isinstance(opts, list) or not opts:
+            r.err(gw, "options must be a non-empty list of option ids")
+            bad.append(name)
+            continue
+        if len(opts) != len(set(opts)):
+            r.err(gw, "lists an option twice")
+        valid = {o["id"] for o in q["options"]}
+        stray = [o for o in opts if o not in valid]
+        if stray:
+            r.err(gw, f"{stray} aren't options of {g['question']}")
+            bad.append(name)
+    for name in bad:
+        del groups[name]  # reported here; conditions using it are reported as unknown groups
 
 
 def check_event_gate(r, where, match):
@@ -497,6 +539,8 @@ def check_condition(r, where, cond, questions):
             r.err(where, "'all'/'any' needs a non-empty list")
             return False
         return all([check_condition(r, where, c, questions) for c in kids])
+    if E.is_group(cond):
+        return False  # couldn't be expanded; already reported
     if not check_keys(r, where, cond, {"question", "op", "value"}, ["question", "op"]):
         return False
     qid, op = cond["question"], cond["op"]
@@ -1360,6 +1404,7 @@ def validate(root, only=None):
         questions.broken.add(E.ENCOUNTER_EVENTS)
     check_client_pronouns(r, questions)
     check_event_groups(r, questions, config)
+    check_option_groups(r, questions, config)
     groups_used = set()
     used = set()
     headings = {}
@@ -1374,10 +1419,10 @@ def validate(root, only=None):
             continue
         if issue.get("id") != os.path.splitext(os.path.basename(path))[0]:
             r.err(where, f"id {issue.get('id')!r} doesn't match the file name")
-        issue, g_used, g_unknown = E.expand_issue(issue, config["event_groups"])
+        issue, g_used, g_problems = E.expand_issue(issue, config)
         groups_used |= g_used
-        for name in sorted(g_unknown):
-            r.err(where, f"unknown event_group {name!r} (groups are defined in config event_groups)")
+        for msg in g_problems:
+            r.err(where, msg)
         check_issue(r, where, issue, config, questions, used)
         h = issue.get("motion_heading")
         if h:
@@ -1387,8 +1432,9 @@ def validate(root, only=None):
     if only is not None:
         check_sessions(r, root, config, questions)
         return r
-    for name in sorted(set(config["event_groups"]) - groups_used):
-        r.warn("content/config.json event_groups", f"group {name!r} isn't used by any issue")
+    for kind in ("event_group", "option_group"):
+        for name in sorted(set(config[kind + "s"]) - {n for k, n in groups_used if k == kind}):
+            r.warn(f"content/config.json {kind}s", f"group {name!r} isn't used by any issue")
     for qid, q in sorted(questions.items()):
         if qid not in used and qid not in (E.FILING_COURT, E.CLIENT_PRONOUNS) and qid not in questions.opening:
             if q["type"] == "short_text":

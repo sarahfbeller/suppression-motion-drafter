@@ -382,6 +382,38 @@ class ValidatorCatchesKnownBugs(unittest.TestCase):
         self.assertWarning(self.run_with("content/config.json", lambda c: c["event_groups"].update({"any_test": ["statements"]})),
                            "group 'any_test' isn't used by any issue")
 
+    DUI = f"{ISSUES}/dui-arrest-without-probable-cause.json"
+
+    def test_unknown_option_group(self):
+        def f(d):
+            d["law_paragraphs"][-1]["when"]["all"][1]["option_group"] = "dui_unhelpful"
+        self.assertError(self.run_with(self.DUI, f), "unknown option_group 'dui_unhelpful'")
+
+    def test_option_group_bad_op(self):
+        def f(d):
+            d["law_paragraphs"][-1]["when"]["all"][1]["op"] = "not_includes"
+        self.assertError(self.run_with(self.DUI, f), "op must be one of ['includes_any', 'includes_none']")
+
+    def test_option_group_except_outside_the_group(self):
+        def f(d):
+            d["law_paragraphs"][-1]["when"]["all"][1]["except"] = ["lucid_speech"]
+        self.assertError(self.run_with(self.DUI, f), "'except' lists ['lucid_speech'], which aren't in the group")
+
+    def test_option_group_member_not_an_option(self):
+        def f(c):
+            c["option_groups"]["dui_helpful_observations"]["options"].append("sober")
+        self.assertError(self.run_with("content/config.json", f), "['sober'] aren't options of q_dui_observations")
+
+    def test_option_group_needs_a_checklist(self):
+        def f(c):
+            c["option_groups"]["dui_helpful_observations"] = {"question": "q_arrest_warrant", "options": ["yes"]}
+        self.assertError(self.run_with("content/config.json", f), "option groups are for multi_select questions")
+
+    def test_unused_option_group(self):
+        def f(c):
+            c["option_groups"]["unused"] = {"question": "q_dui_observations", "options": ["red_eyes"]}
+        self.assertWarning(self.run_with("content/config.json", f), "group 'unused' isn't used by any issue")
+
     def test_contradiction_still_caught_with_grouped_events(self):
         # Plain view starts from any of ten events; the validator enumerates them as one group.
         # A review note that needs none of those events must still be caught as dead.

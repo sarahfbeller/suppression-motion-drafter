@@ -22,78 +22,8 @@
           "value": "dui_or_refusal"
         },
         {
-          "all": [
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "weaving"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "straddling_line"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "crossed_center"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "on_shoulder"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "wrong_lane"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "no_headlights"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "no_signal"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "ran_stop_sign"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "ran_red_light"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "speeding"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "too_slow"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "slow_to_respond"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "collision"
-            },
-            {
-              "question": "q_dui_driving",
-              "op": "not_includes",
-              "value": "failed_to_stop_for_officer"
-            }
-          ]
+          "option_group": "dui_unhelpful_driving",
+          "op": "includes_none"
         },
         {
           "any": [
@@ -116,91 +46,16 @@
     "review_conditions": [
       {
         "when": {
-          "any": [
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "lack_of_dexterity"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "swaying"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "stumbling"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "slurred_speech"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "confusion"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "admitted_drinking"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "open_container"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "odor_alcohol"
-            }
-          ]
+          "option_group": "dui_unhelpful_observations",
+          "op": "includes_any"
         },
         "flag": "dui_signs_observed",
         "display_note": "The officer observed signs the prosecution will rely on (such as odor, speech, balance, or an admission to drinking). Address each one in the argument, including any innocent explanation and anything on video that contradicts it."
       },
       {
         "when": {
-          "any": [
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "lucid_speech"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "steady_balance"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "exited_normally"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "produced_documents"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "answered_appropriately"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "cooperative"
-            },
-            {
-              "question": "q_dui_observations",
-              "op": "includes",
-              "value": "innocent_explanation"
-            }
-          ]
+          "option_group": "dui_helpful_observations",
+          "op": "includes_any"
         },
         "flag": "dui_helpful_facts",
         "display_note": "Some of what the officer observed cuts against impairment (such as lucid speech, steady balance, or handling documents without difficulty). Make sure those facts are in the record, from the video or the officer's own report, and use them in the argument."
@@ -254,6 +109,43 @@
           ]
         }
       ]
+    },
+    {
+      "id": "odor_alone_alaska",
+      "when": {
+        "all": [
+          {
+            "question": "q_dui_observations",
+            "op": "includes",
+            "value": "odor_alcohol"
+          },
+          {
+            "option_group": "dui_unhelpful_observations",
+            "op": "includes_none",
+            "except": [
+              "odor_alcohol"
+            ]
+          }
+        ]
+      },
+      "applicable_courts": [
+        "ak"
+      ],
+      "sentences": [
+        {
+          "id": "odor_shows_drinking_not_intoxication",
+          "text": "While “the odor of alcohol [Officer] Byrnes detected indicated that Saucier had consumed some amount of alcohol . . . the law prohibits driving while intoxicated, not driving after having had a drink.”",
+          "authorities": [
+            {
+              "type": "case",
+              "name": "Saucier v. State",
+              "citation": "869 P.2d 483 (Alaska App. 1994)",
+              "court": "ak",
+              "pincite": "486"
+            }
+          ]
+        }
+      ]
     }
   ],
   "practice_notes": [],
@@ -261,6 +153,9 @@
     "REVIEW CAREFULLY (provisional rule, legal judgment not yet reviewed): this issue is suggested on a DUI arrest when the officer observed none of the bad-driving options and the field sobriety tests don't add up to failure (no tests given, none failed, or something affected them). Field sobriety tests are no longer an encounter event (2026-10-12): q_dui_fsts_given is asked for every DUI arrest, blank if none. Observations after the stop don't affect whether it's suggested yet; they drive memo notes. Drafted by Claude on 2026-10-12 as a placeholder until the maintainer supplies Alaska cases with the factors that mattered, which should replace this rule (and print case paragraphs keyed to matching factors).",
     "Supreme Court citations in this file were added from memory (not checked against the opinions) under the maintainer's 'certain SCOTUS cites only' policy: Devenpeck v. Alford, Beck v. Ohio. Unverified; pincites empty.",
     "The three review notes (dui_signs_observed, dui_helpful_facts, dui_fst_problems) are Claude's drafts. applicable_courts is ['scotus'] for now; Alaska-only paragraphs will get ['ak'].",
-    "2026-10-14: q_arrest_offense's dui and refusal options were combined into dui_or_refusal at the maintainer's request, so this issue now also applies to an arrest for refusal alone. The maintainer confirmed that's intended (a refusal charge usually comes with a DUI charge, but not always). The motion heading was changed from 'The Arrest for Driving Under the Influence Was Not Supported by Probable Cause' to 'The Arrest Was Not Supported by Probable Cause' (maintainer's wording) so it fits a refusal-only arrest."
+    "2026-10-14: q_arrest_offense's dui and refusal options were combined into dui_or_refusal at the maintainer's request, so this issue now also applies to an arrest for refusal alone. The maintainer confirmed that's intended (a refusal charge usually comes with a DUI charge, but not always). The motion heading was changed from 'The Arrest for Driving Under the Influence Was Not Supported by Probable Cause' to 'The Arrest Was Not Supported by Probable Cause' (maintainer's wording) so it fits a refusal-only arrest.",
+    "2026-10-15: paragraph odor_alone_alaska (Alaska only) added at the maintainer's request, with the Saucier quotation, citation, and pincite as the maintainer supplied them. It prints when odor of alcohol is the only sign of drinking or impairment checked in q_dui_observations; helpful facts (lucid speech etc.) may also be checked. That reading of the maintainer's 'only the odor of alcohol is checked' is Claude's. More DUI probable-cause cases will be added over time.",
+    "2026-10-15: q_dui_observations' options are split into config option groups dui_unhelpful_observations and dui_helpful_observations (maintainer's names and membership). The dui_signs_observed review note, the dui_helpful_facts review note, and paragraph odor_alone_alaska use them. dui_signs_observed now also fires on red, watery, or bloodshot eyes or belligerence, which the maintainer decided count as unhelpful.",
+    "2026-10-15: the trigger's list of bad-driving options is now config option group dui_unhelpful_driving (every q_dui_driving option except pulled_over_promptly, per the maintainer). Same results as before."
   ]
 }

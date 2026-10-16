@@ -70,8 +70,7 @@ def load_repo(root):
         for q in load_json(path):
             questions[q["id"]] = q
     questions[ENCOUNTER_EVENTS] = events_question(config, questions)
-    groups = config.get("event_groups", {})
-    issues = [expand_issue(load_json(path), groups)[0] for path in content_files(root, "issues")]
+    issues = [expand_issue(load_json(path), config)[0] for path in content_files(root, "issues")]
     return config, questions, ordered_issues(config, issues)
 
 
@@ -212,44 +211,89 @@ def eval_condition(cond, answers):
     raise ValueError(f"unknown op {op!r}")
 
 
-def expand_event_groups(cond, groups, used, unknown):
-    """Replace each {event_group: name} leaf with the 'any' of encounter events it stands for.
+GROUP_OPS = {"includes_any": ("any", "includes"), "includes_none": ("all", "not_includes")}
 
-    An expanded group directly inside an 'any' is spliced into it, so "any of these two groups"
-    becomes one flat 'any'. Names found in groups are added to used; others to unknown (left as is).
-    """
+
+def expand_groups(cond, config, used, problems):
+    """Replace each group leaf with the plain conditions it stands for:
+    - {event_group: name}: the 'any' of the encounter events in config.event_groups[name];
+    - {option_group: name, op, except?}: for the options in config.option_groups[name] (less any in
+      'except'), op includes_any is the 'any' of "includes" each, and includes_none the 'all' of
+      "not_includes" each.
+
+    An expanded group directly inside a compound of the same kind is spliced into it, so "any of these
+    two groups" becomes one flat 'any'. Groups found are added to used as (kind, name); anything that
+    can't be expanded is left as is, with a message added to problems."""
     if set(cond) == {"event_group"}:
         name = cond["event_group"]
+        groups = config.get("event_groups", {})
         if name not in groups:
-            unknown.add(name)
+            problems.append(f"unknown event_group {name!r} (groups are defined in config event_groups)")
             return cond
-        used.add(name)
+        used.add(("event_group", name))
         return {"any": [{"question": ENCOUNTER_EVENTS, "op": "includes", "value": e} for e in groups[name]]}
-    if "all" in cond:
-        return {"all": [expand_event_groups(c, groups, used, unknown) for c in cond["all"]]}
-    if "any" in cond:
-        kids = []
-        for c in cond["any"]:
-            e = expand_event_groups(c, groups, used, unknown)
-            kids.extend(e["any"] if set(c) == {"event_group"} and "any" in e else [e])
-        return {"any": kids}
+    if "option_group" in cond:
+        return expand_option_group(cond, config.get("option_groups", {}), used, problems)
+    for kind in ("all", "any"):
+        if kind in cond:
+            kids = []
+            for c in cond[kind]:
+                e = expand_groups(c, config, used, problems)
+                kids.extend(e[kind] if is_group(c) and kind in e else [e])
+            return {kind: kids}
     return cond
 
 
-def expand_issue(issue, groups):
-    """A copy of issue with every event group in its conditions expanded. Returns (issue, used, unknown)."""
-    issue, used, unknown = copy.deepcopy(issue), set(), set()
+def is_group(cond):
+    return isinstance(cond, dict) and ("event_group" in cond or "option_group" in cond)
+
+
+def expand_option_group(cond, groups, used, problems):
+    name = cond.get("option_group")
+    extra = set(cond) - {"option_group", "op", "except"}
+    if extra:
+        problems.append(f"option_group leaf {name!r} has unknown keys {sorted(extra)} "
+                        f"(allowed: option_group, op, except)")
+        return cond
+    if name not in groups:
+        problems.append(f"unknown option_group {name!r} (groups are defined in config option_groups)")
+        return cond
+    if cond.get("op") not in GROUP_OPS:
+        problems.append(f"option_group {name!r}: op must be one of {sorted(GROUP_OPS)}, not {cond.get('op')!r}")
+        return cond
+    group = groups[name]
+    skip = cond.get("except", [])
+    if "except" in cond and (not isinstance(skip, list) or not skip):
+        problems.append(f"option_group {name!r}: 'except' must be a non-empty list of the group's options")
+        return cond
+    stray = [o for o in skip if o not in group["options"]]
+    if stray:
+        problems.append(f"option_group {name!r}: 'except' lists {stray}, which aren't in the group")
+        return cond
+    members = [o for o in group["options"] if o not in skip]
+    if not members:
+        problems.append(f"option_group {name!r}: 'except' leaves no options")
+        return cond
+    used.add(("option_group", name))
+    kind, op = GROUP_OPS[cond["op"]]
+    return {kind: [{"question": group["question"], "op": op, "value": o} for o in members]}
+
+
+def expand_issue(issue, config):
+    """A copy of issue with every event and option group in its conditions expanded (expand_groups).
+    Returns (issue, used, problems)."""
+    issue, used, problems = copy.deepcopy(issue), set(), []
     trig = issue.get("trigger", {})
     if isinstance(trig.get("match_condition"), dict):
-        trig["match_condition"] = expand_event_groups(trig["match_condition"], groups, used, unknown)
+        trig["match_condition"] = expand_groups(trig["match_condition"], config, used, problems)
     for kind in ("review_conditions", "excluded_explanations"):
         for note in trig.get(kind, []):
             if isinstance(note, dict) and isinstance(note.get("when"), dict):
-                note["when"] = expand_event_groups(note["when"], groups, used, unknown)
+                note["when"] = expand_groups(note["when"], config, used, problems)
     for para in issue.get("law_paragraphs", []):
         if isinstance(para, dict) and isinstance(para.get("when"), dict):
-            para["when"] = expand_event_groups(para["when"], groups, used, unknown)
-    return issue, used, unknown
+            para["when"] = expand_groups(para["when"], config, used, problems)
+    return issue, used, problems
 
 
 def is_event_gate(cond):
@@ -404,7 +448,9 @@ def law_paragraphs(issue, answers, courts, config):
     of argument (e.g. an application paragraph) renders as is, but one whose cited sentences were
     all dropped doesn't, since its argument would rest on nothing. Whether citations go inline or
     in footnotes is up to the renderer. If anything renders but no fill-in paragraph does, the
-    generic one is added at the end, so no section is only law.
+    generic one is added at the end, so no section is only law: as its own paragraph, or, when the
+    last paragraph is generated application (only argument sentences), as that paragraph's
+    trailing_fill_in, printed at its end.
     """
     paragraphs, gaps = [], []
     for para in issue["law_paragraphs"]:
@@ -429,7 +475,11 @@ def law_paragraphs(issue, answers, courts, config):
         if sentences and (not had_cited or has_cited(sentences)):
             paragraphs.append({"id": para["id"], "sentences": sentences})
     if paragraphs and not any("fill_in" in p for p in paragraphs):
-        paragraphs.append({"id": "fill_in", "fill_in": GENERIC_FILL_IN})
+        last = paragraphs[-1]
+        if all(st["kind"] == "argument" for st in last["sentences"]):
+            last["trailing_fill_in"] = GENERIC_FILL_IN
+        else:
+            paragraphs.append({"id": "fill_in", "fill_in": GENERIC_FILL_IN})
     return paragraphs, gaps
 
 

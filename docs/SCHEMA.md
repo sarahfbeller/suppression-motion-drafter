@@ -8,7 +8,7 @@ file disagrees with them, the code wins and this file should be corrected.
 
 | File | Contents |
 |---|---|
-| `content/config.json` | `courts`, `motion_order`, `phase_names`, `event_groups`, and `encounter` |
+| `content/config.json` | `courts`, `motion_order`, `phase_names`, `event_groups`, `option_groups`, and `encounter` |
 | `content/questions/*.json` | The question bank, grouped by topic. Every file in the directory is loaded. |
 | `content/issues/*.json` | One issue per file; the file name is the issue id. Every file in the directory is loaded. |
 
@@ -97,6 +97,20 @@ leaf `{ "event_group": "any_search" }` means at least one of those events was ch
 expands it into the equivalent `any`, and a group listed inside an `any` is merged into it. Use a
 group instead of repeating the same list of events in several issues. The validator checks that
 every member is an encounter event and warns about groups no issue uses.
+
+**Option groups.** `config.option_groups` names a set of one checklist's options, as
+`{ question, options }`: for example `dui_unhelpful_observations` and `dui_helpful_observations`
+split `q_dui_observations` into observations that help the prosecution and ones that help the
+defense. A condition leaf `{ "option_group": name, "op": "includes_any" }` means at least one of
+the group's options was checked; `"op": "includes_none"` means none was. An optional `"except"`
+list leaves some of the group's options out, so "odor of alcohol and no other unhelpful
+observation" is `includes odor_alcohol` plus `{ "option_group": "dui_unhelpful_observations",
+"op": "includes_none", "except": ["odor_alcohol"] }`. The engine expands the leaf into the
+equivalent `any` of `includes` or `all` of `not_includes` (merged into an enclosing compound of the
+same kind). Use a group instead of spelling out the same list of options in several conditions,
+so adding an option to the question means adding it to its group once. The validator checks that
+the question is a `multi_select`, that every member and `except` entry is one of its options, and
+warns about groups no issue uses.
 
 ## Case session
 
@@ -227,7 +241,8 @@ Each issue needs its own note; a note on a related issue doesn't count.
 ## Conditions
 
 Used by `match_condition`, every `when`, and nothing else. A condition is a leaf
-`{ question, op, value }`, an event group leaf `{ event_group }` (see above), or a compound `{ all: [...] }` / `{ any: [...] }`; compounds can nest.
+`{ question, op, value }`, an event group leaf `{ event_group }` or option group leaf
+`{ option_group, op, except? }` (see above), or a compound `{ all: [...] }` / `{ any: [...] }`; compounds can nest.
 Values are option ids, never labels.
 
 | Question type | Ops |
@@ -288,7 +303,9 @@ paragraph `{ id, when?, applicable_courts?, fill_in }` is an instruction to the 
 the motion as **[Fill in: …]** where the text belongs. It's written to the attorney ("your
 client"), has no tokens or brackets, and ends with sentence punctuation. If a section renders no
 fill-in of its own, the engine ends it with "[Fill in: Apply the law to your client's facts.]", so
-no section is only law. The memo counts the prompts. Fill-ins don't count as law: an issue whose
+no section is only law. When the section's last paragraph is generated application (only argument
+sentences), that prompt goes at the end of the paragraph; otherwise it's a paragraph of its own.
+The memo counts the prompts. Fill-ins don't count as law: an issue whose
 only rendered paragraphs are fill-ins and argument isn't a section.
 
 ## Authorities

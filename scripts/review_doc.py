@@ -17,7 +17,7 @@ import render as R  # noqa: E402
 
 
 def load_raw(root):
-    """Config, questions (id -> question, with its file), and issues as written (event groups unexpanded)."""
+    """Config, questions (id -> question, with its file), and issues as written (event and option groups unexpanded)."""
     config = E.load_json(os.path.join(root, "content", "config.json"))
     questions, files = {}, []
     for path in E.content_files(root, "questions"):
@@ -43,12 +43,21 @@ def label(q, oid):
     return f"“{oid}”"
 
 
-def leaf_text(c, questions, groups):
+def leaf_text(c, questions, config):
     if set(c) == {"event_group"}:
         name = c["event_group"]
-        members = groups.get(name, [])
+        members = config.get("event_groups", {}).get(name, [])
         q = questions.get(E.ENCOUNTER_EVENTS, {})
         return f"any `{name}` event is checked ({'; '.join(label(q, m) for m in members)})"
+    if "option_group" in c:
+        name = c["option_group"]
+        g = config.get("option_groups", {}).get(name, {"question": "", "options": []})
+        q = questions.get(g["question"], {"prompt": g["question"]})
+        members = [m for m in g["options"] if m not in c.get("except", [])]
+        which = "any" if c.get("op") == "includes_any" else "none"
+        but = f", other than {' or '.join(label(q, m) for m in c['except'])}" if c.get("except") else ""
+        return (f"*{q['prompt']}* → {which} of `{name}`{but} checked "
+                f"({'; '.join(label(q, m) for m in members)})")
     q = questions.get(c["question"], {"prompt": c["question"]})
     op, v = c["op"], c.get("value")
     prompt = f"*{q['prompt']}*"
@@ -71,23 +80,23 @@ def leaf_text(c, questions, groups):
     return f"{prompt} {op} {v}"
 
 
-def condition_lines(c, questions, groups, depth=0):
+def condition_lines(c, questions, config, depth=0):
     """Nested bullet lines. 'all' reads as ALL of, 'any' as ANY of."""
     pad = "  " * depth
     if "all" in c or "any" in c:
         kind = "all" if "all" in c else "any"
         kids = c[kind]
         if len(kids) == 1:
-            return condition_lines(kids[0], questions, groups, depth)
+            return condition_lines(kids[0], questions, config, depth)
         out = [f"{pad}- {'ALL' if kind == 'all' else 'ANY'} of:"]
         for k in kids:
-            out += condition_lines(k, questions, groups, depth + 1)
+            out += condition_lines(k, questions, config, depth + 1)
         return out
-    return [f"{pad}- {leaf_text(c, questions, groups)}"]
+    return [f"{pad}- {leaf_text(c, questions, config)}"]
 
 
-def when_inline(c, questions, groups):
-    lines = condition_lines(c, questions, groups)
+def when_inline(c, questions, config):
+    lines = condition_lines(c, questions, config)
     if len(lines) == 1:
         return lines[0][2:]
     return "\n" + "\n".join("  " + x for x in lines)
@@ -95,7 +104,7 @@ def when_inline(c, questions, groups):
 
 # --------------------------------------------------------------------------- document
 
-def issue_section(n, issue, phase, config, questions, groups):
+def issue_section(n, issue, phase, config, questions):
     courts = config["courts"]
     ac = ", ".join(courts[c]["display_name"] for c in issue["applicable_courts"])
     trig = issue["trigger"]
@@ -103,7 +112,7 @@ def issue_section(n, issue, phase, config, questions, groups):
            f"`{issue['_file']}` · phase: {phase} · applies in: {ac} · status: **{issue['status']}**", "",
            f"**Motion heading:** {issue['motion_heading']}", "",
            "### Included when", ""]
-    out += condition_lines(trig["match_condition"], questions, groups) + [""]
+    out += condition_lines(trig["match_condition"], questions, config) + [""]
 
     out += ["### Motion text (paragraphs, in order)", ""]
     for para in issue["law_paragraphs"]:
@@ -111,7 +120,7 @@ def issue_section(n, issue, phase, config, questions, groups):
         if "applicable_courts" in para:
             out.append(f"  - *Only in:* {', '.join(courts[c]['display_name'] for c in para['applicable_courts'])}")
         if "when" in para:
-            out.append(f"  - *Only when:* {when_inline(para['when'], questions, groups)}")
+            out.append(f"  - *Only when:* {when_inline(para['when'], questions, config)}")
         if "fill_in" in para:
             out.append(f"  - *Fill-in for the attorney:* {para['fill_in']}")
             continue
@@ -132,7 +141,7 @@ def issue_section(n, issue, phase, config, questions, groups):
         if notes:
             out += [f"### {title}", ""]
             for note in notes:
-                out.append(f"- `{note['flag']}` — *when:* {when_inline(note['when'], questions, groups)}")
+                out.append(f"- `{note['flag']}` — *when:* {when_inline(note['when'], questions, config)}")
                 out.append(f"  - {note['display_note']}")
             out.append("")
 
@@ -190,7 +199,7 @@ def build(root):
 
     used_by, used_options = {}, set()
     for iid, issue in issues.items():
-        expanded = E.expand_issue(issue, groups)[0]
+        expanded = E.expand_issue(issue, config)[0]
         trig = expanded["trigger"]
         conds = ([trig["match_condition"]] + [n["when"] for n in trig.get("review_conditions", [])]
                  + [n["when"] for n in trig.get("excluded_explanations", [])]
@@ -210,7 +219,7 @@ def build(root):
     out += ["", "[Questions](#questions)", "", "---", ""]
 
     for n, iid in enumerate(order, 1):
-        out += issue_section(n, issues[iid], phase_of[iid], config, questions, groups) + ["---", ""]
+        out += issue_section(n, issues[iid], phase_of[iid], config, questions) + ["---", ""]
 
     out += ["# Questions", "", "Grouped by file, in file order. *Used by* lists every issue whose conditions "
             "mention the question. Options no condition mentions are marked; on a checklist they can still "
@@ -224,6 +233,12 @@ def build(root):
         out += ["**Event groups** (`content/config.json`):", ""]
         for name, members in groups.items():
             out.append(f"- `{name}`: {'; '.join(label(q, m) for m in members)}")
+        out.append("")
+    if config.get("option_groups"):
+        out += ["**Option groups** (`content/config.json`):", ""]
+        for name, g in config["option_groups"].items():
+            gq = questions.get(g["question"], {})
+            out.append(f"- `{name}` (`{g['question']}`): {'; '.join(label(gq, m) for m in g['options'])}")
         out.append("")
     for rel, qids in files:
         out += question_section(rel, qids, questions, used_by, used_options)

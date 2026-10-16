@@ -178,6 +178,62 @@
           ]
         }
       ]
+    },
+    {
+      "id": "application_suppression",
+      "when": {
+        "all": [
+          {
+            "question": "q_breath_test_completed",
+            "op": "equals",
+            "value": "yes"
+          },
+          {
+            "question": "q_comprehension_barrier",
+            "op": "in",
+            "value": [
+              "language",
+              "intoxication"
+            ]
+          }
+        ]
+      },
+      "sentences": [
+        {
+          "id": "apply_suppression",
+          "kind": "argument",
+          "text": "{client} was unable to understand {their} right to an independent chemical test, so the breath test results must be suppressed.",
+          "authorities": []
+        }
+      ]
+    },
+    {
+      "id": "application_presumption",
+      "when": {
+        "all": [
+          {
+            "question": "q_breath_test_completed",
+            "op": "equals",
+            "value": "no"
+          },
+          {
+            "question": "q_comprehension_barrier",
+            "op": "in",
+            "value": [
+              "language",
+              "intoxication"
+            ]
+          }
+        ]
+      },
+      "sentences": [
+        {
+          "id": "apply_presumption",
+          "kind": "argument",
+          "text": "{client} was unable to understand {their} right to an independent chemical test, so {they} {are} entitled to the presumption that an independent test would have been favorable.",
+          "authorities": []
+        }
+      ]
     }
   ],
   "practice_notes": [
@@ -188,6 +244,7 @@
     "The two remedy statements (suppression vs. favorable presumption) were previously memo-style notes on this issue and are now court-facing text. Nelson and Snyder address failure to advise; confirm the same remedies apply to an invalid waiver caused by a comprehension barrier.",
     "Nelson/Snyder pincites carried over from independent-test-advisement-failure — verify.",
     "2026-10-12: breath tests are no longer an encounter event. The trigger is now an arrest, a DUI or refusal charge, and a breath test in q_chemical_tests.",
-    "2026-10-14: q_arrest_offense's dui and refusal options were combined into dui_or_refusal at the maintainer's request; the trigger checks that one option. Same results as before."
+    "2026-10-14: q_arrest_offense's dui and refusal options were combined into dui_or_refusal at the maintainer's request; the trigger checks that one option. Same results as before.",
+    "2026-10-15: application paragraphs application_suppression and application_presumption added; the wording is the maintainer's (tokens substituted for the pronouns). They cover a language or intoxication barrier only; other_barrier gets no generated application."
   ]
 }

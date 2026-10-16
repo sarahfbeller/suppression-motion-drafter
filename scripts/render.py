@@ -84,6 +84,8 @@ def section(paragraphs):
             cite = citation(st["authorities"], previous)
             sentences.append(st["text"] + " " + cite + ("" if cite.rstrip("*").endswith(".") else "."))
             previous = st["authorities"][0] if len(st["authorities"]) == 1 else None
+        if "trailing_fill_in" in para:
+            sentences.append(f"**{fill_in_marker(para['trailing_fill_in'])}**")
         out.append(" ".join(sentences))
     return "\n\n".join(out)
 
